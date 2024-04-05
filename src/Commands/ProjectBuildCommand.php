@@ -5,6 +5,11 @@ namespace MoonShine\ProjectBuilder\Commands;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use MoonShine\Commands\MoonShineCommand;
 use MoonShine\ProjectBuilder\Actions\FieldsToMigration;
+use MoonShine\ProjectBuilder\Structures\Factories\StructureFactory;
+use MoonShine\ProjectBuilder\Structures\Factories\StructureFromJson;
+use MoonShine\ProjectBuilder\Structures\MainStructure;
+use MoonShine\ProjectBuilder\Structures\ResourceStructure;
+use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
 
 class ProjectBuildCommand extends MoonShineCommand
 {
@@ -14,32 +19,29 @@ class ProjectBuildCommand extends MoonShineCommand
 
     /**
      * @throws FileNotFoundException
+     * @throws ProjectBuilderException
      */
     public function handle(): void
     {
         $path = base_path('builds/post.json');
 
-        $project = json_decode(file_get_contents($path), true);
+        $builder = StructureFactory::make()->getBuilderFromJson($path);
 
-        foreach ($project['resources'] as $resources) {
-            foreach ($resources as $resource => $values) {
-                $name = str($resource)->replace('Resource', '')->value();
-                $lowName = str($name)->snake()->lower()->value();
-                $pluralName = str($lowName)->plural()->value();
-
-                $this->createMigration($pluralName, $values['fields']);
-            }
+        foreach ($builder->resources() as $resource) {
+            $this->createMigration($resource);
         }
     }
 
     /**
      * @throws FileNotFoundException
      */
-    private function createMigration(string $table, array $fields): void
+    private function createMigration(ResourceStructure $resourceStructure): void
     {
+        $table = $resourceStructure->pluralName();
+
         $path = base_path('database/migrations/'.date('Y_m_d_His').'_create_'.$table.'.php');
 
-        $columns = FieldsToMigration::make()->handle($fields);
+        $columns = $resourceStructure->fieldsToMigration();
 
         $this->copyStub('Migration', $path, [
             '{{ table }}' => $table,
