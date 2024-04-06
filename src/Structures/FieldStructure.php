@@ -6,11 +6,14 @@ namespace MoonShine\ProjectBuilder\Structures;
 
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Number;
+use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Text;
 
 final class FieldStructure
 {
     private string $type = '';
+
+    private string $relation = '';
 
     private ?string $fieldClass = null;
 
@@ -41,9 +44,21 @@ final class FieldStructure
         return $this->type;
     }
 
+    public function relation(): string
+    {
+        return $this->relation;
+    }
+
     public function fieldClass(): ?string
     {
         return $this->fieldClass;
+    }
+
+    public function setRelation(string $relation): self
+    {
+        $this->relation = $relation;
+
+        return $this;
     }
 
     public function setType(string $type): self
@@ -135,6 +150,9 @@ final class FieldStructure
         $typeMap = [
             ID::class => [
                 'id',
+            ],
+            BelongsTo::class => [
+                'belongsTo'
             ],
             Number::class => [
                 'unsignedBigInteger',

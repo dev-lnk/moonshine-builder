@@ -45,6 +45,10 @@ final class StructureFromJson implements MakeStructureContract
 
                     $fieldBuilder->setType($field['type']);
 
+                    if(! empty($field['relation'])) {
+                        $fieldBuilder->setRelation($field['relation']);
+                    }
+
                     if(! empty($field['methods'])) {
                         $fieldBuilder->addResourceMethods($field['methods']);
                     }

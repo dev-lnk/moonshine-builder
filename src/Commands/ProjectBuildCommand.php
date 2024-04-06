@@ -5,16 +5,13 @@ namespace MoonShine\ProjectBuilder\Commands;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use MoonShine\Commands\MoonShineCommand;
 use MoonShine\MoonShine;
-use MoonShine\ProjectBuilder\Actions\FieldsToMigration;
 use MoonShine\ProjectBuilder\Structures\Factories\StructureFactory;
-use MoonShine\ProjectBuilder\Structures\Factories\StructureFromJson;
-use MoonShine\ProjectBuilder\Structures\MainStructure;
 use MoonShine\ProjectBuilder\Structures\ResourceStructure;
 use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
 
 class ProjectBuildCommand extends MoonShineCommand
 {
-    protected $signature = 'moonshine:build';
+    protected $signature = 'moonshine:build {file}';
 
     protected string $stubsDir = __DIR__ . '/../../stubs';
 
@@ -22,9 +19,15 @@ class ProjectBuildCommand extends MoonShineCommand
      * @throws FileNotFoundException
      * @throws ProjectBuilderException
      */
-    public function handle(): void
+    public function handle(): int
     {
-        $path = base_path('builds/post.json');
+        if(! $this->hasArgument('file')) {
+            return self::FAILURE;
+        }
+
+        $dir = config('moonshine_builder.builds_dir');
+
+        $path = $dir . '/' . $this->argument('file') . '.json';
 
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
@@ -33,6 +36,8 @@ class ProjectBuildCommand extends MoonShineCommand
             $this->createMigration($resource);
             $this->createResource($resource);
         }
+
+        return self::SUCCESS;
     }
 
     /**

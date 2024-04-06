@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Structures;
 
+use MoonShine\Fields\ID;
+use MoonShine\Fields\Relationships\BelongsTo;
+
 final class ResourceStructure
 {
     /**
@@ -118,9 +121,27 @@ final class ResourceStructure
 
         foreach ($this->fields as $field) {
 
+            if($field->fieldClass() === BelongsTo::class) {
+                $result .= str(class_basename($field->fieldClass()))
+                    ->append('::make')
+                    ->append("('{$field->name()}', '{$field->column()}'")
+                    ->append(", resource: new ")
+                    ->append(str($field->relation())->ucfirst()->append('Resource')->value())
+                    ->append('())')
+                    ->append(',')
+                    ->newLine()
+                    ->append('    ')
+                    ->append('    ')
+                    ->append('    ')
+                    ->append('    ')
+                    ->value();
+
+                continue;
+            }
+
             $result .= str(class_basename($field->fieldClass()))
                 ->append('::make')
-                ->when($field->type() !== 'id',
+                ->when($field->fieldClass() !== ID::class,
                     fn($str) => $str->append("('{$field->name()}', '{$field->column()}')"),
                     fn($str) => $str->append("('{$field->column()}')"),
                 )
