@@ -40,16 +40,14 @@ final class StructureFromJson implements MakeStructureContract
             foreach ($resource as $name => $values) {
                 $resourceBuilder = new ResourceStructure($name);
 
-                foreach ($values['fields'] as $fieldName => $field) {
-                    $fieldBuilder = new FieldStructure($fieldName);
-
-                    if(is_string($field)) {
-                        $fieldBuilder->setType($field);
-                        $resourceBuilder->addField($fieldBuilder);
-                        continue;
-                    }
+                foreach ($values['fields'] as $fieldColumn => $field) {
+                    $fieldBuilder = new FieldStructure($fieldColumn, $field['name'] ?? '');
 
                     $fieldBuilder->setType($field['type']);
+
+                    if(! empty($field['methods'])) {
+                        $fieldBuilder->addResourceMethods($field['methods']);
+                    }
 
                     if(! empty($field['migration'])) {
                         if(! empty($field['migration']['option'])) {

@@ -4,17 +4,46 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Structures;
 
+use MoonShine\Fields\ID;
+use MoonShine\Fields\Number;
+use MoonShine\Fields\Text;
+
 final class FieldStructure
 {
     private string $type = '';
+
+    private ?string $fieldClass = null;
+
+    private array $resourceMethods = [];
 
     private array $migrationOptions = [];
 
     private array $migrationMethods = [];
 
     public function __construct(
-        private string $name
+        private string $column,
+        private string $name = '',
     ) {
+    }
+
+    public function column(): string
+    {
+        return $this->column;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    public function fieldClass(): ?string
+    {
+        return $this->fieldClass;
     }
 
     public function setType(string $type): self
@@ -29,6 +58,14 @@ final class FieldStructure
 
         $this->type = $type;
 
+        $this->setFieldClass();
+
+        return $this;
+    }
+
+    public function addResourceMethods(array $methods): self
+    {
+        $this->resourceMethods = $methods;
         return $this;
     }
 
@@ -47,9 +84,9 @@ final class FieldStructure
     public function migrationName(): string
     {
         return str($this->type)
-            ->when($this->name === 'id' && $this->type === 'id',
+            ->when($this->column === 'id' && $this->type === 'id',
                 fn($str) => $str->append("("),
-                fn($str) => $str->append("('{$this->name}'")
+                fn($str) => $str->append("('{$this->column}'")
             )
             ->when(! empty($this->migrationOptions),
                 fn($str) => $str->append(', ' . implode(', ', $this->migrationOptions) . ')'),
@@ -72,5 +109,55 @@ final class FieldStructure
         }
 
         return $result;
+    }
+
+    public function resourceMethods(): string
+    {
+        if(empty($this->resourceMethods)) {
+            return '';
+        }
+
+        $result = "";
+
+        foreach ($this->resourceMethods as $method) {
+            $result .= "->$method";
+        }
+
+        return $result;
+    }
+
+    public function setFieldClass(): self
+    {
+        if(! is_null($this->fieldClass)) {
+            return $this;
+        }
+
+        $typeMap = [
+            ID::class => [
+                'id',
+            ],
+            Number::class => [
+                'unsignedBigInteger',
+                'unsignedInteger',
+                'unsignedMediumInteger',
+                'unsignedSmallInteger',
+                'unsignedTinyInteger',
+                'bigInteger',
+                'integer',
+                'tinyInteger',
+            ],
+            Text::class => [
+                'string',
+                'text',
+            ],
+        ];
+
+        foreach ($typeMap as $fieldClass => $findTypes) {
+            if (in_array($this->type(), $findTypes, true)) {
+                $this->fieldClass = $fieldClass;
+            }
+        }
+
+        return $this;
     }
 }

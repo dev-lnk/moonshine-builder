@@ -4,6 +4,7 @@ namespace MoonShine\ProjectBuilder\Commands;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use MoonShine\Commands\MoonShineCommand;
+use MoonShine\MoonShine;
 use MoonShine\ProjectBuilder\Actions\FieldsToMigration;
 use MoonShine\ProjectBuilder\Structures\Factories\StructureFactory;
 use MoonShine\ProjectBuilder\Structures\Factories\StructureFromJson;
@@ -28,8 +29,28 @@ class ProjectBuildCommand extends MoonShineCommand
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
         foreach ($builder->resources() as $resource) {
+            $this->createModel($resource);
             $this->createMigration($resource);
+            $this->createResource($resource);
         }
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    private function createModel(ResourceStructure $resourceStructure): void
+    {
+        $modelName = $resourceStructure->name();
+
+        $path = base_path("app/Models/$modelName.php");
+
+        $fillable = $resourceStructure->fieldsToModel();
+
+        $this->copyStub('Model', $path, [
+            '{namespace}' => 'App\Models',
+            '{class}' => $modelName,
+            '{fillable}' => $fillable
+        ]);
     }
 
     /**
@@ -44,8 +65,34 @@ class ProjectBuildCommand extends MoonShineCommand
         $columns = $resourceStructure->fieldsToMigration();
 
         $this->copyStub('Migration', $path, [
-            '{{ table }}' => $table,
-            '{{ columns }}' => $columns,
+            '{table}' => $table,
+            '{columns}' => $columns,
+        ]);
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    private function createResource(ResourceStructure $resourceStructure): void
+    {
+        $name = $resourceStructure->resourceName();
+
+        $model = $this->qualifyModel($resourceStructure->name());
+
+        $path = base_path("app/MoonShine/Resources/$name.php");
+
+        $fieldsUses = $resourceStructure->usesFieldsToResource();
+
+        $fields = $resourceStructure->fieldsToResources();
+
+        $this->copyStub('ModelResourceDefault', $path, [
+            '{namespace}' => MoonShine::namespace('\Resources'),
+            '{model-namespace}' => $model,
+            '{uses}' => $fieldsUses,
+            '{fields}' => $fields,
+            '{model}' => class_basename($model),
+            'DummyTitle' => class_basename($model),
+            'Dummy' => $resourceStructure->name(),
         ]);
     }
 }

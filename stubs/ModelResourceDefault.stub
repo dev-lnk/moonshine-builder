@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {namespace};
+
+use Illuminate\Database\Eloquent\Model;
+use {model-namespace};
+
+use MoonShine\Resources\ModelResource;
+use MoonShine\Decorations\Block;
+{uses}
+
+/**
+ * @extends ModelResource<{model}>
+ */
+class DummyResource extends ModelResource
+{
+    protected string $model = {model}::class;
+
+    protected string $title = 'DummyTitle';
+
+    public function fields(): array
+    {
+        return [
+            Block::make([
+                {fields}
+            ]),
+        ];
+    }
+
+    public function rules(Model $item): array
+    {
+        return [];
+    }
+}
