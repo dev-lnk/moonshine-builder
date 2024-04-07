@@ -26,6 +26,7 @@ final class ResourceStructure
     public function addField(FieldStructure $fieldBuilder): self
     {
         $this->fields[] = $fieldBuilder;
+
         return $this;
     }
 
@@ -35,6 +36,14 @@ final class ResourceStructure
     public function fields(): array
     {
         return $this->fields;
+    }
+
+    /**
+     * @return array<int, RelationFieldStructure>
+     */
+    public function relationFields(): array
+    {
+        return array_filter($this->fields, fn($fieldStructure) => $fieldStructure instanceof RelationFieldStructure);
     }
 
     public function name(): NameStr
@@ -114,13 +123,18 @@ final class ResourceStructure
         $result = "";
 
         foreach ($this->fields as $field) {
-
-            if($field->fieldClass() === BelongsTo::class) {
+            if(
+                $field instanceof RelationFieldStructure
+                && $field->fieldClass() === BelongsTo::class
+            ) {
                 $result .= str(class_basename($field->fieldClass()))
                     ->append('::make')
-                    ->append("('{$field->name()}', '{$field->column()}'")
+                    ->append("('{$field->name()}', '{$field->relation()->raw()}'")
                     ->append(", resource: new ")
-                    ->append(str($field->relation()->ucFirst())->append('Resource')->value())
+                    ->when($field->resourceClass(),
+                        fn($str) => $str->append($field->resourceClass()),
+                        fn($str) => $str->append(str($field->relation()->ucFirst())->append('Resource')->value()),
+                    )
                     ->append('())')
                     ->append(',')
                     ->newLine()
@@ -151,5 +165,35 @@ final class ResourceStructure
         }
 
         return $result;
+    }
+
+    public function relationUses(): string
+    {
+        $result = "";
+
+        foreach ($this->relationFields() as $relationField) {
+            if(str_contains($result, $relationField->getModelUse())) {
+                continue;
+            }
+
+            $result .= str($relationField->getModelUse())
+                ->prepend("use ")
+                ->append(";")
+                ->newLine()
+                ->value();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<int, array<string, string>>
+     */
+    public function relationsData(): array
+    {
+        return array_map(fn(RelationFieldStructure $fieldStructure)
+            => $fieldStructure->relationData(),
+            $this->relationFields()
+        );
     }
 }

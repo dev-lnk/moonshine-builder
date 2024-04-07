@@ -24,7 +24,17 @@ final class NameStr
 
     public function lower(): string
     {
-        return str($this->raw())->snake()->lower()->value();
+        return str($this->raw())
+            ->snake()
+            ->lower()
+            ->value();
+    }
+
+    public function camel(): string
+    {
+        return str($this->raw())
+            ->camel()
+            ->value();
     }
 
     public function plural(): string

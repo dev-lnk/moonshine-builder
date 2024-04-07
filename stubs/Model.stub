@@ -4,6 +4,7 @@ namespace {namespace};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+{relation_uses}
 
 class {class} extends Model
 {
@@ -12,4 +13,6 @@ class {class} extends Model
     protected $fillable = [
         {fillable}
     ];
+
+{relations_block}
 }

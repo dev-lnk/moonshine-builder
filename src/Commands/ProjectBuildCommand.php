@@ -51,10 +51,30 @@ class ProjectBuildCommand extends MoonShineCommand
 
         $fillable = $resourceStructure->fieldsToModel();
 
+        $relationUses = $resourceStructure->relationUses();
+
+        $relationsBlock = '';
+
+        if(! empty($resourceStructure->relationFields())) {
+            foreach ($resourceStructure->relationsData() as $relationsData) {
+                $relationsBlock .= str($this->replaceInStub($relationsData['stub'], [
+                    '{relation}' => $relationsData['relation'],
+                    '{relation_model}' => $relationsData['relation_model'],
+                    '{relation_key}' => $relationsData['relation_key'],
+                ]))
+                    ->newLine()
+                    ->newLine()
+                    ->value()
+                ;
+            }
+        }
+
         $this->copyStub('Model', $path, [
             '{namespace}' => 'App\Models',
             '{class}' => $modelName,
-            '{fillable}' => $fillable
+            '{fillable}' => $fillable,
+            '{relation_uses}' => $relationUses,
+            '{relations_block}' => $relationsBlock,
         ]);
     }
 

@@ -10,11 +10,9 @@ use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Text;
 use MoonShine\ProjectBuilder\Support\NameStr;
 
-final class FieldStructure
+class FieldStructure
 {
     private string $type = '';
-
-    private ?NameStr $relation = null;
 
     private ?string $fieldClass = null;
 
@@ -45,21 +43,9 @@ final class FieldStructure
         return $this->type;
     }
 
-    public function relation(): NameStr
-    {
-        return $this->relation;
-    }
-
     public function fieldClass(): ?string
     {
         return $this->fieldClass;
-    }
-
-    public function setRelation(string $relation): self
-    {
-        $this->relation = new NameStr($relation);
-
-        return $this;
     }
 
     public function setType(string $type): self

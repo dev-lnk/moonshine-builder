@@ -6,6 +6,7 @@ namespace MoonShine\ProjectBuilder\Structures\Factories;
 
 use MoonShine\ProjectBuilder\Structures\FieldStructure;
 use MoonShine\ProjectBuilder\Structures\MainStructure;
+use MoonShine\ProjectBuilder\Structures\RelationFieldStructure;
 use MoonShine\ProjectBuilder\Structures\ResourceStructure;
 use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
 use MoonShine\ProjectBuilder\Traits\Makeable;
@@ -41,13 +42,9 @@ final class StructureFromJson implements MakeStructureContract
                 $resourceBuilder = new ResourceStructure($name);
 
                 foreach ($values['fields'] as $fieldColumn => $field) {
-                    $fieldBuilder = new FieldStructure($fieldColumn, $field['name'] ?? '');
+                    $fieldBuilder = $this->getFieldBuilder($fieldColumn, $field);
 
                     $fieldBuilder->setType($field['type']);
-
-                    if(! empty($field['relation'])) {
-                        $fieldBuilder->setRelation($field['relation']);
-                    }
 
                     if(! empty($field['methods'])) {
                         $fieldBuilder->addResourceMethods($field['methods']);
@@ -71,5 +68,20 @@ final class StructureFromJson implements MakeStructureContract
         }
 
         return $mainBuilder;
+    }
+
+    private function getFieldBuilder(string $fieldColumn, array $field): FieldStructure
+    {
+        if( empty($field['relation'])) {
+            return new FieldStructure($fieldColumn, $field['name'] ?? '');
+        }
+
+        $fieldStructure = new RelationFieldStructure($field['relation'], $fieldColumn, $field['name'] ?? '');
+
+        return $fieldStructure
+            ->setRelationKey($field['relation_key'] ?? '')
+            ->setModelClass($field['model_class'] ?? '')
+            ->setResourceClass($field['resource_class'] ?? '')
+        ;
     }
 }
