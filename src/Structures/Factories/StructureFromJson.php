@@ -41,6 +41,8 @@ final class StructureFromJson implements MakeStructureContract
             foreach ($resource as $name => $values) {
                 $resourceBuilder = new ResourceStructure($name);
 
+                $resourceBuilder->setColumn($values['column'] ?? '');
+
                 foreach ($values['fields'] as $fieldColumn => $field) {
                     $fieldBuilder = $this->getFieldBuilder($fieldColumn, $field);
 

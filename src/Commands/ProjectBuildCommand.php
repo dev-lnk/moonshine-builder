@@ -114,6 +114,7 @@ class ProjectBuildCommand extends MoonShineCommand
             '{namespace}' => MoonShine::namespace('\Resources'),
             '{model-namespace}' => $model,
             '{uses}' => $fieldsUses,
+            '{column}' => $resourceStructure->columnToResource(),
             '{fields}' => $fields,
             '{model}' => class_basename($model),
             'DummyTitle' => class_basename($model),

@@ -17,6 +17,8 @@ final class ResourceStructure
 
     private NameStr $name;
 
+    private string $column = '';
+
     public function __construct(
         string $name
     ) {
@@ -38,6 +40,18 @@ final class ResourceStructure
         return $this->fields;
     }
 
+    public function column(): string
+    {
+        return $this->column;
+    }
+
+    public function setColumn(string $column): self
+    {
+        $this->column = $column;
+
+        return $this;
+    }
+
     /**
      * @return array<int, RelationFieldStructure>
      */
@@ -54,6 +68,15 @@ final class ResourceStructure
     public function resourceName(): string
     {
         return $this->name->raw().'Resource';
+    }
+
+    public function columnToResource(): string
+    {
+        if(empty($this->column)) {
+            return '';
+        }
+
+        return "protected string \$column = '{$this->column}';".PHP_EOL;
     }
 
     public function fieldsToModel(): string

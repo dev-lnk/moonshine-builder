@@ -109,15 +109,15 @@ class RelationFieldStructure extends FieldStructure
             )
             ->append("::class")
             //TODO foreign key
-//            ->when($this->relationKey,
-//                fn($str) => $str->append(", '{$this->relationKey}'")
+//            ->when($this->foreignKey,
+//                fn($str) => $str->append(", '{$this->foreignKey}'")
 //            )
             ->append(')')
-            ->tap(fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => $this->foreignStrFunction($str))
             ->append('->constrained()')
-            ->tap(fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => $this->foreignStrFunction($str))
             ->append('->cascadeOnDelete()')
-            ->tap(fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => $this->foreignStrFunction($str))
             ->append('->cascadeOnUpdate()')
             ->value()
         ;
@@ -125,7 +125,8 @@ class RelationFieldStructure extends FieldStructure
 
     private function foreignStrFunction(Stringable $str): Stringable
     {
-        return $str->newLine()
+        return $str
+            ->newLine()
             ->append('    ')
             ->append('    ')
             ->append('    ')
