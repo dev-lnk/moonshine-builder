@@ -8,12 +8,13 @@ use MoonShine\Fields\ID;
 use MoonShine\Fields\Number;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Text;
+use MoonShine\ProjectBuilder\Support\NameStr;
 
 final class FieldStructure
 {
     private string $type = '';
 
-    private string $relation = '';
+    private ?NameStr $relation = null;
 
     private ?string $fieldClass = null;
 
@@ -24,8 +25,8 @@ final class FieldStructure
     private array $migrationMethods = [];
 
     public function __construct(
-        private string $column,
-        private string $name = '',
+        private readonly string $column,
+        private readonly string $name = '',
     ) {
     }
 
@@ -44,7 +45,7 @@ final class FieldStructure
         return $this->type;
     }
 
-    public function relation(): string
+    public function relation(): NameStr
     {
         return $this->relation;
     }
@@ -56,7 +57,7 @@ final class FieldStructure
 
     public function setRelation(string $relation): self
     {
-        $this->relation = $relation;
+        $this->relation = new NameStr($relation);
 
         return $this;
     }

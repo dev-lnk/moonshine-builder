@@ -6,6 +6,7 @@ namespace MoonShine\ProjectBuilder\Structures;
 
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Relationships\BelongsTo;
+use MoonShine\ProjectBuilder\Support\NameStr;
 
 final class ResourceStructure
 {
@@ -14,9 +15,12 @@ final class ResourceStructure
      */
     private array $fields = [];
 
+    private NameStr $name;
+
     public function __construct(
-        private string $name
+        string $name
     ) {
+        $this->name = new NameStr(str($name)->replace('Resource', '')->value());
     }
 
     public function addField(FieldStructure $fieldBuilder): self
@@ -33,24 +37,14 @@ final class ResourceStructure
         return $this->fields;
     }
 
-    public function resourceName(): string
+    public function name(): NameStr
     {
         return $this->name;
     }
 
-    public function name(): string
+    public function resourceName(): string
     {
-        return str($this->name)->replace('Resource', '')->value();
-    }
-
-    public function lowName(): string
-    {
-        return str($this->name())->snake()->lower()->value();
-    }
-
-    public function pluralName(): string
-    {
-        return str($this->lowName())->plural()->value();
+        return $this->name->raw().'Resource';
     }
 
     public function fieldsToModel(): string
@@ -126,7 +120,7 @@ final class ResourceStructure
                     ->append('::make')
                     ->append("('{$field->name()}', '{$field->column()}'")
                     ->append(", resource: new ")
-                    ->append(str($field->relation())->ucfirst()->append('Resource')->value())
+                    ->append(str($field->relation()->ucFirst())->append('Resource')->value())
                     ->append('())')
                     ->append(',')
                     ->newLine()

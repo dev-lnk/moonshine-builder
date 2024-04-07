@@ -45,7 +45,7 @@ class ProjectBuildCommand extends MoonShineCommand
      */
     private function createModel(ResourceStructure $resourceStructure): void
     {
-        $modelName = $resourceStructure->name();
+        $modelName = $resourceStructure->name()->ucFirst();
 
         $path = base_path("app/Models/$modelName.php");
 
@@ -63,7 +63,7 @@ class ProjectBuildCommand extends MoonShineCommand
      */
     private function createMigration(ResourceStructure $resourceStructure): void
     {
-        $table = $resourceStructure->pluralName();
+        $table = $resourceStructure->name()->plural();
 
         $path = base_path('database/migrations/'.date('Y_m_d_His').'_create_'.$table.'.php');
 
@@ -82,7 +82,7 @@ class ProjectBuildCommand extends MoonShineCommand
     {
         $name = $resourceStructure->resourceName();
 
-        $model = $this->qualifyModel($resourceStructure->name());
+        $model = $this->qualifyModel($resourceStructure->name()->ucFirst());
 
         $path = base_path("app/MoonShine/Resources/$name.php");
 
@@ -97,7 +97,7 @@ class ProjectBuildCommand extends MoonShineCommand
             '{fields}' => $fields,
             '{model}' => class_basename($model),
             'DummyTitle' => class_basename($model),
-            'Dummy' => $resourceStructure->name(),
+            'Dummy' => $resourceStructure->name()->ucFirst(),
         ]);
     }
 }
