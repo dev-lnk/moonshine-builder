@@ -98,9 +98,7 @@ final class ResourceStructure
             }
             $result .= str("'{$field->column()}'")
                 ->append(',')
-                ->newLine()
-                ->append('    ')
-                ->append('    ')
+                ->when(true, fn($str) => newLineWithTab($str, 2))
                 ->value()
             ;
         }
@@ -121,10 +119,7 @@ final class ResourceStructure
                 ->append($field->migrationName())
                 ->append($field->migrationMethods())
                 ->append(';')
-                ->newLine()
-                ->append('    ')
-                ->append('    ')
-                ->append('    ')
+                ->when(true, fn($str) => newLineWithTab($str, 3))
                 ->value()
             ;
         }

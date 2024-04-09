@@ -7,7 +7,7 @@ namespace MoonShine\ProjectBuilder\Structures;
 final class MainStructure
 {
     /**
-     * @var ResourceStructure[]
+     * @var array<int, ResourceStructure>
      */
     private array $resources = [];
 
@@ -18,7 +18,7 @@ final class MainStructure
     }
 
     /**
-     * @return ResourceStructure[]
+     * @return array<int, ResourceStructure>
      */
     public function resources(): array
     {

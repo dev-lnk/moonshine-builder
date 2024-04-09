@@ -21,6 +21,7 @@ class FieldStructure
      *
      * @see FieldStructure::setField()
      * @see FieldStructure::setFieldClass()
+     *
      * @var string|null
      */
     private ?string $fieldClass = null;
