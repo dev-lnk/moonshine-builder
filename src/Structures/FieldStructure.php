@@ -141,7 +141,11 @@ class FieldStructure
         $result = "";
 
         foreach ($this->migrationMethods as $method) {
+            if(! str_contains($method, '(')) {
+                $method .= "()";
+            }
             $result .= "->$method";
+
         }
 
         return $result;
@@ -156,6 +160,9 @@ class FieldStructure
         $result = "";
 
         foreach ($this->resourceMethods as $method) {
+            if(! str_contains($method, '(')) {
+                $method .= "()";
+            }
             $result .= "->$method";
         }
 
