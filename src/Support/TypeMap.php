@@ -50,7 +50,7 @@ final class TypeMap
                 'bigInteger',
                 'integer',
                 'tinyInteger',
-                'bool'
+                'boolean'
             ],
             Text::class => [
                 'string',
