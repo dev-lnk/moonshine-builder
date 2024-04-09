@@ -13,7 +13,7 @@ This package allows you to describe the entire project structure using a JSON sc
 
 ### Installation:
 ```shell
-composer require moonshine/moonshine-builder
+composer require dev-lnk/moonshine-builder
 ```
 ### Configuration:
 Publish the package configuration file:
