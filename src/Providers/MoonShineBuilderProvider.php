@@ -20,6 +20,11 @@ class MoonShineBuilderProvider extends ServiceProvider
             $this->commands($this->commands);
         }
 
+        $this->publishes([
+            __DIR__.'/../../config/moonshine_builder.php' =>
+                config_path('moonshine_builder.php'),
+        ], 'moonshine-builder');
+
         $this->mergeConfigFrom(
             __DIR__.'/../../config/moonshine_builder.php',
             'moonshine_builder'
