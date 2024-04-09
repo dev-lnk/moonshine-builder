@@ -32,9 +32,13 @@ class ProjectBuildCommand extends MoonShineCommand
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
         foreach ($builder->resources() as $index => $resource) {
+            $this->warn("app/MoonShine/Resources/{$resource->resourceName()} is created...");
+
             $this->createModel($resource);
             $this->createMigration($resource, $index);
             $this->createResource($resource);
+
+            $this->info("app/MoonShine/Resources/{$resource->resourceName()} created successfully");
         }
 
         return self::SUCCESS;
@@ -75,6 +79,8 @@ class ProjectBuildCommand extends MoonShineCommand
             '{relation_uses}' => $relationUses,
             '{relations_block}' => $relationsBlock,
         ]);
+
+        $this->info("Model App\\Models\\$modelName created successfully");
     }
 
     /**
@@ -84,7 +90,10 @@ class ProjectBuildCommand extends MoonShineCommand
     {
         $table = $resourceStructure->name()->plural();
 
-        $path = base_path('database/migrations/'.date('Y_m_d_His').'_'.$index.'_create_'.$table.'.php');
+        // TODO подумать как сделать рефакторинг $index
+        $migrationPath = 'database/migrations/'.date('Y_m_d_His').'_'.$index.'_create_'.$table.'.php';
+
+        $path = base_path($migrationPath);
 
         $columns = $resourceStructure->fieldsToMigration();
 
@@ -92,6 +101,8 @@ class ProjectBuildCommand extends MoonShineCommand
             '{table}' => $table,
             '{columns}' => $columns,
         ]);
+
+        $this->info("Migration $migrationPath created successfully");
     }
 
     /**
