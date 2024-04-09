@@ -34,7 +34,7 @@ return [
     {
       "CategoryResource": {
         "fields": {
-          "category_id": {
+          "id": {
             "type": "id",
             "methods": [
               "sortable"
@@ -58,4 +58,6 @@ return [
 ```php
  php artisan moonshine:build category
 ```
-Более детальный пример файла с несколькими ресурсами и отношениями находится здесь
+Более детальный пример файла с несколькими ресурсами и отношениями находится здесь.
+
+После генерации файлов, необходимо зарегистрировать все новые ресурсы в вашем MoonShineServiceProvider
