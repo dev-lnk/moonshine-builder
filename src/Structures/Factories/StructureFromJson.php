@@ -35,7 +35,7 @@ final class StructureFromJson implements MakeStructureContract
             throw new ProjectBuilderException('Wrong json data');
         }
 
-        $mainBuilder = new MainStructure();
+        $mainStructure = new MainStructure();
 
         foreach ($file['resources'] as $resource) {
             foreach ($resource as $name => $values) {
@@ -68,11 +68,11 @@ final class StructureFromJson implements MakeStructureContract
                     $resourceBuilder->addField($fieldBuilder);
                 }
 
-                $mainBuilder->addResource($resourceBuilder);
+                $mainStructure->addResource($resourceBuilder);
             }
         }
 
-        return $mainBuilder;
+        return $mainStructure;
     }
 
     private function getFieldBuilder(string $fieldColumn, array $field): FieldStructure

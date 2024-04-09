@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MoonShine\ProjectBuilder\Structures;
 
 use MoonShine\Fields\ID;
-use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\ProjectBuilder\Support\NameStr;
 
 final class ResourceStructure
@@ -15,8 +14,18 @@ final class ResourceStructure
      */
     private array $fields = [];
 
+    /**
+     * Main name for generation
+     *
+     * @var NameStr
+     */
     private NameStr $name;
 
+    /**
+     * $column property of a Resource
+     *
+     * @var string
+     */
     private string $column = '';
 
     public function __construct(
@@ -103,7 +112,6 @@ final class ResourceStructure
     {
         $result = "";
 
-
         foreach ($this->fields as $field) {
             if($field->isHasField()) {
                 continue;
@@ -151,9 +159,7 @@ final class ResourceStructure
         $result = "";
 
         foreach ($this->fields as $field) {
-            if(
-                $field instanceof RelationFieldStructure
-            ) {
+            if($field instanceof RelationFieldStructure) {
                 $resourceName = $field->isManyField()
                     ? $field->relation()->ucFirstSingular()
                     : $field->relation()->ucFirst() ;
@@ -169,11 +175,7 @@ final class ResourceStructure
                     ->append('())')
                     ->append($field->resourceMethods())
                     ->append(',')
-                    ->newLine()
-                    ->append('    ')
-                    ->append('    ')
-                    ->append('    ')
-                    ->append('    ')
+                    ->when(true, fn($str) => newLineWithTab($str))
                     ->value();
 
                 continue;
@@ -187,11 +189,7 @@ final class ResourceStructure
                 )
                 ->append($field->resourceMethods())
                 ->append(',')
-                ->newLine()
-                ->append('    ')
-                ->append('    ')
-                ->append('    ')
-                ->append('    ')
+                ->when(true, fn($str) => newLineWithTab($str))
                 ->value()
             ;
         }

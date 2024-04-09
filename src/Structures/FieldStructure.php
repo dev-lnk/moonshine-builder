@@ -9,16 +9,41 @@ use MoonShine\ProjectBuilder\Support\TypeMap;
 
 class FieldStructure
 {
+    /**
+     * Field type, for example int
+     *
+     * @var string
+     */
     private string $type = '';
 
-    private string $field = '';
-
+    /**
+     * Class fields to generate in a resource
+     *
+     * @see FieldStructure::setField()
+     * @see FieldStructure::setFieldClass()
+     * @var string|null
+     */
     private ?string $fieldClass = null;
 
+    /**
+     * Methods for a field in resources
+     *
+     * @var array<int, string>
+     */
     private array $resourceMethods = [];
 
+    /**
+     * Options for creating a field in a table, for example string('name', [options])
+     *
+     * @var array
+     */
     private array $migrationOptions = [];
 
+    /**
+     * Methods for a field in migrations
+     *
+     * @var array<int, string>
+     */
     private array $migrationMethods = [];
 
     private TypeMap $typeMap;
@@ -78,7 +103,7 @@ class FieldStructure
 
         $field = str($field)->ucfirst()->value();
 
-        $this->fieldClass = $this->typeMap->getFieldClass($field);
+        $this->fieldClass = $this->typeMap->fieldClassFromAlias($field);
 
         return $this;
     }
@@ -175,7 +200,7 @@ class FieldStructure
             return $this;
         }
 
-        $typeMap = $this->typeMap->getFieldFromType();
+        $typeMap = $this->typeMap->fieldMigrationMap();
 
         foreach ($typeMap as $fieldClass => $findTypes) {
             if (in_array($this->type(), $findTypes, true)) {

@@ -35,7 +35,7 @@ use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
 
 final class TypeMap
 {
-    public function getFieldFromType(): array
+    public function fieldMigrationMap(): array
     {
         return [
             ID::class => [
@@ -71,7 +71,7 @@ final class TypeMap
     /**
      * @throws ProjectBuilderException
      */
-    public function getFieldClass(string $field)
+    public function fieldClassFromAlias(string $field): string
     {
         return match ($field) {
             'Text' => Text::class,
