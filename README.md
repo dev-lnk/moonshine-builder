@@ -1,33 +1,33 @@
 ![logo](https://github.com/moonshine-software/moonshine/raw/2.x/art/lego.png)
 
-## Создание проектов по схеме для админ-панели [MoonShine](https://github.com/moonshine-software/moonshine).
+## Creating projects using schemas for the [MoonShine](https://github.com/moonshine-software/moonshine).
 
-#### Привет пользователь Laravel и MoonShine!
+#### Hello, Laravel and MoonShine User!
 
-Данный пакет позволяет с помощью json схемы описать всю структуру проекта и сгенерировать необходимые файлы, такие как:
+This package allows you to describe the entire project structure using a JSON schema and generate necessary files such as:
 <ul>
-    <li>Модели</li>
-    <li>Миграции</li>
-    <li>Ресурсы</li>
+    <li>Models</li>
+    <li>Migrations</li>
+    <li>Resources</li>
 </ul>
 
-### Установка:
+### Installation:
 ```php
 composer require moonshine/moonshine-builder
 ```
-### Настройка:
-Опубликуйте файл конфигурации пакета:
+### Configuration:
+Publish the package configuration file:
 ```php
 php artisan vendor:publish --tag=moonshine-builder
 ```
-В файле конфигурации укажите путь до ваших json схем:
+n the configuration file, specify the path to your JSON schemas:
 ```php
 return [
     'builds_dir' => base_path('builds')
 ];
 ```
-### Создание схемы
-В директории builds_dir создайте файл со схемой, например category.json:
+### Creating a Schema
+In the <code>builds_dir</code> directory, create a schema file, for example, <code>category.json</code>:
 ```
 {
   "resources": [
@@ -50,14 +50,14 @@ return [
   ]
 }
 ```
-Для создания файлов проекта выполните команду:
+To generate project files, run the command:
 ```php
  php artisan moonshine:build <filename>
 ```
-Где filename - это созданный файл, без расширения json, например
+Where filename is the created file without the .json extension. For example
 ```php
  php artisan moonshine:build category
 ```
-Более детальный пример файла с несколькими ресурсами и отношениями находится здесь.
+A more detailed example with multiple resources and relationships can be found here.
 
-После генерации файлов, необходимо зарегистрировать все новые ресурсы в вашем MoonShineServiceProvider
+After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
