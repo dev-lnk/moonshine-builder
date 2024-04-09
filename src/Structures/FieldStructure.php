@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Structures;
 
-use MoonShine\Fields\ID;
-use MoonShine\Fields\Number;
-use MoonShine\Fields\Relationships\BelongsTo;
-use MoonShine\Fields\Text;
-use MoonShine\ProjectBuilder\Support\NameStr;
+use MoonShine\ProjectBuilder\Support\TypeMap;
 
 class FieldStructure
 {
@@ -83,6 +79,22 @@ class FieldStructure
         return $this;
     }
 
+    public function isHasField(): bool
+    {
+        return in_array($this->type(), [
+            'HasMany',
+            'HasOne',
+        ]);
+    }
+
+    public function isManyField(): bool
+    {
+        return in_array($this->type(), [
+            'HasMany',
+            'BelongsToMany'
+        ]);
+    }
+
     public function migrationName(): string
     {
         return str($this->type)
@@ -134,28 +146,7 @@ class FieldStructure
             return $this;
         }
 
-        $typeMap = [
-            ID::class => [
-                'id',
-            ],
-            BelongsTo::class => [
-                'belongsTo'
-            ],
-            Number::class => [
-                'unsignedBigInteger',
-                'unsignedInteger',
-                'unsignedMediumInteger',
-                'unsignedSmallInteger',
-                'unsignedTinyInteger',
-                'bigInteger',
-                'integer',
-                'tinyInteger',
-            ],
-            Text::class => [
-                'string',
-                'text',
-            ],
-        ];
+        $typeMap = TypeMap::get();
 
         foreach ($typeMap as $fieldClass => $findTypes) {
             if (in_array($this->type(), $findTypes, true)) {

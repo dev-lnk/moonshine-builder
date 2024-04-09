@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Support;
 
+use Illuminate\Support\Stringable;
+
 final class NameStr
 {
     public function __construct(
@@ -17,9 +19,19 @@ final class NameStr
         return $this->name;
     }
 
+    public function str(): Stringable
+    {
+        return str($this->name);
+    }
+
     public function ucFirst(): string
     {
         return str($this->raw())->ucfirst()->value();
+    }
+
+    public function ucFirstSingular(): string
+    {
+        return str($this->raw())->singular()->ucfirst()->value();
     }
 
     public function lower(): string

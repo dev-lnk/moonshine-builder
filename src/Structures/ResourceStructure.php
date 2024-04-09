@@ -103,7 +103,12 @@ final class ResourceStructure
     {
         $result = "";
 
+
         foreach ($this->fields as $field) {
+            if($field->isHasField()) {
+                continue;
+            }
+
             $result .= str('$table->')
                 ->append($field->migrationName())
                 ->append($field->migrationMethods())
@@ -148,17 +153,21 @@ final class ResourceStructure
         foreach ($this->fields as $field) {
             if(
                 $field instanceof RelationFieldStructure
-                && $field->fieldClass() === BelongsTo::class
             ) {
+                $resourceName = $field->isManyField()
+                    ? $field->relation()->ucFirstSingular()
+                    : $field->relation()->ucFirst() ;
+
                 $result .= str(class_basename($field->fieldClass()))
                     ->append('::make')
                     ->append("('{$field->name()}', '{$field->relation()->raw()}'")
                     ->append(", resource: new ")
                     ->when($field->resourceClass(),
                         fn($str) => $str->append($field->resourceClass()),
-                        fn($str) => $str->append(str($field->relation()->ucFirst())->append('Resource')->value()),
+                        fn($str) => $str->append(str($resourceName)->append('Resource')->value()),
                     )
                     ->append('())')
+                    ->append($field->resourceMethods())
                     ->append(',')
                     ->newLine()
                     ->append('    ')

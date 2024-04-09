@@ -31,9 +31,9 @@ class ProjectBuildCommand extends MoonShineCommand
 
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
-        foreach ($builder->resources() as $resource) {
+        foreach ($builder->resources() as $index => $resource) {
             $this->createModel($resource);
-            $this->createMigration($resource);
+            $this->createMigration($resource, $index);
             $this->createResource($resource);
         }
 
@@ -81,11 +81,11 @@ class ProjectBuildCommand extends MoonShineCommand
     /**
      * @throws FileNotFoundException
      */
-    private function createMigration(ResourceStructure $resourceStructure): void
+    private function createMigration(ResourceStructure $resourceStructure, int $index): void
     {
         $table = $resourceStructure->name()->plural();
 
-        $path = base_path('database/migrations/'.date('Y_m_d_His').'_create_'.$table.'.php');
+        $path = base_path('database/migrations/'.date('Y_m_d_His').'_'.$index.'_create_'.$table.'.php');
 
         $columns = $resourceStructure->fieldsToMigration();
 

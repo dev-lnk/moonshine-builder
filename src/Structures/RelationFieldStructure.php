@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Structures;
 
-use Closure;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Stringable;
 use MoonShine\ProjectBuilder\Support\NameStr;
 
@@ -64,7 +65,9 @@ class RelationFieldStructure extends FieldStructure
     public function getModelUse(): string
     {
         return match ($this->type()) {
-            "belongsTo" => BelongsTo::class,
+            'BelongsTo' => BelongsTo::class,
+            'HasMany' => HasMany::class,
+            'HasOne' => HasOne::class,
             default => ''
         };
     }
@@ -80,9 +83,13 @@ class RelationFieldStructure extends FieldStructure
             )
             ->value();
 
+        $modelName = $this->isManyField()
+            ? $this->relation()->ucFirstSingular()
+            : $this->relation()->ucFirst() ;
+
         $relationModel = ! empty($this->modelClass)
             ? $this->modelClass . '::class'
-            : $this->relation()->ucFirst() . '::class'
+            : $modelName . '::class'
         ;
 
         return [
