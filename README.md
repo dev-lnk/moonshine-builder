@@ -12,12 +12,12 @@ This package allows you to describe the entire project structure using a JSON sc
 </ul>
 
 ### Installation:
-```php
+```shell
 composer require moonshine/moonshine-builder
 ```
 ### Configuration:
 Publish the package configuration file:
-```php
+```shell
 php artisan vendor:publish --tag=moonshine-builder
 ```
 n the configuration file, specify the path to your JSON schemas:
@@ -28,7 +28,7 @@ return [
 ```
 ### Creating a Schema
 In the <code>builds_dir</code> directory, create a schema file, for example, <code>category.json</code>:
-```
+```json
 {
   "resources": [
     {
@@ -51,11 +51,11 @@ In the <code>builds_dir</code> directory, create a schema file, for example, <co
 }
 ```
 To generate project files, run the command:
-```php
+```shell
  php artisan moonshine:build <filename>
 ```
 Where filename is the created file without the .json extension. For example
-```php
+```shell
  php artisan moonshine:build category
 ```
 A more detailed example with multiple resources and relationships can be found here.
