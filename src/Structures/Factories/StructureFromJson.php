@@ -81,7 +81,7 @@ final class StructureFromJson implements MakeStructureContract
         $fieldStructure = new RelationFieldStructure($field['relation'], $fieldColumn, $field['name'] ?? '');
 
         return $fieldStructure
-            ->setRelationKey($field['relation_key'] ?? '')
+            ->setForeignId($field['foreign_id'] ?? '')
             ->setModelClass($field['model_class'] ?? '')
             ->setResourceClass($field['resource_class'] ?? '')
         ;

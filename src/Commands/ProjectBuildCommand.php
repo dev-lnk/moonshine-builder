@@ -59,8 +59,7 @@ class ProjectBuildCommand extends MoonShineCommand
             foreach ($resourceStructure->relationsData() as $relationsData) {
                 $relationsBlock .= str($this->replaceInStub($relationsData['stub'], [
                     '{relation}' => $relationsData['relation'],
-                    '{relation_model}' => $relationsData['relation_model'],
-                    '{relation_key}' => $relationsData['relation_key'],
+                    '{relation_model}' => $relationsData['relation_model']
                 ]))
                     ->newLine()
                     ->newLine()

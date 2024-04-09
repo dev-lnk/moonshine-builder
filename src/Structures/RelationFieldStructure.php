@@ -14,7 +14,7 @@ class RelationFieldStructure extends FieldStructure
 {
     private NameStr $relation;
 
-    private string $relationKey = '';
+    private string $foreignId = '';
 
     private string $modelClass = '';
 
@@ -31,9 +31,9 @@ class RelationFieldStructure extends FieldStructure
         $this->relation = new NameStr($relation);
     }
 
-    public function setRelationKey(string $relationKey): self
+    public function setForeignId(?string $foreignId): self
     {
-        $this->relationKey = $relationKey;
+        $this->foreignId = $foreignId;
 
         return $this;
     }
@@ -77,10 +77,8 @@ class RelationFieldStructure extends FieldStructure
      */
     public function relationData(): array
     {
-        $stub = str($this->type())->ucfirst()
-            ->when(! empty($this->relationKey),
-                fn($str) => $str->append('WithKey')
-            )
+        $stub = str($this->type())
+            ->ucfirst()
             ->value();
 
         $modelName = $this->isManyField()
@@ -95,8 +93,7 @@ class RelationFieldStructure extends FieldStructure
         return [
             'stub' => $stub,
             'relation' => $this->relation()->camel(),
-            'relation_model' => $relationModel,
-            'relation_key' => $this->relationKey ?? '',
+            'relation_model' => $relationModel
         ];
     }
 
@@ -115,10 +112,9 @@ class RelationFieldStructure extends FieldStructure
                 fn($str) => $str->append($this->relation()->ucFirst())
             )
             ->append("::class")
-            //TODO foreign key
-//            ->when($this->foreignKey,
-//                fn($str) => $str->append(", '{$this->foreignKey}'")
-//            )
+            ->when($this->foreignId,
+                fn($str) => $str->append(", '{$this->foreignId}'")
+            )
             ->append(')')
             ->when(true, fn($str) => $this->foreignStrFunction($str))
             ->append('->constrained()')

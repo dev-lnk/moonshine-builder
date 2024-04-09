@@ -1,4 +1,0 @@
-    public function {relation}(): HasMany
-    {
-        return $this->hasMany({relation_model}, '{relation_key}');
-    }

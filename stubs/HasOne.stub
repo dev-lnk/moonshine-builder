@@ -1,0 +1,4 @@
+    public function {relation}(): HasOne
+    {
+        return $this->hasOne({relation_model});
+    }
