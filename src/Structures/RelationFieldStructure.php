@@ -116,23 +116,13 @@ class RelationFieldStructure extends FieldStructure
                 fn($str) => $str->append(", '{$this->foreignId}'")
             )
             ->append(')')
-            ->when(true, fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => newLineWithTab($str))
             ->append('->constrained()')
-            ->when(true, fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => newLineWithTab($str))
             ->append('->cascadeOnDelete()')
-            ->when(true, fn($str) => $this->foreignStrFunction($str))
+            ->when(true, fn($str) => newLineWithTab($str))
             ->append('->cascadeOnUpdate()')
             ->value()
         ;
-    }
-
-    private function foreignStrFunction(Stringable $str): Stringable
-    {
-        return $str
-            ->newLine()
-            ->append('    ')
-            ->append('    ')
-            ->append('    ')
-            ->append('    ');
     }
 }

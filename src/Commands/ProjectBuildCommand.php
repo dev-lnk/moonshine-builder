@@ -39,6 +39,7 @@ class ProjectBuildCommand extends MoonShineCommand
             $this->createResource($resource);
 
             $this->info("app/MoonShine/Resources/{$resource->resourceName()} created successfully");
+            $this->newLine();
         }
 
         return self::SUCCESS;

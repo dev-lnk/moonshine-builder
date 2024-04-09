@@ -163,7 +163,7 @@ class FieldStructure
             if(! str_contains($method, '(')) {
                 $method .= "()";
             }
-            $result .= "->$method";
+            $result .= newLineWithTab(str(''), 5)->value() . "->$method";
         }
 
         return $result;

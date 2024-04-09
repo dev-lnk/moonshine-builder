@@ -27,7 +27,10 @@
         "psr-4": {
             "MoonShine\\ProjectBuilder\\": "src/",
             "MoonShine\\ProjectBuilder\\Database\\Factories\\": "database/factories/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "conflict": {
         "moonshine/moonshine": "<2.0"
