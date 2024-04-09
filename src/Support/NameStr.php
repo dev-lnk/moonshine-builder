@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Support;
+namespace DevLnk\MoonShineBuilder\Support;
 
 use Illuminate\Support\Stringable;
 

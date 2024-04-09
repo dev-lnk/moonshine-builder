@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Structures;
+namespace DevLnk\MoonShineBuilder\Structures;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Stringable;
-use MoonShine\ProjectBuilder\Support\NameStr;
+use DevLnk\MoonShineBuilder\Support\NameStr;
 
 class RelationFieldStructure extends FieldStructure
 {

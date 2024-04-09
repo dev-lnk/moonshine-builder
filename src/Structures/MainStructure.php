@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Structures;
+namespace DevLnk\MoonShineBuilder\Structures;
 
 final class MainStructure
 {

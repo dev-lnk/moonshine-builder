@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Structures;
+namespace DevLnk\MoonShineBuilder\Structures;
 
-use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
-use MoonShine\ProjectBuilder\Support\TypeMap;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Support\TypeMap;
 
 class FieldStructure
 {

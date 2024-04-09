@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Support;
+namespace DevLnk\MoonShineBuilder\Support;
 
 use Illuminate\Support\Facades\File;
 use MoonShine\Fields\ID;
@@ -12,7 +12,7 @@ use MoonShine\Fields\Relationships\HasMany;
 use MoonShine\Fields\Relationships\HasOne;
 use MoonShine\Fields\Text;
 use MoonShine\MoonShine;
-use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use Symfony\Component\Finder\SplFileInfo;
 
 final class TypeMap

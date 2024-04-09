@@ -1,8 +1,8 @@
 <?php
 
-namespace MoonShine\ProjectBuilder\Structures\Factories;
+namespace DevLnk\MoonShineBuilder\Structures\Factories;
 
-use MoonShine\ProjectBuilder\Structures\MainStructure;
+use DevLnk\MoonShineBuilder\Structures\MainStructure;
 
 interface MakeStructureContract
 {

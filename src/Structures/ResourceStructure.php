@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Structures;
+namespace DevLnk\MoonShineBuilder\Structures;
 
 use MoonShine\Fields\ID;
-use MoonShine\ProjectBuilder\Support\NameStr;
+use DevLnk\MoonShineBuilder\Support\NameStr;
 
 final class ResourceStructure
 {

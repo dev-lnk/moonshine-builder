@@ -1,5 +1,5 @@
 {
-    "name": "moonshine/project-builder",
+    "name": "dev-lnk/moonshine-builder",
     "description": "Project builder for MoonShine",
     "keywords": ["moonshine", "builder"],
     "type": "library",
@@ -19,8 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MoonShine\\ProjectBuilder\\": "src/",
-            "MoonShine\\ProjectBuilder\\Database\\Factories\\": "database/factories/"
+            "DevLnk\\MoonShineBuilder\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -35,7 +34,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "MoonShine\\ProjectBuilder\\Providers\\MoonShineBuilderProvider"
+                "DevLnk\\MoonShineBuilder\\Providers\\MoonShineBuilderProvider"
             ]
         }
     }

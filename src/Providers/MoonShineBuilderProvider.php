@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Providers;
+namespace DevLnk\MoonShineBuilder\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use MoonShine\MoonShine;
-use MoonShine\ProjectBuilder\Commands\ProjectBuildCommand;
+use DevLnk\MoonShineBuilder\Commands\ProjectBuildCommand;
 
 class MoonShineBuilderProvider extends ServiceProvider
 {

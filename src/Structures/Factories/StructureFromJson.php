@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Structures\Factories;
+namespace DevLnk\MoonShineBuilder\Structures\Factories;
 
-use MoonShine\ProjectBuilder\Structures\FieldStructure;
-use MoonShine\ProjectBuilder\Structures\MainStructure;
-use MoonShine\ProjectBuilder\Structures\RelationFieldStructure;
-use MoonShine\ProjectBuilder\Structures\ResourceStructure;
-use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
-use MoonShine\ProjectBuilder\Traits\Makeable;
+use DevLnk\MoonShineBuilder\Structures\FieldStructure;
+use DevLnk\MoonShineBuilder\Structures\MainStructure;
+use DevLnk\MoonShineBuilder\Structures\RelationFieldStructure;
+use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class StructureFromJson implements MakeStructureContract
 {

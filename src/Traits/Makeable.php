@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MoonShine\ProjectBuilder\Traits;
+namespace DevLnk\MoonShineBuilder\Traits;
 
 trait Makeable
 {

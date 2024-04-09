@@ -1,6 +1,6 @@
 <?php
 
-namespace MoonShine\ProjectBuilder\Exceptions;
+namespace DevLnk\MoonShineBuilder\Exceptions;
 
 use Exception;
 

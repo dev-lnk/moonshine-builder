@@ -1,13 +1,13 @@
 <?php
 
-namespace MoonShine\ProjectBuilder\Commands;
+namespace DevLnk\MoonShineBuilder\Commands;
 
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use MoonShine\Commands\MoonShineCommand;
 use MoonShine\MoonShine;
-use MoonShine\ProjectBuilder\Structures\Factories\StructureFactory;
-use MoonShine\ProjectBuilder\Structures\ResourceStructure;
-use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
+use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 
 class ProjectBuildCommand extends MoonShineCommand
 {
