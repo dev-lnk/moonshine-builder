@@ -4,37 +4,37 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Support;
 
-use MoonShine\Fields\Checkbox;
-use MoonShine\Fields\Code;
-use MoonShine\Fields\Color;
-use MoonShine\Fields\Date;
-use MoonShine\Fields\DateRange;
-use MoonShine\Fields\Email;
-use MoonShine\Fields\Enum;
-use MoonShine\Fields\File;
-use MoonShine\Fields\Hidden;
+use Illuminate\Support\Facades\File;
 use MoonShine\Fields\ID;
-use MoonShine\Fields\Image;
-use MoonShine\Fields\Json;
 use MoonShine\Fields\Number;
-use MoonShine\Fields\Password;
-use MoonShine\Fields\Phone;
-use MoonShine\Fields\Range;
-use MoonShine\Fields\RangeSlider;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Relationships\HasMany;
 use MoonShine\Fields\Relationships\HasOne;
-use MoonShine\Fields\Select;
-use MoonShine\Fields\Slug;
-use MoonShine\Fields\Switcher;
 use MoonShine\Fields\Text;
-use MoonShine\Fields\Textarea;
-use MoonShine\Fields\TinyMce;
-use MoonShine\Fields\Url;
+use MoonShine\MoonShine;
 use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
+use Symfony\Component\Finder\SplFileInfo;
 
 final class TypeMap
 {
+    /**
+     * @var array<string, string>
+     */
+    private array $fieldClasses;
+
+    public function __construct()
+    {
+        $this->fieldClasses = collect(File::files(MoonShine::path('src/Fields')))
+            ->mapWithKeys(
+                fn (SplFileInfo $file): array => [
+                    $file->getFilenameWithoutExtension() => 'MoonShine\\Fields\\'.$file->getFilenameWithoutExtension(),
+                ]
+            )
+            ->except(['Field', 'Fields', 'FormElement', 'FormElements'])
+            ->toArray()
+        ;
+    }
+
     public function fieldMigrationMap(): array
     {
         return [
@@ -73,32 +73,6 @@ final class TypeMap
      */
     public function fieldClassFromAlias(string $field): string
     {
-        return match ($field) {
-            'Text' => Text::class,
-            'Hidden' => Hidden::class,
-            'ID' => ID::class,
-            'Slug' => Slug::class,
-            'Color' => Color::class,
-            'Url' => Url::class,
-            'Email' => Email::class,
-            'Phone' => Phone::class,
-            'Password' => Password::class,
-            'Number' => Number::class,
-            'Range' => Range::class,
-            'RangeSlider' => RangeSlider::class,
-            'Date' => Date::class,
-            'DateRange' => DateRange::class,
-            'Textarea' => Textarea::class,
-            'Code' => Code::class,
-            'TinyMce' => TinyMce::class,
-            'Select' => Select::class,
-            'Enum' => Enum::class,
-            'Checkbox' => Checkbox::class,
-            'Switcher' => Switcher::class,
-            'File' => File::class,
-            'Image' => Image::class,
-            'Json' => Json::class,
-            default => throw new ProjectBuilderException("Field: $field not found")
-        };
+        return $this->fieldClasses[$field] ?? throw new ProjectBuilderException("Field: $field not found");
     }
 }

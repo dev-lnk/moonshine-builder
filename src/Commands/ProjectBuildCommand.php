@@ -27,7 +27,7 @@ class ProjectBuildCommand extends MoonShineCommand
 
         $dir = config('moonshine_builder.builds_dir');
 
-        $path = $dir . '/' . $this->argument('file') . '.json';
+        $path = $dir . '/' . $this->argument('file');
 
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
