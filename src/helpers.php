@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Stringable;
 
-if(! file_exists('foreignStrNewLne')) {
+if(! function_exists('newLineWithTab')) {
     function newLineWithTab(Stringable $str, int $countTab = 4): Stringable
     {
         $str = $str->newLine();
