@@ -58,6 +58,6 @@ Where filename is the created file without the .json extension. For example
 ```shell
  php artisan moonshine:build category
 ```
-A more detailed example with multiple resources and relationships can be found here.
+A more detailed example with multiple resources and relationships can be found [here](https://github.com/dev-lnk/moonshine-builder/blob/master/examples/project.json).
 
 After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
