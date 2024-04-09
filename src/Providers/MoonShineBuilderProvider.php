@@ -6,12 +6,12 @@ namespace DevLnk\MoonShineBuilder\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use MoonShine\MoonShine;
-use DevLnk\MoonShineBuilder\Commands\ProjectBuildCommand;
+use DevLnk\MoonShineBuilder\Commands\MoonShineBuildCommand;
 
 class MoonShineBuilderProvider extends ServiceProvider
 {
     protected array $commands = [
-        ProjectBuildCommand::class,
+        MoonShineBuildCommand::class,
     ];
 
     public function boot(): void

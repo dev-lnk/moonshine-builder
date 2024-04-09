@@ -9,7 +9,7 @@ use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 
-class ProjectBuildCommand extends MoonShineCommand
+class MoonShineBuildCommand extends MoonShineCommand
 {
     protected $signature = 'moonshine:build {file}';
 
@@ -31,6 +31,9 @@ class ProjectBuildCommand extends MoonShineCommand
 
         $builder = StructureFactory::make()->getBuilderFromJson($path);
 
+        $reminderResourceInfo = [];
+        $reminderMenuInfo = [];
+
         foreach ($builder->resources() as $index => $resource) {
             $this->warn("app/MoonShine/Resources/{$resource->resourceName()} is created...");
 
@@ -40,7 +43,17 @@ class ProjectBuildCommand extends MoonShineCommand
 
             $this->info("app/MoonShine/Resources/{$resource->resourceName()} created successfully");
             $this->newLine();
+
+            $reminderResourceInfo[] = "new {$resource->resourceName()}(),";
+            $reminderMenuInfo[] = $this->replaceInStub('MenuItem', [
+                '{resource}' => $resource->name()->ucFirst(),
+            ]);
         }
+
+        $this->warn("Don't forget to register new resources in the provider method – resources:");
+        $this->info(implode("\n", $reminderResourceInfo));
+        $this->warn("...or in the menu method:");
+        $this->info(implode("\n", $reminderMenuInfo));
 
         return self::SUCCESS;
     }

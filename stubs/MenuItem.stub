@@ -1,0 +1,4 @@
+MenuItem::make(
+    static fn() => '{resource}',
+    new {resource}Resource()
+),
