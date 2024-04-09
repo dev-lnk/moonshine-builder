@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace MoonShine\ProjectBuilder\Structures;
 
+use MoonShine\ProjectBuilder\Exceptions\ProjectBuilderException;
 use MoonShine\ProjectBuilder\Support\TypeMap;
 
 class FieldStructure
 {
     private string $type = '';
+
+    private string $field = '';
 
     private ?string $fieldClass = null;
 
@@ -18,10 +21,13 @@ class FieldStructure
 
     private array $migrationMethods = [];
 
+    private TypeMap $typeMap;
+
     public function __construct(
         private readonly string $column,
         private readonly string $name = '',
     ) {
+        $this->typeMap = new TypeMap();
     }
 
     public function column(): string
@@ -57,6 +63,22 @@ class FieldStructure
         $this->type = $type;
 
         $this->setFieldClass();
+
+        return $this;
+    }
+
+    /**
+     * @throws ProjectBuilderException
+     */
+    public function setField(string $field): self
+    {
+        if(empty($field)) {
+            return $this;
+        }
+
+        $field = str($field)->ucfirst()->value();
+
+        $this->fieldClass = $this->typeMap->getFieldClass($field);
 
         return $this;
     }
@@ -146,7 +168,7 @@ class FieldStructure
             return $this;
         }
 
-        $typeMap = TypeMap::get();
+        $typeMap = $this->typeMap->getFieldFromType();
 
         foreach ($typeMap as $fieldClass => $findTypes) {
             if (in_array($this->type(), $findTypes, true)) {
