@@ -29,25 +29,29 @@ class MoonShineBuildCommand extends MoonShineCommand
 
         $path = $dir . '/' . $this->argument('file');
 
-        $builder = StructureFactory::make()->getBuilderFromJson($path);
+        $mainStructure = StructureFactory::make()->getBuilderFromJson($path);
 
         $reminderResourceInfo = [];
         $reminderMenuInfo = [];
 
-        foreach ($builder->resources() as $index => $resource) {
+        foreach ($mainStructure->resources() as $index => $resource) {
             $this->warn("app/MoonShine/Resources/{$resource->resourceName()} is created...");
 
-            $this->createModel($resource);
-            $this->createMigration($resource, $index);
-            $this->createResource($resource);
+            if($mainStructure->withModel()) {
+                $this->createModel($resource);
+            }
 
-            $this->info("app/MoonShine/Resources/{$resource->resourceName()} created successfully");
-            $this->newLine();
+            if($mainStructure->withMigration()) {
+                $this->createMigration($resource, $index);
+            }
 
-            $reminderResourceInfo[] = "new {$resource->resourceName()}(),";
-            $reminderMenuInfo[] = $this->replaceInStub('MenuItem', [
-                '{resource}' => $resource->name()->ucFirst(),
-            ]);
+            if($mainStructure->withResource()) {
+                $this->createResource($resource);
+                $reminderResourceInfo[] = "new {$resource->resourceName()}(),";
+                $reminderMenuInfo[] = $this->replaceInStub('MenuItem', [
+                    '{resource}' => $resource->name()->ucFirst(),
+                ]);
+            }
         }
 
         $this->warn("Don't forget to register new resources in the provider method – resources:");
@@ -144,5 +148,7 @@ class MoonShineBuildCommand extends MoonShineCommand
             'DummyTitle' => class_basename($model),
             'Dummy' => $resourceStructure->name()->ucFirst(),
         ]);
+
+        $this->info("app/MoonShine/Resources/{$resourceStructure->resourceName()} created successfully");
     }
 }

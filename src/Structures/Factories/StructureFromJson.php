@@ -37,6 +37,18 @@ final class StructureFromJson implements MakeStructureContract
 
         $mainStructure = new MainStructure();
 
+        if( isset($file['withModel'])) {
+            $mainStructure->setWithModel($file['withModel']);
+        }
+
+        if( isset($file['withMigration'])) {
+            $mainStructure->setWithMigration($file['withMigration']);
+        }
+
+        if( isset($file['withResource'])) {
+            $mainStructure->setWithResource($file['withResource']);
+        }
+
         foreach ($file['resources'] as $resource) {
             foreach ($resource as $name => $values) {
                 $resourceBuilder = new ResourceStructure($name);
