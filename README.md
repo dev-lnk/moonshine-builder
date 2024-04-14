@@ -55,5 +55,28 @@ To generate project files, run the command:
  php artisan moonshine:build category.json
 ```
 A more detailed example with multiple resources and relationships can be found [here](https://github.com/dev-lnk/moonshine-builder/blob/master/examples/project.json).
+### Creation from sql table
+You can create a resource using a table schema.You must specify the table name and <code>.table</code> extension. Example:
+```shell
+ php artisan moonshine:build users.table
+```
+Result:
+```php
+public function fields(): array
+{
+    return [
+        Block::make([
+            ID::make('id'),
+            Text::make('Name', 'name'),
+            Text::make('Email', 'email'),
+            Date::make('EmailVerifiedAt', 'email_verified_at'),
+            Text::make('Password', 'password'),
+            Text::make('RememberToken', 'remember_token'),
+            Date::make('CreatedAt', 'created_at'),
+            Date::make('UpdatedAt', 'updated_at'),
+        ]),
+    ];
+}
+```
 
 After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
