@@ -1,0 +1,111 @@
+{
+  "withResource": true,
+  "withMigration": true,
+  "resources": [
+    {
+      "CategoryResource": {
+        "column": "name",
+        "fields": {
+          "id": {
+            "type": "tinyIncrements",
+            "methods": [
+              "sortable"
+            ]
+          },
+          "title": {
+            "type": "tinyText",
+            "name": "Название"
+          }
+        }
+      },
+      "ProductResource": {
+        "fields": {
+          "id": {
+            "type": "id",
+            "methods": [
+              "sortable"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "name": "Название"
+          },
+          "content": {
+            "type": "text",
+            "name": "Контент"
+          },
+          "sort_number": {
+            "type": "integer",
+            "name": "Порядковый номер",
+            "methods": [
+              "sortable",
+              "default(0)"
+            ],
+            "migration": {
+              "methods": [
+                "default(0)"
+              ]
+            }
+          },
+          "category_id": {
+            "type": "BelongsTo",
+            "relation": "category",
+            "name": "Категория",
+            "foreign_id": "category_id"
+          },
+          "comments": {
+            "type": "HasMany",
+            "relation": "comments",
+            "name": "Комментарии",
+            "methods": [
+              "creatable"
+            ]
+          },
+          "moonshine_user_id": {
+            "type": "BelongsTo",
+            "relation": "moonshineUser",
+            "model_class": "\\MoonShine\\Models\\MoonshineUser",
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
+            "name": "Пользователь"
+          },
+          "is_active": {
+            "type": "boolean",
+            "name": "Активен",
+            "migration": {
+              "methods": [
+                "default(0)",
+                "index"
+              ]
+            }
+          }
+        }
+      },
+      "CommentResource": {
+        "fields": {
+          "id": {
+            "type": "id",
+            "methods": [
+              "sortable"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "name": "Комментарий"
+          },
+          "product_id": {
+            "type": "BelongsTo",
+            "relation": "product",
+            "name": "Продукт"
+          },
+          "moonshine_user_id": {
+            "type": "BelongsTo",
+            "relation": "moonshineUser",
+            "model_class": "\\MoonShine\\Models\\MoonshineUser",
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
+            "name": "Пользователь"
+          }
+        }
+      }
+    }
+  ]
+}

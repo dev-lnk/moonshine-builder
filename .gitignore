@@ -1,5 +1,6 @@
 .idea
 vendor
 composer.lock
-.phpunit.result.cache
+.phpunit.cache
+phpunit.xml.dist
 app
