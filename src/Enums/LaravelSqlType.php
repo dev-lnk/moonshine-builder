@@ -171,4 +171,14 @@ enum LaravelSqlType: string
 
         return in_array($this, $idFields);
     }
+
+    public static function fromSqlType(string $sqlType): LaravelSqlType
+    {
+        return match ($sqlType) {
+            'primary' => self::ID,
+            'bigint unsigned' => self::UNSIGNED_BIG_INTEGER,
+            'timestamp' => self::TIMESTAMP,
+            default => self::TEXT
+        };
+    }
 }

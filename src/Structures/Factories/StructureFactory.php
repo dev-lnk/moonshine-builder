@@ -15,9 +15,24 @@ final class StructureFactory
     /**
      * @throws ProjectBuilderException
      */
-    public function getBuilderFromJson(string $filePath): MainStructure
+    public function getStructure(string $file): MainStructure
     {
-        $fromJsonBuilder = new StructureFromJson($filePath);
-        return $fromJsonBuilder->makeStructure();
+        $fileSeparate = explode('.', $file);
+        $extension = $fileSeparate[count($fileSeparate) - 1];
+
+        if($extension === 'table') {
+            return StructureFromTable::make($file)->makeStructure();
+        }
+
+        $path = config('moonshine_builder.builds_dir') . '/' . $file;
+
+        if(! file_exists($path)) {
+            throw new ProjectBuilderException("File $path not found");
+        }
+
+        return match ($extension) {
+            'json' => StructureFromJson::make($path)->makeStructure(),
+            default => throw new ProjectBuilderException("$extension extension is not supported")
+        };
     }
 }

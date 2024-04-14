@@ -25,11 +25,8 @@ class MoonShineBuildCommand extends MoonShineCommand
             return self::FAILURE;
         }
 
-        $dir = config('moonshine_builder.builds_dir');
-
-        $path = $dir . '/' . $this->argument('file');
-
-        $mainStructure = StructureFactory::make()->getBuilderFromJson($path);
+        $mainStructure = StructureFactory::make()
+            ->getStructure($this->argument('file'));
 
         $reminderResourceInfo = [];
         $reminderMenuInfo = [];

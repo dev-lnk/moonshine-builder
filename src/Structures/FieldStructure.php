@@ -52,9 +52,13 @@ class FieldStructure
 
     public function __construct(
         private readonly string $column,
-        private readonly string $name = '',
+        private string $name = '',
     ) {
         $this->typeMap = new TypeMap();
+
+        if(empty($this->name)) {
+            $this->name = str($this->column)->camel()->ucfirst()->value();
+        }
     }
 
     public function column(): string
