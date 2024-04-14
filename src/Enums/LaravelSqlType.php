@@ -79,6 +79,8 @@ enum LaravelSqlType: string
     /*Date*/
     case TIMESTAMP = 'timestamp';
 
+    case TIME = 'time';
+
     case DATE_TIME = 'dateTime';
 
     case DATE = 'date';
@@ -142,6 +144,7 @@ enum LaravelSqlType: string
 
             /*Date*/
             self::TIMESTAMP,
+            self::TIME,
             self::DATE_TIME,
             self::DATE,
             self::DATE_TIME_TZ,
@@ -175,9 +178,44 @@ enum LaravelSqlType: string
     public static function fromSqlType(string $sqlType): LaravelSqlType
     {
         return match ($sqlType) {
+            /*ID*/
             'primary' => self::ID,
+
+            /*Number*/
+            'bigint' => self::BIG_INTEGER,
+            'mediumint' => self::MEDIUM_INTEGER,
+            'int' => self::INTEGER,
+            'smallint' => self::SMALL_INTEGER,
+            'tinyint' => self::TINY_INTEGER,
             'bigint unsigned' => self::UNSIGNED_BIG_INTEGER,
+            'mediumint unsigned' => self::UNSIGNED_MEDIUM_INTEGER,
+            'int unsigned' => self::UNSIGNED_INTEGER,
+            'smallint unsigned' => self::UNSIGNED_SMALL_INTEGER,
+            'tinyint unsigned' => self::UNSIGNED_TINY_INTEGER,
+            'decimal' => self::DECIMAL,
+            'double' => self::DOUBLE,
+            'float' => self::FLOAT,
+
+            /*Text*/
+            'char' => self::CHAR,
+            'varchar' => self::STRING,
+            'json' => self::JSON,
+            'jsonb' => self::JSONB,
+            'longtext' => self::LONG_TEXT,
+            'mediumtext' => self::MEDIUM_TEXT,
+            'tinytext' => self::TINY_TEXT,
+            'uuid' => self::UUID,
+
+            /*Date*/
             'timestamp' => self::TIMESTAMP,
+            'datetime' => self::DATE_TIME,
+            'year' => self::YEAR,
+            'date' => self::DATE,
+            'time' => self::TIME,
+
+            /*Enum*/
+            'enum' => self::ENUM,
+
             default => self::TEXT
         };
     }

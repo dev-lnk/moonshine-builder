@@ -27,7 +27,12 @@ final class StructureFromTable implements MakeStructureContract
         $mainStructure->setWithMigration(false);
         $mainStructure->setWithModel(false);
 
-        $resourceName = str($this->table)->singular()->ucfirst()->append('Resource')->value();
+        $resourceName = str($this->table)
+            ->singular()
+            ->camel()
+            ->ucfirst()
+            ->append('Resource')
+            ->value();
 
         $resourceStructure = new ResourceStructure($resourceName);
 
@@ -50,7 +55,7 @@ final class StructureFromTable implements MakeStructureContract
 
             $type = $column['name'] === $primaryKey
                 ? 'primary'
-                : preg_replace("/[0-9]+|\(|\)/", '', $column['type']);
+                : preg_replace("/[0-9]+|\(|\)|,/", '', $column['type']);
 
             $fieldStructure->setType(LaravelSqlType::fromSqlType($type)->value);
 
