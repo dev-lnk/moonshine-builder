@@ -81,4 +81,4 @@ public function fields(): array
 
 After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
 
-### Be careful, at the moment all resource files are overwritten during generation!
+### Be careful, at the moment all resource and model files are overwritten during generation!
