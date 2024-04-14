@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace DevLnk\MoonShineBuilder\Support;
 
 use Illuminate\Support\Facades\File;
+use MoonShine\Fields\Date;
+use MoonShine\Fields\Enum;
 use MoonShine\Fields\ID;
 use MoonShine\Fields\Number;
 use MoonShine\Fields\Relationships\BelongsTo;
 use MoonShine\Fields\Relationships\HasMany;
 use MoonShine\Fields\Relationships\HasOne;
+use MoonShine\Fields\Switcher;
 use MoonShine\Fields\Text;
 use MoonShine\MoonShine;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
@@ -39,32 +42,59 @@ final class TypeMap
     {
         return [
             ID::class => [
-                'id',
+                'id'  => 'PRIMARY',
+                'bigIncrements' => 'PRIMARY',
+                'mediumIncrements' => 'PRIMARY',
+                'increments' => 'PRIMARY',
+                'smallIncrements' => 'PRIMARY',
+                'tinyIncrements' => 'PRIMARY',
             ],
             Number::class => [
-                'unsignedBigInteger',
-                'unsignedInteger',
-                'unsignedMediumInteger',
-                'unsignedSmallInteger',
-                'unsignedTinyInteger',
-                'bigInteger',
-                'integer',
-                'tinyInteger',
-                'boolean'
+                'bigInteger' => 'BIGINT',
+                'mediumInteger' => 'MEDIUMINT',
+                'integer' => 'INTEGER',
+                'smallInteger' => 'SMALLINT',
+                'tinyInteger' => 'TINYINT',
+                'unsignedBigInteger' => 'BIGINT',
+                'unsignedMediumInteger' => 'MEDIUMINT',
+                'unsignedInteger' => 'INTEGER',
+                'unsignedSmallInteger' => 'SMALLINT',
+                'unsignedTinyInteger' => 'TINYINT',
+                'decimal' => 'DECIMAL',
+                'double' => 'DOUBLE',
+                'float' => 'FLOAT'
+            ],
+            Switcher::class => [
+                'boolean' => 'BOOLEAN'
             ],
             Text::class => [
-                'string',
-                'text',
+                'char' => 'CHAR',
+                'string' => 'VARCHAR',
+                'text' => 'TEXT',
+                'json' => 'JSON',
+                'jsonb' => 'JSONB',
+                'longText' => 'LONGTEXT',
+                'mediumText' => 'MEDIUMTEXT',
+                'tinyText' => 'TINYTEXT'
             ],
             BelongsTo::class => [
-                'BelongsTo'
+                'BelongsTo' => null
             ],
             HasMany::class => [
-                'HasMany'
+                'HasMany' => null
             ],
             HasOne::class => [
-                'HasOne'
+                'HasOne' => null
             ],
+            Date::class => [
+                'timestamp' => 'TIMESTAMP',
+                'dateTime' => 'DATETIME',
+                'date' => 'DATE',
+                'dateTimeTz' => 'DATETIME',
+            ],
+            Enum::class => [
+                'enum' => 'ENUM'
+            ]
         ];
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Structures;
 
+use DevLnk\MoonShineBuilder\Enums\LaravelSqlType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Support\TypeMap;
 
@@ -201,13 +202,7 @@ class FieldStructure
             return $this;
         }
 
-        $typeMap = $this->typeMap->fieldMigrationMap();
-
-        foreach ($typeMap as $fieldClass => $findTypes) {
-            if (in_array($this->type(), $findTypes, true)) {
-                $this->fieldClass = $fieldClass;
-            }
-        }
+        $this->fieldClass = LaravelSqlType::from($this->type())->getMoonShineField();
 
         return $this;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Structures;
 
+use DevLnk\MoonShineBuilder\Enums\LaravelSqlType;
 use MoonShine\Fields\ID;
 use DevLnk\MoonShineBuilder\Support\NameStr;
 
@@ -93,9 +94,10 @@ final class ResourceStructure
         $result = "";
 
         foreach ($this->fields as $field) {
-            if($field->type() === 'id') {
+            if(LaravelSqlType::from($field->type())->isIdType()) {
                 continue;
             }
+
             $result .= str("'{$field->column()}'")
                 ->append(',')
                 ->when(true, fn($str) => newLineWithTab($str, 2))
