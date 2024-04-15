@@ -27,7 +27,8 @@ class MoonShineBuildCommand extends MoonShineCommand
     public function handle(): int
     {
         $target = $this->argument('target');
-        $type = $this->option('type') ?? select('Type', ['json', 'table']);
+
+        $type = $this->getType($target);
 
         if (is_null($target) && $type === 'json') {
             $target = select(
@@ -85,7 +86,7 @@ class MoonShineBuildCommand extends MoonShineCommand
 
         note($code);
 
-        $this->components->warn("...or in the menu method:");
+        note("...or in the menu method:");
 
         $code = implode(PHP_EOL, $reminderMenuInfo);
 
@@ -94,6 +95,24 @@ class MoonShineBuildCommand extends MoonShineCommand
         $this->components->info('All done');
 
         return self::SUCCESS;
+    }
+
+    private function getType(?string $target): string
+    {
+        if (! $this->option('type') && ! is_null($target)) {
+            $availableTypes = [
+                'json'
+            ];
+
+            $fileSeparate = explode('.', $target);
+            $type = $fileSeparate[count($fileSeparate) - 1];
+
+            if (in_array($type, $availableTypes)) {
+                return $type;
+            }
+        }
+
+        return $this->option('type') ?? select('Type', ['json', 'table']);
     }
 
     /**
