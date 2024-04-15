@@ -28,7 +28,7 @@ class ProjectBuildTest extends TestCase
     #[Test]
     public function build(): void
     {
-        $this->artisan('moonshine:build project.json');
+        $this->artisan('moonshine:build project.json --type=json');
 
         $this->assertFileExists($this->resourcePath . 'CategoryResource.php');
         $this->assertFileExists($this->resourcePath . 'ProductResource.php');
