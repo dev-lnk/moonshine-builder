@@ -6,17 +6,17 @@ use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use MoonShine\Commands\MoonShineCommand;
 use MoonShine\MoonShine;
 use SplFileInfo;
 
-use function Laravel\Prompts\select;
+use function Laravel\Prompts\{select, note, confirm};
 
 class MoonShineBuildCommand extends MoonShineCommand
 {
-    protected $signature = 'moonshine:build {target?} {--type=json}';
+    protected $signature = 'moonshine:build {target?} {--type=}';
 
     protected string $stubsDir = __DIR__ . '/../../stubs';
 
@@ -27,7 +27,8 @@ class MoonShineBuildCommand extends MoonShineCommand
     public function handle(): int
     {
         $target = $this->argument('target');
-        $type = $this->option('type');
+        $type = $this->option('type') ?? select('Type', ['json', 'table']);
+        $withModel = false;
 
         if (is_null($target) && $type === 'json') {
             $target = select(
@@ -38,18 +39,23 @@ class MoonShineBuildCommand extends MoonShineCommand
                     ]
                 ),
             );
-        }
 
+            $withModel = true;
+        }
 
         if (is_null($target) && $type === 'table') {
             $target = select(
                 'Table',
-                collect(DB::select('SHOW TABLES'))->map(fn ($v) => head($v)),
+                collect(Schema::getTables())->map(fn ($v) => $v['name']),
             );
+
+            $withModel = confirm('Make model?', default: false, hint: 'If the model exists, it will be overwritten');
         }
 
         $mainStructure = StructureFactory::make()
             ->getStructure($target, $type);
+
+        $mainStructure->setWithModel($withModel);
 
         $reminderResourceInfo = [];
         $reminderMenuInfo = [];
@@ -78,13 +84,13 @@ class MoonShineBuildCommand extends MoonShineCommand
 
         $code = implode(PHP_EOL, $reminderResourceInfo);
 
-        $this->info($code);
+        note($code);
 
         $this->components->warn("...or in the menu method:");
 
         $code = implode(PHP_EOL, $reminderMenuInfo);
 
-        $this->info($code);
+        note($code);
 
         $this->components->info('All done');
 
