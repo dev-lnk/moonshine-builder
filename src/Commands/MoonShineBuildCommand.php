@@ -2,16 +2,21 @@
 
 namespace DevLnk\MoonShineBuilder\Commands;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use MoonShine\Commands\MoonShineCommand;
-use MoonShine\MoonShine;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
-use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
+use MoonShine\Commands\MoonShineCommand;
+use MoonShine\MoonShine;
+use SplFileInfo;
+
+use function Laravel\Prompts\{select, note, confirm};
 
 class MoonShineBuildCommand extends MoonShineCommand
 {
-    protected $signature = 'moonshine:build {file}';
+    protected $signature = 'moonshine:build {target?} {--type=}';
 
     protected string $stubsDir = __DIR__ . '/../../stubs';
 
@@ -21,28 +26,51 @@ class MoonShineBuildCommand extends MoonShineCommand
      */
     public function handle(): int
     {
-        if(! $this->hasArgument('file')) {
-            return self::FAILURE;
+        $target = $this->argument('target');
+        $type = $this->option('type') ?? select('Type', ['json', 'table']);
+
+        if (is_null($target) && $type === 'json') {
+            $target = select(
+                'File',
+                collect(File::files(config('moonshine_builder.builds_dir')))->mapWithKeys(
+                    fn (SplFileInfo $file): array => [
+                        $file->getFilename() => $file->getFilename(),
+                    ]
+                ),
+            );
+        }
+
+        if (is_null($target) && $type === 'table') {
+            $target = select(
+                'Table',
+                collect(Schema::getTables())->map(fn ($v) => $v['name']),
+            );
         }
 
         $mainStructure = StructureFactory::make()
-            ->getStructure($this->argument('file'));
+            ->getStructure($target, $type);
+
+        if($type === 'table') {
+            $mainStructure->setWithModel(
+                confirm('Make model?', default: false, hint: 'If the model exists, it will be overwritten')
+            );
+        }
 
         $reminderResourceInfo = [];
         $reminderMenuInfo = [];
 
         foreach ($mainStructure->resources() as $index => $resource) {
-            $this->warn("app/MoonShine/Resources/{$resource->resourceName()} is created...");
+            $this->components->task("app/MoonShine/Resources/{$resource->resourceName()} is created...");
 
-            if($mainStructure->withModel()) {
+            if ($mainStructure->withModel()) {
                 $this->createModel($resource);
             }
 
-            if($mainStructure->withMigration()) {
+            if ($mainStructure->withMigration()) {
                 $this->createMigration($resource, $index);
             }
 
-            if($mainStructure->withResource()) {
+            if ($mainStructure->withResource()) {
                 $this->createResource($resource);
                 $reminderResourceInfo[] = "new {$resource->resourceName()}(),";
                 $reminderMenuInfo[] = $this->replaceInStub('MenuItem', [
@@ -51,10 +79,19 @@ class MoonShineBuildCommand extends MoonShineCommand
             }
         }
 
-        $this->warn("Don't forget to register new resources in the provider method – resources:");
-        $this->info(implode("\n", $reminderResourceInfo));
-        $this->warn("...or in the menu method:");
-        $this->info(implode("\n", $reminderMenuInfo));
+        $this->components->warn("Don't forget to register new resources in the provider method:");
+
+        $code = implode(PHP_EOL, $reminderResourceInfo);
+
+        note($code);
+
+        $this->components->warn("...or in the menu method:");
+
+        $code = implode(PHP_EOL, $reminderMenuInfo);
+
+        note($code);
+
+        $this->components->info('All done');
 
         return self::SUCCESS;
     }
@@ -74,16 +111,15 @@ class MoonShineBuildCommand extends MoonShineCommand
 
         $relationsBlock = '';
 
-        if(! empty($resourceStructure->relationFields())) {
+        if (! empty($resourceStructure->relationFields())) {
             foreach ($resourceStructure->relationsData() as $relationsData) {
                 $relationsBlock .= str($this->replaceInStub($relationsData['stub'], [
                     '{relation}' => $relationsData['relation'],
-                    '{relation_model}' => $relationsData['relation_model']
+                    '{relation_model}' => $relationsData['relation_model'],
                 ]))
                     ->newLine()
                     ->newLine()
-                    ->value()
-                ;
+                    ->value();
             }
         }
 
@@ -95,7 +131,7 @@ class MoonShineBuildCommand extends MoonShineCommand
             '{relations_block}' => $relationsBlock,
         ]);
 
-        $this->info("Model App\\Models\\$modelName created successfully");
+        $this->components->task("Model App\\Models\\$modelName created successfully");
     }
 
     /**
@@ -106,7 +142,7 @@ class MoonShineBuildCommand extends MoonShineCommand
         $table = $resourceStructure->name()->plural();
 
         // TODO подумать как сделать рефакторинг $index
-        $migrationPath = 'database/migrations/'.date('Y_m_d_His').'_'.$index.'_create_'.$table.'.php';
+        $migrationPath = 'database/migrations/' . date('Y_m_d_His') . '_' . $index . '_create_' . $table . '.php';
 
         $path = base_path($migrationPath);
 
@@ -117,7 +153,7 @@ class MoonShineBuildCommand extends MoonShineCommand
             '{columns}' => $columns,
         ]);
 
-        $this->info("Migration $migrationPath created successfully");
+        $this->components->task("Migration $migrationPath created successfully");
     }
 
     /**
@@ -146,6 +182,6 @@ class MoonShineBuildCommand extends MoonShineCommand
             'Dummy' => $resourceStructure->name()->ucFirst(),
         ]);
 
-        $this->info("app/MoonShine/Resources/{$resourceStructure->resourceName()} created successfully");
+        $this->components->task("app/MoonShine/Resources/{$resourceStructure->resourceName()} created successfully");
     }
 }

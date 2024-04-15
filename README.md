@@ -56,9 +56,9 @@ To generate project files, run the command:
 ```
 A more detailed example with multiple resources and relationships can be found [here](https://github.com/dev-lnk/moonshine-builder/blob/master/examples/project.json).
 ### Creation from sql table
-You can create a resource using a table schema.You must specify the table name and <code>.table</code> extension. Example:
+You can create a resource using a table schema.You must specify the table name and select <code>table</code> type. Example:
 ```shell
- php artisan moonshine:build users.table
+ php artisan moonshine:build users --type=table
 ```
 Result:
 ```php
