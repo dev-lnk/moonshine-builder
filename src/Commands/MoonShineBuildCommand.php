@@ -28,7 +28,6 @@ class MoonShineBuildCommand extends MoonShineCommand
     {
         $target = $this->argument('target');
         $type = $this->option('type') ?? select('Type', ['json', 'table']);
-        $withModel = false;
 
         if (is_null($target) && $type === 'json') {
             $target = select(
@@ -39,8 +38,6 @@ class MoonShineBuildCommand extends MoonShineCommand
                     ]
                 ),
             );
-
-            $withModel = true;
         }
 
         if (is_null($target) && $type === 'table') {
@@ -48,14 +45,16 @@ class MoonShineBuildCommand extends MoonShineCommand
                 'Table',
                 collect(Schema::getTables())->map(fn ($v) => $v['name']),
             );
-
-            $withModel = confirm('Make model?', default: false, hint: 'If the model exists, it will be overwritten');
         }
 
         $mainStructure = StructureFactory::make()
             ->getStructure($target, $type);
 
-        $mainStructure->setWithModel($withModel);
+        if($type === 'table') {
+            $mainStructure->setWithModel(
+                confirm('Make model?', default: false, hint: 'If the model exists, it will be overwritten')
+            );
+        }
 
         $reminderResourceInfo = [];
         $reminderMenuInfo = [];
