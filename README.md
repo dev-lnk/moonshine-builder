@@ -58,7 +58,7 @@ A more detailed example with multiple resources and relationships can be found [
 ### Creation from sql table
 You can create a resource using a table schema.You must specify the table name and <code>.table</code> extension. Example:
 ```shell
- php artisan moonshine:build users.table
+ php artisan moonshine:build users --type=table
 ```
 Result:
 ```php
