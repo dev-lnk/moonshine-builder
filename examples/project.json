@@ -2,6 +2,8 @@
   "resources": [
     {
       "CategoryResource": {
+        "timestamps": true,
+        "column": "title",
         "fields": {
           "id": {
             "type": "id",
@@ -16,6 +18,8 @@
         }
       },
       "ProductResource": {
+        "timestamps": true,
+        "soft_deletes": true,
         "fields": {
           "id": {
             "type": "id",
@@ -79,6 +83,7 @@
         }
       },
       "CommentResource": {
+        "timestamps": true,
         "fields": {
           "id": {
             "type": "id",

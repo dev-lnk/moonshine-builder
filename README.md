@@ -20,12 +20,21 @@ Publish the package configuration file:
 ```shell
 php artisan vendor:publish --tag=moonshine-builder
 ```
-n the configuration file, specify the path to your JSON schemas:
+In the configuration file, specify the path to your JSON schemas:
+
 ```php
 return [
     'builds_dir' => base_path('builds')
 ];
 ```
+
+Now you can run the command:
+
+```shell
+php artisan moonshine:build
+```
+You will be given options as to which scheme to use when generating the code.
+
 ### Creating a Schema
 In the <code>builds_dir</code> directory, create a schema file, for example, <code>category.json</code>:
 ```json
@@ -72,13 +81,31 @@ public function fields(): array
             Date::make('EmailVerifiedAt', 'email_verified_at'),
             Text::make('Password', 'password'),
             Text::make('RememberToken', 'remember_token'),
-            Date::make('CreatedAt', 'created_at'),
-            Date::make('UpdatedAt', 'updated_at'),
         ]),
     ];
 }
 ```
 
 After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
+
+### Timestamps
+You can specify the timestamp: true flag
+```json
+{
+  "resources": [
+    {
+      "CategoryResource": {
+        "timestamps": true,
+        "fields": {
+        }
+      }
+    }
+  ]
+}
+```
+The created_at and updated_at fields will be added to your code. If you manually specified the created_at and updated_at fields, the `timestamps` flag will be automatically set to true
+
+### Soft deletes
+Works similarly to the `timestamps` flag and the `deleted_at` field
 
 ### Be careful, at the moment all resource and model files are overwritten during generation!
