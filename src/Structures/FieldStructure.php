@@ -81,6 +81,26 @@ class FieldStructure
         return $this->fieldClass;
     }
 
+    public function isCreatedAt(): bool
+    {
+        return $this->column() === 'created_at';
+    }
+
+    public function isUpdatedAt(): bool
+    {
+        return $this->column() === 'updated_at';
+    }
+
+    public function isDeletedAt(): bool
+    {
+        return $this->column() === 'deleted_at';
+    }
+
+    public function isLaravelTimestamp(): bool
+    {
+        return $this->isCreatedAt() || $this->isUpdatedAt() || $this->isDeletedAt();
+    }
+
     public function setType(string $type): self
     {
         if(str_contains($type, '(')) {

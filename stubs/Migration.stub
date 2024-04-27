@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('{table}', function (Blueprint $table) {
             {columns}
-            $table->timestamps();
+            {timestamps}
+            {soft_deletes}
         });
     }
 

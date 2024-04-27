@@ -3,16 +3,17 @@
 namespace {namespace};
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+{use_soft_deletes}
 use Illuminate\Database\Eloquent\Model;
 {relation_uses}
 
 class {class} extends Model
 {
     use HasFactory;
-
+{soft_deletes}
+{timestamps}
     protected $fillable = [
         {fillable}
     ];
-
 {relations_block}
 }

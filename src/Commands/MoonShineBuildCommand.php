@@ -6,6 +6,7 @@ use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use MoonShine\Commands\MoonShineCommand;
@@ -142,13 +143,31 @@ class MoonShineBuildCommand extends MoonShineCommand
             }
         }
 
+        $useSoftDeletes = '';
+        $softDeletes = '';
+        if($resourceStructure->isSoftDeletes()) {
+            $useSoftDeletes = 'use Illuminate\Database\Eloquent\SoftDeletes;';
+            $softDeletes = '    use SoftDeletes;';
+        }
+
+        $timestamps = (! $resourceStructure->isTimestamps())
+            ? '    public $timestamps = false;'
+            : '';
+
         $this->copyStub('Model', $path, [
             '{namespace}' => 'App\Models',
+            '{use_soft_deletes}' => $useSoftDeletes,
             '{class}' => $modelName,
+            '{timestamps}' => $timestamps,
+            '{soft_deletes}' => $softDeletes,
             '{fillable}' => $fillable,
             '{relation_uses}' => $relationUses,
             '{relations_block}' => $relationsBlock,
         ]);
+
+        $this->correctModel($path);
+
+        $this->correctFile($path);
 
         $this->components->task("Model App\\Models\\$modelName created successfully");
     }
@@ -167,10 +186,22 @@ class MoonShineBuildCommand extends MoonShineCommand
 
         $columns = $resourceStructure->fieldsToMigration();
 
+        $timestamps = $resourceStructure->isTimestamps()
+            ? '$table->timestamps();'
+            : '';
+
+        $softDeletes = $resourceStructure->isSoftDeletes()
+            ? '$table->softDeletes();'
+            : '';
+
         $this->copyStub('Migration', $path, [
             '{table}' => $table,
             '{columns}' => $columns,
+            '{timestamps}' => $timestamps,
+            '{soft_deletes}' => $softDeletes,
         ]);
+
+        $this->correctFile($path);
 
         $this->components->task("Migration $migrationPath created successfully");
     }
@@ -201,6 +232,45 @@ class MoonShineBuildCommand extends MoonShineCommand
             'Dummy' => $resourceStructure->name()->ucFirst(),
         ]);
 
+        $this->correctFile($path);
+
         $this->components->task("app/MoonShine/Resources/{$resourceStructure->resourceName()} created successfully");
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    private function correctModel(string $path): void
+    {
+        $filesystem = new Filesystem();
+        $file = $filesystem->get($path);
+
+        $file = str($file)
+            ->replace("use Illuminate\Database\Eloquent\Factories\HasFactory;\n\n", "use Illuminate\Database\Eloquent\Factories\HasFactory;\n")
+            ->replace("use SoftDeletes;\n", "use SoftDeletes;\n\n")
+            ->replace("public \$timestamps = false;\n", "public \$timestamps = false;\n\n")
+            ->value();
+
+        $filesystem->put($path, $file);
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    private function correctFile(string $path): void
+    {
+        $filesystem = new Filesystem();
+        $file = $filesystem->get($path);
+
+        $file = str($file)
+            ->replace("\n\n\n", "\n\n")
+            ->replace("\n        \n    ];", "\n    ];")
+            ->replace("\n    \n    ];", "\n    ];")
+            ->replace("\n\n    \n", "\n\n")
+            ->replace("\n                \n", "\n")
+            ->replace("\n            \n", "\n")
+            ->value();
+
+        $filesystem->put($path, $file);
     }
 }

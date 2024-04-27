@@ -29,6 +29,12 @@ final class ResourceStructure
      */
     private string $column = '';
 
+    private bool $isCreatedAt = false;
+
+    private bool $isUpdatedAt = false;
+
+    private bool $isDeletedAt = false;
+
     public function __construct(
         string $name
     ) {
@@ -37,7 +43,17 @@ final class ResourceStructure
 
     public function addField(FieldStructure $fieldBuilder): self
     {
+        if(
+            ($this->isCreatedAt && $fieldBuilder->isCreatedAt())
+            || ($this->isUpdatedAt && $fieldBuilder->isUpdatedAt())
+            || ($this->isDeletedAt && $fieldBuilder->isDeletedAt())
+        ) {
+            return $this;
+        }
+
         $this->fields[] = $fieldBuilder;
+
+        $this->setTimestamps($fieldBuilder);
 
         return $this;
     }
@@ -60,6 +76,33 @@ final class ResourceStructure
         $this->column = $column;
 
         return $this;
+    }
+
+    public function isTimestamps(): bool
+    {
+        return $this->isCreatedAt && $this->isUpdatedAt;
+    }
+
+    public function isSoftDeletes(): bool
+    {
+        return $this->isDeletedAt;
+    }
+
+    private function setTimestamps(FieldStructure $fieldBuilder): void
+    {
+        if(! $this->isCreatedAt && $fieldBuilder->isCreatedAt()) {
+            $this->isCreatedAt = true;
+            return;
+        }
+
+        if(! $this->isUpdatedAt && $fieldBuilder->isUpdatedAt()) {
+            $this->isUpdatedAt = true;
+            return;
+        }
+
+        if(! $this->isDeletedAt && $fieldBuilder->isDeletedAt()) {
+            $this->isDeletedAt = true;
+        }
     }
 
     /**
@@ -117,6 +160,12 @@ final class ResourceStructure
                 continue;
             }
 
+            if($this->isTimestamps()
+                && ($field->isCreatedAt() || $field->isUpdatedAt())
+            ) {
+                continue;
+            }
+
             $result .= str('$table->')
                 ->append($field->migrationName())
                 ->append($field->migrationMethods())
@@ -134,6 +183,10 @@ final class ResourceStructure
         $result = "";
 
         foreach ($this->fields as $field) {
+            if($field->isLaravelTimestamp()) {
+                continue;
+            }
+
             $fieldClass = $field->fieldClass();
 
             if(str_contains($result, $fieldClass)) {
@@ -156,6 +209,10 @@ final class ResourceStructure
         $result = "";
 
         foreach ($this->fields as $field) {
+            if($field->isLaravelTimestamp()) {
+                continue;
+            }
+
             if($field instanceof RelationFieldStructure) {
                 $resourceName = $field->isManyField()
                     ? $field->relation()->ucFirstSingular()
