@@ -166,6 +166,10 @@ final class ResourceStructure
                 continue;
             }
 
+            if($this->isSoftDeletes() && $field->isDeletedAt()) {
+                continue;
+            }
+
             $result .= str('$table->')
                 ->append($field->migrationName())
                 ->append($field->migrationMethods())

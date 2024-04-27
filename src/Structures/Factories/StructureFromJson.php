@@ -9,6 +9,7 @@ use DevLnk\MoonShineBuilder\Structures\MainStructure;
 use DevLnk\MoonShineBuilder\Structures\RelationFieldStructure;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Support\TypeMap;
 use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class StructureFromJson implements MakeStructureContract
@@ -35,6 +36,8 @@ final class StructureFromJson implements MakeStructureContract
             throw new ProjectBuilderException('Wrong json data');
         }
 
+        $typeMap = new TypeMap();
+
         $mainStructure = new MainStructure();
 
         if( isset($file['withModel'])) {
@@ -60,7 +63,7 @@ final class StructureFromJson implements MakeStructureContract
 
                     $fieldBuilder
                         ->setType($field['type'])
-                        ->setField($field['field'] ?? '')
+                        ->setField($field['field'] ?? '', $typeMap)
                     ;
 
                     if(! empty($field['methods'])) {
@@ -78,6 +81,19 @@ final class StructureFromJson implements MakeStructureContract
                     }
 
                     $resourceBuilder->addField($fieldBuilder);
+                }
+
+                if(isset($values['timestamps']) && $values['timestamps'] === true) {
+                    $createdAtField = new FieldStructure('created_at');
+                    $resourceBuilder->addField($createdAtField->setType('timestamp'));
+
+                    $updatedAtField = new FieldStructure('updated_at');
+                    $resourceBuilder->addField($updatedAtField->setType('timestamp'));
+                }
+
+                if(isset($values['soft_deletes']) && $values['soft_deletes'] === true) {
+                    $softDeletes = new FieldStructure('deleted_at');
+                    $resourceBuilder->addField($softDeletes->setType('timestamp'));
                 }
 
                 $mainStructure->addResource($resourceBuilder);

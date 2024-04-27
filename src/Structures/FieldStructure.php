@@ -48,14 +48,10 @@ class FieldStructure
      */
     private array $migrationMethods = [];
 
-    private TypeMap $typeMap;
-
     public function __construct(
         private readonly string $column,
         private string $name = '',
     ) {
-        $this->typeMap = new TypeMap();
-
         if(empty($this->name)) {
             $this->name = str($this->column)->camel()->ucfirst()->value();
         }
@@ -121,7 +117,7 @@ class FieldStructure
     /**
      * @throws ProjectBuilderException
      */
-    public function setField(string $field): self
+    public function setField(string $field, TypeMap $typeMap): self
     {
         if(empty($field)) {
             return $this;
@@ -129,7 +125,7 @@ class FieldStructure
 
         $field = str($field)->ucfirst()->value();
 
-        $this->fieldClass = $this->typeMap->fieldClassFromAlias($field);
+        $this->fieldClass = $typeMap->fieldClassFromAlias($field);
 
         return $this;
     }
