@@ -33,7 +33,15 @@ Now you can run the command:
 ```shell
 php artisan moonshine:build
 ```
-You will be given options as to which scheme to use when generating the code.
+You will be given options as to which scheme to use when generating the code, form example:
+
+![img1](https://raw.githubusercontent.com/dev-lnk/moonshine-builder/master/examples/img_1.png)
+
+![img2](https://raw.githubusercontent.com/dev-lnk/moonshine-builder/master/examples/img_2.png)
+
+![img3](https://raw.githubusercontent.com/dev-lnk/moonshine-builder/master/examples/img_3.png)
+
+![img4](https://raw.githubusercontent.com/dev-lnk/moonshine-builder/master/examples/img_4.png)
 
 ### Creating a Schema
 In the <code>builds_dir</code> directory, create a schema file, for example, <code>category.json</code>:
