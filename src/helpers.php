@@ -10,7 +10,7 @@ if(! function_exists('newLineWithTab')) {
         $str = $str->newLine();
 
         for($i = 0; $i < $countTab; $i++) {
-            $str = $str->append('    ');
+            $str = $str->append("\t");
         }
 
         return $str;

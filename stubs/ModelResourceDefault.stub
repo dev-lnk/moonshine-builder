@@ -18,14 +18,12 @@ class DummyResource extends ModelResource
 {
     protected string $model = {model}::class;
 
-    protected string $title = 'DummyTitle';
+    protected string $title = 'DummyTitle';{column}
 
-    {column}
     public function fields(): array
     {
         return [
-            Block::make([
-                {fields}
+            Block::make([{fields}
             ]),
         ];
     }

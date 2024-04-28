@@ -11,10 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('{table}', function (Blueprint $table) {
-            {columns}
-            {timestamps}
-            {soft_deletes}
+        Schema::create('{table}', function (Blueprint $table) {{columns}{timestamps}{soft_deletes}
         });
     }
 

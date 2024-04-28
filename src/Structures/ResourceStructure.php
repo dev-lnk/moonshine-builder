@@ -129,7 +129,7 @@ final class ResourceStructure
             return '';
         }
 
-        return "protected string \$column = '{$this->column}';".PHP_EOL;
+        return "\n\n\tprotected string \$column = '{$this->column}';";
     }
 
     public function fieldsToModel(): string
@@ -142,8 +142,9 @@ final class ResourceStructure
             }
 
             $result .= str("'{$field->column()}'")
+                ->prepend("\t\t")
+                ->prepend("\n")
                 ->append(',')
-                ->when(true, fn($str) => newLineWithTab($str, 2))
                 ->value()
             ;
         }
@@ -171,10 +172,11 @@ final class ResourceStructure
             }
 
             $result .= str('$table->')
+                ->prepend("\t\t\t")
+                ->prepend("\n")
                 ->append($field->migrationName())
                 ->append($field->migrationMethods())
                 ->append(';')
-                ->when(true, fn($str) => newLineWithTab($str, 3))
                 ->value()
             ;
         }
@@ -223,6 +225,8 @@ final class ResourceStructure
                     : $field->relation()->ucFirst() ;
 
                 $result .= str(class_basename($field->fieldClass()))
+                    ->prepend("\t\t\t\t")
+                    ->prepend("\n")
                     ->append('::make')
                     ->append("('{$field->name()}', '{$field->relation()->raw()}'")
                     ->append(", resource: new ")
@@ -233,13 +237,14 @@ final class ResourceStructure
                     ->append('())')
                     ->append($field->resourceMethods())
                     ->append(',')
-                    ->when(true, fn($str) => newLineWithTab($str))
                     ->value();
 
                 continue;
             }
 
             $result .= str(class_basename($field->fieldClass()))
+                ->prepend("\t\t\t\t")
+                ->prepend("\n")
                 ->append('::make')
                 ->when($field->fieldClass() !== ID::class,
                     fn($str) => $str->append("('{$field->name()}', '{$field->column()}')"),
@@ -247,7 +252,6 @@ final class ResourceStructure
                 )
                 ->append($field->resourceMethods())
                 ->append(',')
-                ->when(true, fn($str) => newLineWithTab($str))
                 ->value()
             ;
         }

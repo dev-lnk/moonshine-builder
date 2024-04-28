@@ -11,7 +11,6 @@ final class NameStr
     public function __construct(
         private readonly string $name
     ) {
-
     }
 
     public function raw(): string
