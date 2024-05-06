@@ -59,7 +59,7 @@ In the <code>builds_dir</code> directory, create a schema file, for example, <co
           },
           "title": {
             "type": "string",
-            "name": "Название"
+            "name": "Name"
           }
         }
       }
