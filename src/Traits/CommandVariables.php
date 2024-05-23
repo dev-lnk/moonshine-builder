@@ -1,6 +1,6 @@
 <?php
 
-namespace DevLnk\MoonShineBuilder\Commands;
+namespace DevLnk\MoonShineBuilder\Traits;
 
 use DevLnk\LaravelCodeBuilder\Enums\BuildTypeContract;
 use DevLnk\LaravelCodeBuilder\Services\Builders\Factory\AbstractBuildFactory;
@@ -43,7 +43,7 @@ trait CommandVariables
     protected function builders(): array
     {
         return [
-            MoonShineBuildType::MODEL,
+            //MoonShineBuildType::MODEL,
             MoonShineBuildType::RESOURCE,
         ];
     }

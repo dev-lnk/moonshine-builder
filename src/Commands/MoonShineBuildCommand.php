@@ -4,12 +4,12 @@ namespace DevLnk\MoonShineBuilder\Commands;
 
 use DevLnk\LaravelCodeBuilder\Commands\LaravelCodeBuildCommand;
 use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
-use DevLnk\LaravelCodeBuilder\Services\Builders\BuildFactory;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\Factories\CodeStructureFromMysql;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
+use DevLnk\MoonShineBuilder\Traits\CommandVariables;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -102,7 +102,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
                 CodeStructureFromMysql::make(
                     table: (string) $target,
                     entity: $target,
-                    isBelongsTo: false,
+                    isBelongsTo: true,
                     hasMany: [],
                     hasOne: [],
                     belongsToMany: []
@@ -166,34 +166,5 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         ]);
 
         $this->components->task("Migration $migrationPath created successfully");
-    }
-
-    /**
-     * @throws FileNotFoundException
-     */
-    private function createResource(ResourceStructure $resourceStructure): void
-    {
-        $name = $resourceStructure->resourceName();
-
-        $model = $this->qualifyModel($resourceStructure->name()->ucFirst());
-
-        $path = base_path("app/MoonShine/Resources/$name.php");
-
-        $fieldsUses = $resourceStructure->usesFieldsToResource();
-
-        $fields = $resourceStructure->fieldsToResources();
-
-        $this->copyStub('ModelResourceDefault', $path, [
-            '{namespace}' => MoonShine::namespace('\Resources'),
-            '{model-namespace}' => $model,
-            '{uses}' => $fieldsUses,
-            '{column}' => $resourceStructure->columnToResource(),
-            '{fields}' => $fields,
-            '{model}' => class_basename($model),
-            'DummyTitle' => class_basename($model),
-            'Dummy' => $resourceStructure->name()->ucFirst(),
-        ]);
-
-        $this->components->task("app/MoonShine/Resources/{$resourceStructure->resourceName()} created successfully");
     }
 }

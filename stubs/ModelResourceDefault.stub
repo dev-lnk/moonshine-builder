@@ -9,7 +9,7 @@ use {model_namespace};
 
 use MoonShine\Resources\ModelResource;
 use MoonShine\Decorations\Block;
-{uses}
+{field_uses}
 
 /**
  * @extends ModelResource<{model}>
