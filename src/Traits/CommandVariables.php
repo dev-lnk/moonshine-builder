@@ -43,8 +43,9 @@ trait CommandVariables
     protected function builders(): array
     {
         return [
-            //MoonShineBuildType::MODEL,
+            MoonShineBuildType::MODEL,
             MoonShineBuildType::RESOURCE,
+            MoonShineBuildType::MIGRATION,
         ];
     }
 }

@@ -1,4 +1,4 @@
     public function {relation}(): HasOne
     {
-        return $this->hasOne({relation_model});
+        return $this->hasOne({relation_model}::class, '{relation_column}');
     }

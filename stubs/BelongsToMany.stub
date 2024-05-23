@@ -1,0 +1,4 @@
+    public function {relation}(): BelongsToMany
+    {
+        return $this->belongsToMany({relation_model}::class);
+    }

@@ -22,7 +22,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
 {
     use CommandVariables;
 
-    protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--builders}';
+    protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--migration} {--builders}';
 
     /**
      * @throws CodeGenerateCommandException

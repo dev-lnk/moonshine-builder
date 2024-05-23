@@ -9,6 +9,7 @@ use DevLnk\LaravelCodeBuilder\Services\CodePath\AbstractPathItem;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathItemContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
+use DevLnk\MoonShineBuilder\Services\CodePath\MoonShine\MigrationPath;
 use DevLnk\MoonShineBuilder\Services\CodePath\MoonShine\ModelPath;
 use DevLnk\MoonShineBuilder\Services\CodePath\MoonShine\ResourcePath;
 
@@ -34,6 +35,13 @@ class MoonShineCodePath implements CodePathContract
                     $codeStructure->entity()->ucFirstSingular() . 'Resource.php',
                     app_path('MoonShine/Resources'),
                     'App\\MoonShine\\Resources'
+                )
+            )
+            ->setPath(
+                new MigrationPath(
+                    date('Y_m_d_His') . '_create_' . $codeStructure->table() . '.php',
+                    base_path('database/migrations'),
+                    ''
                 )
             )
         ;

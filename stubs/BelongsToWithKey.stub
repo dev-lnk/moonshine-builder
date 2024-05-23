@@ -1,4 +1,0 @@
-    public function {relation}(): BelongsTo
-    {
-        return $this->belongsTo({relation_model}, '{relation_key}');
-    }

@@ -28,6 +28,11 @@ final readonly class MoonShineBuildFactory extends AbstractBuildFactory
                 $this->codePath,
                 $stub
             ),
+            MoonShineBuildType::MIGRATION->value => new MigrationBuilder(
+                $this->codeStructure,
+                $this->codePath,
+                $stub
+            ),
             default => throw new NotFoundBuilderException()
         };
 

@@ -1,4 +1,4 @@
     public function {relation}(): BelongsTo
     {
-        return $this->belongsTo({relation_model});
+        return $this->belongsTo({relation_model}::class, '{relation_column}'{relation_id});
     }
