@@ -1,14 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace {namespace};
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;{use_soft_deletes}
+{use_soft_deletes}
 use Illuminate\Database\Eloquent\Model;
-{relation_uses}
+{use_belongs_to}
+{use_has_many}
+{use_has_one}
+{use_belongs_to_many}
+
 class {class} extends Model
 {
-    use HasFactory;{soft_deletes}{timestamps}
-
+{soft_deletes}
+{timestamps}
+{table}
     protected $fillable = [{fillable}
-    ];{relations_block}
+    ];{relations}
 }

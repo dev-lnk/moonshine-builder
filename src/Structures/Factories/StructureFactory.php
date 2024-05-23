@@ -17,10 +17,6 @@ final class StructureFactory
      */
     public function getStructure(string $target, string $type): MainStructure
     {
-        if($type === 'table') {
-            return StructureFromTable::make($target)->makeStructure();
-        }
-
         $path = config('moonshine_builder.builds_dir') . '/' . $target;
 
         if(! file_exists($path)) {

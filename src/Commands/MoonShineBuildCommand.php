@@ -2,30 +2,78 @@
 
 namespace DevLnk\MoonShineBuilder\Commands;
 
+use DevLnk\LaravelCodeBuilder\Commands\LaravelCodeBuildCommand;
+use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\LaravelCodeBuilder\Services\Builders\BuildFactory;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\Factories\CodeStructureFromMysql;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use MoonShine\Commands\MoonShineCommand;
 use MoonShine\MoonShine;
 use SplFileInfo;
 
-use function Laravel\Prompts\{select, note, confirm};
+use function Laravel\Prompts\{select};
 
-class MoonShineBuildCommand extends MoonShineCommand
+class MoonShineBuildCommand extends LaravelCodeBuildCommand
 {
-    protected $signature = 'moonshine:build {target?} {--type=}';
+    use CommandVariables;
 
-    protected string $stubsDir = __DIR__ . '/../../stubs';
+    protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--builders}';
 
     /**
-     * @throws FileNotFoundException
+     * @throws CodeGenerateCommandException
      * @throws ProjectBuilderException
      */
     public function handle(): int
+    {
+        $this->setStubDir();
+
+        $this->prepareBuilders();
+
+        $codeStructures = $this->codeStructures();
+
+        $generationPath = $this->generationPath();
+
+        foreach ($codeStructures as $codeStructure) {
+            $this->make($codeStructure, $generationPath);
+        }
+
+        return self::SUCCESS;
+    }
+
+    protected function prepareBuilders(): void
+    {
+        $builders = $this->builders();
+
+        foreach ($builders as $builder) {
+            if($this->option($builder->value())) {
+                $this->builders[] = $builder;
+            }
+        }
+
+        if($this->option('builders')) {
+            foreach (config('code_builder.builders', []) as $builder) {
+                if(! in_array($builder, $this->builders)) {
+                    $this->builders[] = $builder;
+                }
+            }
+        }
+
+        if(empty($this->builders)) {
+            $this->builders = $this->builders();
+        }
+    }
+
+    /**
+     * @return array<int, CodeStructure>
+     *
+     * @throws ProjectBuilderException
+     */
+    protected function codeStructures(): array
     {
         $target = $this->argument('target');
 
@@ -49,56 +97,28 @@ class MoonShineBuildCommand extends MoonShineCommand
             );
         }
 
+        if($type === 'table') {
+            return [
+                CodeStructureFromMysql::make(
+                    table: (string) $target,
+                    entity: $target,
+                    isBelongsTo: false,
+                    hasMany: [],
+                    hasOne: [],
+                    belongsToMany: []
+                ),
+            ];
+        }
+
         $mainStructure = StructureFactory::make()
             ->getStructure($target, $type);
 
-        if($type === 'table') {
-            $mainStructure->setWithModel(
-                confirm('Make model?', default: false, hint: 'If the model exists, it will be overwritten')
-            );
-        }
-
-        $reminderResourceInfo = [];
-        $reminderMenuInfo = [];
-
-        foreach ($mainStructure->resources() as $index => $resource) {
-            $this->components->task("app/MoonShine/Resources/{$resource->resourceName()} is created...");
-
-            if ($mainStructure->withModel()) {
-                $this->createModel($resource);
-            }
-
-            if ($mainStructure->withMigration()) {
-                $this->createMigration($resource, $index);
-            }
-
-            if ($mainStructure->withResource()) {
-                $this->createResource($resource);
-                $reminderResourceInfo[] = "new {$resource->resourceName()}(),";
-                $reminderMenuInfo[] = $this->replaceInStub('MenuItem', [
-                    '{resource}' => $resource->name()->ucFirst(),
-                ]);
-            }
-        }
-
-        $this->components->warn("Don't forget to register new resources in the provider method:");
-
-        $code = implode(PHP_EOL, $reminderResourceInfo);
-
-        note($code);
-
-        note("...or in the menu method:");
-
-        $code = implode(PHP_EOL, $reminderMenuInfo);
-
-        note($code);
-
-        $this->components->info('All done');
-
-        return self::SUCCESS;
+        return [
+            $mainStructure
+        ];
     }
 
-    private function getType(?string $target): string
+    protected function getType(?string $target): string
     {
         if (! $this->option('type') && ! is_null($target)) {
             $availableTypes = [
@@ -114,58 +134,6 @@ class MoonShineBuildCommand extends MoonShineCommand
         }
 
         return $this->option('type') ?? select('Type', ['json', 'table']);
-    }
-
-    /**
-     * @throws FileNotFoundException
-     */
-    private function createModel(ResourceStructure $resourceStructure): void
-    {
-        $modelName = $resourceStructure->name()->ucFirst();
-
-        $path = base_path("app/Models/$modelName.php");
-
-        $fillable = $resourceStructure->fieldsToModel();
-
-        $relationUses = $resourceStructure->relationUses();
-
-        $relationsBlock = '';
-
-        if (! empty($resourceStructure->relationFields())) {
-            foreach ($resourceStructure->relationsData() as $relationsData) {
-                $relationsBlock .= str($this->replaceInStub($relationsData['stub'], [
-                    '{relation}' => $relationsData['relation'],
-                    '{relation_model}' => $relationsData['relation_model'],
-                ]))
-                    ->prepend("\n")
-                    ->prepend("\n")
-                    ->value();
-            }
-        }
-
-        $useSoftDeletes = '';
-        $softDeletes = '';
-        if($resourceStructure->isSoftDeletes()) {
-            $useSoftDeletes = "\nuse Illuminate\Database\Eloquent\SoftDeletes;";
-            $softDeletes = "\n\tuse SoftDeletes;";
-        }
-
-        $timestamps = (! $resourceStructure->isTimestamps())
-            ? "\n\tpublic \$timestamps = false;"
-            : '';
-
-        $this->copyStub('Model', $path, [
-            '{namespace}' => 'App\Models',
-            '{use_soft_deletes}' => $useSoftDeletes,
-            '{class}' => $modelName,
-            '{timestamps}' => $timestamps,
-            '{soft_deletes}' => $softDeletes,
-            '{fillable}' => $fillable,
-            '{relation_uses}' => $relationUses,
-            '{relations_block}' => $relationsBlock,
-        ]);
-
-        $this->components->task("Model App\\Models\\$modelName created successfully");
     }
 
     /**
