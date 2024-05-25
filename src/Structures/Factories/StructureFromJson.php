@@ -8,11 +8,8 @@ use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\RelationStructure;
-use DevLnk\MoonShineBuilder\Structures\FieldStructure;
 use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
-use DevLnk\MoonShineBuilder\Structures\RelationFieldStructure;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
-use DevLnk\MoonShineBuilder\Support\TypeMap;
 use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class StructureFromJson implements MakeStructureContract
@@ -57,7 +54,7 @@ final class StructureFromJson implements MakeStructureContract
             foreach ($resource as $name => $values) {
                 $codeStructure = new CodeStructure($name, $name);
 
-                $codeStructure->setDataValue('column', $values['column'] ?? '');
+                $codeStructure->setDataValue('column', $values['column'] ?? null);
 
                 foreach ($values['fields'] as $fieldColumn => $field) {
 
@@ -83,8 +80,6 @@ final class StructureFromJson implements MakeStructureContract
                             $field['relation']
                         ));
                     }
-
-                    $columnStructure->setDataValue('field', $field['field'] ?? '');
 
                     if(isset($field['default'])) {
                         if(! isset($field['methods'])) {
@@ -128,7 +123,7 @@ final class StructureFromJson implements MakeStructureContract
                 if(isset($values['timestamps']) && $values['timestamps'] === true) {
                     $createdAtField = new ColumnStructure(
                         column: 'created_at',
-                        name: 'created_at',
+                        name: 'Created at',
                         type: SqlTypeMap::TIMESTAMP,
                         default: null,
                         nullable: true
@@ -137,7 +132,7 @@ final class StructureFromJson implements MakeStructureContract
 
                     $updatedAtField = new ColumnStructure(
                         column: 'updated_at',
-                        name: 'updated_at',
+                        name: 'Updated at',
                         type: SqlTypeMap::TIMESTAMP,
                         default: null,
                         nullable: true
@@ -148,7 +143,7 @@ final class StructureFromJson implements MakeStructureContract
                 if(isset($values['soft_deletes']) && $values['soft_deletes'] === true) {
                     $softDeletes = new ColumnStructure(
                         column: 'deleted_at',
-                        name: 'deleted_at',
+                        name: 'Deleted at',
                         type: SqlTypeMap::TIMESTAMP,
                         default: null,
                         nullable: true

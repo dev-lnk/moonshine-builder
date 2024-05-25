@@ -11,6 +11,7 @@ use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContract
 {
@@ -67,6 +68,10 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
 
     protected function migrationName(ColumnStructure $column): string
     {
+        if($column->relation()) {
+            return $this->migrationNameFromRelation($column);
+        }
+
         return str($column->type()->value)
             ->when($column->column() === 'id' && $column->type()->value === 'id',
                 fn($str) => $str->append("("),
@@ -76,6 +81,41 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
                 fn($str) => $str->append(', ' . implode(', ', $column->dataValue('migration_options')) . ')'),
                 fn($str) => $str->append(")")
             )
+            ->value()
+            ;
+    }
+
+    public function migrationNameFromRelation(ColumnStructure $column): string
+    {
+        if($column->type() !== SqlTypeMap::BELONGS_TO) {
+            return '';
+        }
+
+        $modelPath = $this->codePath->path(MoonShineBuildType::MODEL->value);
+        $modelName = $modelPath->rawName();
+
+        $modelClass = empty($column->dataValue('model_class')) ? '\\App\\Models\\' : $column->dataValue('model_class');
+
+        return str('foreignIdFor')
+            ->append('(')
+            ->append($modelClass)
+            ->when(empty($column->dataValue('model_class')),
+                fn($str) => $str->append($modelName)
+            )
+            ->append("::class")
+//            ->when($this->foreignId,
+//                fn($str) => $str->append(", '{$this->foreignId}'")
+//            )
+            ->append(')')
+            ->newLine()
+            ->append("\t\t\t\t")
+            ->append('->constrained()')
+            ->newLine()
+            ->append("\t\t\t\t")
+            ->append('->cascadeOnDelete()')
+            ->newLine()
+            ->append("\t\t\t\t")
+            ->append('->cascadeOnUpdate()')
             ->value()
             ;
     }

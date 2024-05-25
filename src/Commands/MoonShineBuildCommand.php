@@ -98,6 +98,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         if($type === 'table') {
+            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MIGRATION);
             return [
                 CodeStructureFromMysql::make(
                     table: (string) $target,
@@ -144,37 +145,5 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         return $this->option('type') ?? select('Type', ['json', 'table']);
-    }
-
-    /**
-     * @throws FileNotFoundException
-     */
-    private function createMigration(ResourceStructure $resourceStructure, int $index): void
-    {
-        $table = $resourceStructure->name()->plural();
-
-        // TODO подумать как сделать рефакторинг $index
-        $migrationPath = 'database/migrations/' . date('Y_m_d_His') . '_' . $index . '_create_' . $table . '.php';
-
-        $path = base_path($migrationPath);
-
-        $columns = $resourceStructure->fieldsToMigration();
-
-        $timestamps = $resourceStructure->isTimestamps()
-            ? "\n\t\t\t\$table->timestamps();"
-            : '';
-
-        $softDeletes = $resourceStructure->isSoftDeletes()
-            ? "\n\t\t\t\$table->softDeletes();"
-            : '';
-
-        $this->copyStub('Migration', $path, [
-            '{table}' => $table,
-            '{columns}' => $columns,
-            '{timestamps}' => $timestamps,
-            '{soft_deletes}' => $softDeletes,
-        ]);
-
-        $this->components->task("Migration $migrationPath created successfully");
     }
 }

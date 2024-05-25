@@ -26,15 +26,21 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
 
         $fields = $this->columnsToResource();
 
-        // TODO column
         StubBuilder::make($this->stubFile)
+            ->setKey('{column}', str('')
+                ->newLine()
+                ->newLine()
+                ->append("\t")
+                ->append("protected string \$column = '{$this->codeStructure->dataValue('column')}';")
+                ->value(),
+                ! is_null($this->codeStructure->dataValue('column'))
+            )
             ->makeFromStub($resourcePath->file(), [
                 '{namespace}' => $resourcePath->namespace(),
                 '{model_namespace}' => $modelPath->namespace() . '\\' . $modelPath->rawName(),
                 '{field_uses}' => $fieldUses,
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),
-                '{column}' => '',
                 '{fields}' => $fields
             ]);
     }
