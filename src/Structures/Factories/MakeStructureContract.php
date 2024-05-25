@@ -2,9 +2,9 @@
 
 namespace DevLnk\MoonShineBuilder\Structures\Factories;
 
-use DevLnk\MoonShineBuilder\Structures\MainStructure;
+use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
 
 interface MakeStructureContract
 {
-    public function makeStructure(): MainStructure;
+    public function makeStructures(): CodeStructureList;
 }

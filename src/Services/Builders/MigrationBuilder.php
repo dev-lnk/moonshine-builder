@@ -72,8 +72,8 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
                 fn($str) => $str->append("("),
                 fn($str) => $str->append("('{$column->column()}'")
             )
-            ->when(! is_null($column->dataValue('migrationOptions')),
-                fn($str) => $str->append(', ' . implode(', ', $column->dataValue('migrationOptions')) . ')'),
+            ->when(! is_null($column->dataValue('migration_options')),
+                fn($str) => $str->append(', ' . implode(', ', $column->dataValue('migration_options')) . ')'),
                 fn($str) => $str->append(")")
             )
             ->value()
@@ -83,15 +83,15 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
     protected function migrationMethods(ColumnStructure $column): string
     {
         if(
-            is_null($column->dataValue('migrationMethods'))
-            || ! is_array($column->dataValue('migrationMethods'))
+            is_null($column->dataValue('migration_methods'))
+            || ! is_array($column->dataValue('migration_methods'))
         ) {
             return '';
         }
 
         $result = "";
 
-        foreach ($column->dataValue('migrationMethods') as $method) {
+        foreach ($column->dataValue('migration_methods') as $method) {
             if(! str_contains($method, '(')) {
                 $method .= "()";
             }

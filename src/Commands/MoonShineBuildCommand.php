@@ -6,14 +6,14 @@ use DevLnk\LaravelCodeBuilder\Commands\LaravelCodeBuildCommand;
 use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\Factories\CodeStructureFromMysql;
+use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
-use DevLnk\MoonShineBuilder\Structures\Factories\StructureFactory;
+use DevLnk\MoonShineBuilder\Structures\Factories\MoonShineStructureFactory;
 use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use DevLnk\MoonShineBuilder\Traits\CommandVariables;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use MoonShine\MoonShine;
 use SplFileInfo;
 
 use function Laravel\Prompts\{select};
@@ -110,12 +110,22 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             ];
         }
 
-        $mainStructure = StructureFactory::make()
-            ->getStructure($target, $type);
+        $codeStructures = MoonShineStructureFactory::make()
+            ->getStructures($target);
 
-        return [
-            $mainStructure
-        ];
+        if(! $codeStructures->withModel()) {
+            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MODEL);
+        }
+
+        if(! $codeStructures->withMigration()) {
+            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MIGRATION);
+        }
+
+        if(! $codeStructures->withResource()) {
+            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::RESOURCE);
+        }
+
+        return $codeStructures->codeStructures();
     }
 
     protected function getType(?string $target): string

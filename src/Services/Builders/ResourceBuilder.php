@@ -6,6 +6,7 @@ namespace DevLnk\MoonShineBuilder\Services\Builders;
 
 use DevLnk\LaravelCodeBuilder\Services\Builders\AbstractBuilder;
 use DevLnk\LaravelCodeBuilder\Services\Builders\Core\Contracts\EditActionBuilderContract;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Support\TypeMap;
@@ -93,7 +94,7 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                         fn($str) => $str->append(str($resourceName)->append('Resource')->value()),
                     )
                     ->append('())')
-                    //->append($field->resourceMethods())
+                    ->append($this->resourceMethods($column))
                     ->append(',')
                     ->value();
 
@@ -108,10 +109,31 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                     fn($str) => $str->append("('{$column->name()}', '{$column->column()}')"),
                     fn($str) => $str->append("('{$column->column()}')"),
                 )
-                //->append($field->resourceMethods())
+                ->append($this->resourceMethods($column))
                 ->append(',')
                 ->value()
             ;
+        }
+
+        return $result;
+    }
+
+    public function resourceMethods(ColumnStructure $columnStructure): string
+    {
+        if(
+            empty($columnStructure->dataValue('resource_methods'))
+            || ! is_array($columnStructure->dataValue('resource_methods'))
+        ) {
+            return '';
+        }
+
+        $result = "";
+
+        foreach ($columnStructure->dataValue('resource_methods') as $method) {
+            if(! str_contains($method, '(')) {
+                $method .= "()";
+            }
+            $result .= str('')->newLine()->append("\t\t\t\t\t")->value() . "->$method";
         }
 
         return $result;

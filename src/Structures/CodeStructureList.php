@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Structures;
 
-final class MainStructure
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
+
+final class CodeStructureList
 {
     /**
-     * @var array<int, ResourceStructure>
+     * @var array<int, CodeStructure>
      */
-    private array $resources = [];
+    private array $codeStructures = [];
 
     private bool $withModel = true;
 
@@ -17,9 +19,9 @@ final class MainStructure
 
     private bool $withResource = true;
 
-    public function addResource(ResourceStructure $resourceBuilder): void
+    public function addCodeStructure(CodeStructure $codeStructure): void
     {
-        $this->resources[] = $resourceBuilder;
+        $this->codeStructures[] = $codeStructure;
     }
 
     public function setWithModel(bool $withModel): void
@@ -53,10 +55,10 @@ final class MainStructure
     }
 
     /**
-     * @return array<int, ResourceStructure>
+     * @return array<int, CodeStructure>
      */
-    public function resources(): array
+    public function codeStructures(): array
     {
-        return $this->resources;
+        return $this->codeStructures;
     }
 }

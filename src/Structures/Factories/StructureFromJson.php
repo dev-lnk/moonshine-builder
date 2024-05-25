@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Structures\Factories;
 
+use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
+use DevLnk\LaravelCodeBuilder\Services\CodeStructure\RelationStructure;
 use DevLnk\MoonShineBuilder\Structures\FieldStructure;
-use DevLnk\MoonShineBuilder\Structures\MainStructure;
+use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
 use DevLnk\MoonShineBuilder\Structures\RelationFieldStructure;
-use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Support\TypeMap;
 use DevLnk\MoonShineBuilder\Traits\Makeable;
@@ -24,7 +27,7 @@ final class StructureFromJson implements MakeStructureContract
     /**
      * @throws ProjectBuilderException
      */
-    public function makeStructure(): MainStructure
+    public function makeStructures(): CodeStructureList
     {
         if(! file_exists($this->filePath)) {
             throw new ProjectBuilderException('File not available: ' .  $this->filePath);
@@ -36,71 +39,128 @@ final class StructureFromJson implements MakeStructureContract
             throw new ProjectBuilderException('Wrong json data');
         }
 
-        $typeMap = new TypeMap();
-
-        $mainStructure = new MainStructure();
+        $codeStructures = new CodeStructureList();
 
         if( isset($file['withModel'])) {
-            $mainStructure->setWithModel($file['withModel']);
+            $codeStructures->setWithModel($file['withModel']);
         }
 
         if( isset($file['withMigration'])) {
-            $mainStructure->setWithMigration($file['withMigration']);
+            $codeStructures->setWithMigration($file['withMigration']);
         }
 
         if( isset($file['withResource'])) {
-            $mainStructure->setWithResource($file['withResource']);
+            $codeStructures->setWithResource($file['withResource']);
         }
 
         foreach ($file['resources'] as $resource) {
             foreach ($resource as $name => $values) {
-                $resourceBuilder = new ResourceStructure($name);
+                $codeStructure = new CodeStructure($name, $name);
 
-                $resourceBuilder->setColumn($values['column'] ?? '');
+                $codeStructure->setDataValue('column', $values['column'] ?? '');
 
                 foreach ($values['fields'] as $fieldColumn => $field) {
-                    $fieldBuilder = $this->getFieldBuilder($fieldColumn, $field);
 
-                    $fieldBuilder
-                        ->setType($field['type'])
-                        ->setField($field['field'] ?? '', $typeMap)
-                    ;
+                    $type = SqlTypeMap::from($field['type']);
+
+                    $columnStructure = new ColumnStructure(
+                        column: $fieldColumn,
+                        name: $field['name'] ?? '',
+                        type: $type,
+                        default: isset($field['default']) ? (string) $field['default'] : null,
+                        nullable: true
+                    );
+
+                    if(! empty($field['relation'])) {
+                        $relationId = (
+                            $columnStructure->type() === SqlTypeMap::BELONGS_TO
+                            || $columnStructure->type() === SqlTypeMap::BELONGS_TO_MANY
+                        ) ? 'id'
+                        : str($name)->singular()->lower()->append('_id')->value();
+
+                        $columnStructure->setRelation(new RelationStructure(
+                            $relationId,
+                            $field['relation']
+                        ));
+                    }
+
+                    $columnStructure->setDataValue('field', $field['field'] ?? '');
+
+                    if(isset($field['default'])) {
+                        if(! isset($field['methods'])) {
+                            $field['methods'][] = "default({$field['default']})";
+                        } else {
+                            array_unshift($field['methods'], "default({$field['default']})");
+                        }
+
+                        if(! isset($field['migration']['methods'])) {
+                            $field['migration']['methods'][] = "default({$field['default']})";
+                        } else {
+                            array_unshift($field['migration']['methods'], "default({$field['default']})");
+                        }
+                    }
 
                     if(! empty($field['methods'])) {
-                        $fieldBuilder->addResourceMethods($field['methods']);
+                        $columnStructure->setDataValue('resource_methods', $field['methods']);
                     }
 
                     if(! empty($field['migration'])) {
-                        if(! empty($field['migration']['option'])) {
-                            $fieldBuilder->addMigrationOptions($field['migration']['option']);
+                        if(! empty($field['migration']['options'])) {
+                            $columnStructure->setDataValue('migration_options', $field['migration']['options']);
                         }
 
                         if(! empty($field['migration']['methods'])) {
-                            $fieldBuilder->addMigrationMethod($field['migration']['methods']);
+                            $columnStructure->setDataValue('migration_methods', $field['migration']['methods']);
                         }
                     }
 
-                    $resourceBuilder->addField($fieldBuilder);
+                    if(! empty($field['resource_class'])) {
+                        $columnStructure->setDataValue('resource_class', $field['resource_class']);
+                    }
+
+                    if(! empty($field['model_class'])) {
+                        $columnStructure->setDataValue('model_class', $field['model_class']);
+                    }
+
+                    $codeStructure->addColumn($columnStructure);
                 }
 
                 if(isset($values['timestamps']) && $values['timestamps'] === true) {
-                    $createdAtField = new FieldStructure('created_at');
-                    $resourceBuilder->addField($createdAtField->setType('timestamp'));
+                    $createdAtField = new ColumnStructure(
+                        column: 'created_at',
+                        name: 'created_at',
+                        type: SqlTypeMap::TIMESTAMP,
+                        default: null,
+                        nullable: true
+                    );
+                    $codeStructure->addColumn($createdAtField);
 
-                    $updatedAtField = new FieldStructure('updated_at');
-                    $resourceBuilder->addField($updatedAtField->setType('timestamp'));
+                    $updatedAtField = new ColumnStructure(
+                        column: 'updated_at',
+                        name: 'updated_at',
+                        type: SqlTypeMap::TIMESTAMP,
+                        default: null,
+                        nullable: true
+                    );
+                    $codeStructure->addColumn($updatedAtField);
                 }
 
                 if(isset($values['soft_deletes']) && $values['soft_deletes'] === true) {
-                    $softDeletes = new FieldStructure('deleted_at');
-                    $resourceBuilder->addField($softDeletes->setType('timestamp'));
+                    $softDeletes = new ColumnStructure(
+                        column: 'deleted_at',
+                        name: 'deleted_at',
+                        type: SqlTypeMap::TIMESTAMP,
+                        default: null,
+                        nullable: true
+                    );
+                    $codeStructure->addColumn($softDeletes);
                 }
 
-                $mainStructure->addResource($resourceBuilder);
+                $codeStructures->addCodeStructure($codeStructure);
             }
         }
 
-        return $mainStructure;
+        return $codeStructures;
     }
 
     private function getFieldBuilder(string $fieldColumn, array $field): FieldStructure
