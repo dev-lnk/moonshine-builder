@@ -4,14 +4,14 @@ namespace DevLnk\MoonShineBuilder\Commands;
 
 use DevLnk\LaravelCodeBuilder\Commands\LaravelCodeBuildCommand;
 use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\Factories\CodeStructureFromMysql;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 use DevLnk\MoonShineBuilder\Structures\Factories\MoonShineStructureFactory;
-use DevLnk\MoonShineBuilder\Structures\ResourceStructure;
 use DevLnk\MoonShineBuilder\Traits\CommandVariables;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use SplFileInfo;
@@ -23,6 +23,8 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
     use CommandVariables;
 
     protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--migration} {--builders}';
+
+    protected int $iterations = 0;
 
     /**
      * @throws CodeGenerateCommandException
@@ -145,5 +147,12 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         return $this->option('type') ?? select('Type', ['json', 'table']);
+    }
+
+    protected function codePath(): CodePathContract
+    {
+        $codePath = new MoonShineCodePath($this->iterations);
+        $this->iterations++;
+        return $codePath;
     }
 }

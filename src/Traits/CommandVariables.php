@@ -12,11 +12,6 @@ use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 
 trait CommandVariables
 {
-    protected function codePath(): CodePathContract
-    {
-        return new MoonShineCodePath();
-    }
-
     protected function buildFactory(
         CodeStructure $codeStructure,
         CodePathContract $codePath

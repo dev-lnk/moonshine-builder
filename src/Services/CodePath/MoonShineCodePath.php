@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Services\CodePath;
 
+use Carbon\Carbon;
 use DevLnk\LaravelCodeBuilder\Exceptions\NotFoundCodePathException;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\AbstractPathItem;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
@@ -15,6 +16,11 @@ use DevLnk\MoonShineBuilder\Services\CodePath\MoonShine\ResourcePath;
 
 class MoonShineCodePath implements CodePathContract
 {
+    public function __construct(
+        private readonly int $iteration
+    ) {
+    }
+
     /**
      * @var array<string, CodePathItemContract>
      */
@@ -22,6 +28,9 @@ class MoonShineCodePath implements CodePathContract
 
     public function initPaths(CodeStructure $codeStructure, string $generationPath, bool $isGenerationDir): void
     {
+        $time = Carbon::now();
+        $time->addSeconds($this->iteration);
+
         $this
             ->setPath(
                 new ModelPath(
@@ -39,7 +48,7 @@ class MoonShineCodePath implements CodePathContract
             )
             ->setPath(
                 new MigrationPath(
-                    date('Y_m_d_His') . '_create_' . $codeStructure->table() . '.php',
+                    $time->format('Y_m_d_His') . '_create_' . $codeStructure->table() . '.php',
                     base_path('database/migrations'),
                     ''
                 )
