@@ -1,7 +1,9 @@
 .idea
 vendor
 composer.lock
+app
 .phpunit.cache
 phpunit.xml.dist
 phpstan.neon
-app
+.php-cs-fixer.cache
+
