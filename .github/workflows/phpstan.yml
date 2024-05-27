@@ -16,13 +16,6 @@ jobs:
   package-phpstan:
     if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [8.2, 8.3]
-        laravel: [10, 11]
-
     steps:
       - uses: actions/checkout@v4
       - uses: php-actions/composer@v6
