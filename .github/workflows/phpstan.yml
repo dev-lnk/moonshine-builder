@@ -24,6 +24,11 @@ jobs:
         laravel: [10, 11]
 
     steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
       - uses: actions/checkout@v4
       - name: Check php
         run: php -v
