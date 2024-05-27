@@ -1,9 +1,8 @@
 {
   "resources": [
     {
-      "CategoryResource": {
-        "timestamps": true,
-        "column": "title",
+      "Category": {
+        "column": "name",
         "fields": {
           "id": {
             "type": "id",
@@ -11,15 +10,18 @@
               "sortable"
             ]
           },
-          "title": {
+          "name": {
             "type": "string",
-            "name": "Название"
+            "name": "Name",
+            "migration": {
+              "options": [
+                100
+              ]
+            }
           }
         }
       },
-      "ProductResource": {
-        "timestamps": true,
-        "soft_deletes": true,
+      "Product": {
         "fields": {
           "id": {
             "type": "id",
@@ -29,50 +31,56 @@
           },
           "title": {
             "type": "string",
-            "name": "Название"
+            "name": "Name"
           },
           "content": {
             "type": "text",
-            "name": "Контент"
+            "name": "Content"
           },
           "sort_number": {
             "type": "integer",
-            "name": "Порядковый номер",
+            "name": "Sorting",
+            "default": 0,
             "methods": [
-              "sortable",
-              "default(0)"
+              "sortable"
             ],
             "migration": {
               "methods": [
-                "default(0)"
+                "index()"
               ]
             }
           },
           "category_id": {
             "type": "BelongsTo",
-            "relation": "category",
-            "name": "Категория",
-            "foreign_id": "category_id"
+            "name": "Category",
+            "relation": {
+              "table" : "categories"
+            }
           },
           "comments": {
             "type": "HasMany",
-            "relation": "comments",
-            "name": "Комментарии",
+            "name": "Comments",
+            "relation": {
+              "table" : "comments",
+              "foreign_key": "product_id"
+            },
             "methods": [
               "creatable"
             ]
           },
           "moonshine_user_id": {
             "type": "BelongsTo",
-            "relation": "moonshineUser",
+            "name": "User",
+            "relation": {
+              "table" : "moonshine_users"
+            },
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
-            "name": "Пользователь"
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           },
           "is_active": {
-            "type": "unsignedTinyInteger",
-            "name": "Активен",
-            "field": "Switcher",
+            "type": "boolean",
+            "name": "Active",
+            "field": "Checkbox",
             "migration": {
               "methods": [
                 "default(0)",
@@ -82,8 +90,7 @@
           }
         }
       },
-      "CommentResource": {
-        "timestamps": true,
+      "Comment": {
         "fields": {
           "id": {
             "type": "id",
@@ -93,19 +100,23 @@
           },
           "comment": {
             "type": "string",
-            "name": "Комментарий"
+            "name": "Comment"
           },
           "product_id": {
             "type": "BelongsTo",
-            "relation": "product",
-            "name": "Продукт"
+            "name": "Product",
+            "relation": {
+              "table" : "products"
+            }
           },
           "moonshine_user_id": {
             "type": "BelongsTo",
-            "relation": "moonshineUser",
+            "name": "User",
+            "relation": {
+              "table" : "moonshine_users"
+            },
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
-            "name": "Пользователь"
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           }
         }
       }

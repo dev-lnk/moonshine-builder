@@ -24,7 +24,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
 {
     use CommandVariables;
 
-    protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--migration} {--builders}';
+    protected $signature = 'moonshine:build {target?} {--type=}';
 
     protected int $iterations = 0;
 
@@ -56,15 +56,19 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             $this->make($codeStructure, $generationPath);
         }
 
-        $this->components->warn("Don't forget to register new resources in the provider method:");
-        $code = implode(PHP_EOL, $this->reminderResourceInfo);
-        note($code);
+        if(in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
+            $this->components->warn(
+                "Don't forget to register new resources in the provider method:"
+            );
+            $code = implode(PHP_EOL, $this->reminderResourceInfo);
+            note($code);
 
-        note("...or in the menu method:");
+            note("...or in the menu method:");
 
-        $code = implode(PHP_EOL, $this->reminderMenuInfo);
-        note($code);
-        $this->components->info('All done');
+            $code = implode(PHP_EOL, $this->reminderMenuInfo);
+            note($code);
+            $this->components->info('All done');
+        }
 
         return self::SUCCESS;
     }
@@ -77,6 +81,10 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
     {
         parent::buildCode($codeStructure, $codePath);
 
+        if(! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
+            return;
+        }
+
         $resourcePath = $codePath->path(MoonShineBuildType::RESOURCE->value);
 
         $this->reminderResourceInfo[] = "new {$resourcePath->rawName()}(),";
@@ -85,29 +93,6 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
                 '{resource}' => $resourcePath->rawName()
             ])
         ;
-    }
-
-    protected function prepareBuilders(): void
-    {
-        $builders = $this->builders();
-
-        foreach ($builders as $builder) {
-            if($this->option($builder->value())) {
-                $this->builders[] = $builder;
-            }
-        }
-
-        if($this->option('builders')) {
-            foreach (config('code_builder.builders', []) as $builder) {
-                if(! in_array($builder, $this->builders)) {
-                    $this->builders[] = $builder;
-                }
-            }
-        }
-
-        if(empty($this->builders)) {
-            $this->builders = $this->builders();
-        }
     }
 
     /**
@@ -132,10 +117,13 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             );
         }
 
-        if (is_null($target) && $type === 'table') {
+        if ($type === 'table') {
             $target = select(
                 'Table',
-                collect(Schema::getTables())->map(fn ($v) => $v['name']),
+                collect(Schema::getTables())
+                    ->filter(fn ($v) => str_contains((string) $v['name'], (string) $target ?? ''))
+                    ->mapWithKeys(fn ($v) => [$v['name'] => $v['name']]),
+                default: 'jobs'
             );
         }
 

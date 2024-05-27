@@ -32,6 +32,11 @@ trait CommandVariables
         $this->stubDir = __DIR__ . '/../../stubs/';
     }
 
+    protected function prepareBuilders(): void
+    {
+        $this->builders = $this->builders();
+    }
+
     /**
      * @return array<int, BuildTypeContract>
      */
