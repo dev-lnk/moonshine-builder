@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check php
+        run: php -v
       - uses: php-actions/composer@v6
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
