@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use MoonShine\MoonShine;
 use DevLnk\MoonShineBuilder\Commands\MoonShineBuildCommand;
+use Illuminate\Support\ServiceProvider;
 
 class MoonShineBuilderProvider extends ServiceProvider
 {
@@ -21,12 +20,12 @@ class MoonShineBuilderProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../../config/moonshine_builder.php' =>
+            __DIR__ . '/../../config/moonshine_builder.php' =>
                 config_path('moonshine_builder.php'),
         ], 'moonshine-builder');
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/moonshine_builder.php',
+            __DIR__ . '/../../config/moonshine_builder.php',
             'moonshine_builder'
         );
     }

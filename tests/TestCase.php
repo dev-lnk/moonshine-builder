@@ -25,7 +25,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function setUpTraits(): array
     {
-        (new Filesystem)->cleanDirectory(base_path('database/migrations'));
+        (new Filesystem())->cleanDirectory(base_path('database/migrations'));
 
         return parent::setUpTraits();
     }

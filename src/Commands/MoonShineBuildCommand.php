@@ -16,9 +16,10 @@ use DevLnk\MoonShineBuilder\Traits\CommandVariables;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use SplFileInfo;
 
 use function Laravel\Prompts\{note, select};
+
+use SplFileInfo;
 
 class MoonShineBuildCommand extends LaravelCodeBuildCommand
 {
@@ -80,7 +81,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         $this->reminderResourceInfo[] = "new {$resourcePath->rawName()}(),";
         $this->reminderMenuInfo[] = StubBuilder::make($this->stubDir . 'MenuItem')
             ->getFromStub([
-                '{resource}' => $resourcePath->rawName()
+                '{resource}' => $resourcePath->rawName(),
             ])
         ;
     }
@@ -118,7 +119,8 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         if($type === 'table') {
-            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MIGRATION);
+            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MIGRATION);
+
             return [
                 CodeStructureFromMysql::make(
                     table: (string) $target,
@@ -134,15 +136,15 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         $codeStructures = (new MoonShineStructureFactory())->getStructures($target);
 
         if(! $codeStructures->withModel()) {
-            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MODEL);
+            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MODEL);
         }
 
         if(! $codeStructures->withMigration()) {
-            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MIGRATION);
+            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MIGRATION);
         }
 
         if(! $codeStructures->withResource()) {
-            $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::RESOURCE);
+            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::RESOURCE);
         }
 
         return $codeStructures->codeStructures();
@@ -152,7 +154,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
     {
         if (! $this->option('type') && ! is_null($target)) {
             $availableTypes = [
-                'json'
+                'json',
             ];
 
             $fileSeparate = explode('.', $target);
@@ -170,6 +172,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
     {
         $codePath = new MoonShineCodePath($this->iterations);
         $this->iterations++;
+
         return $codePath;
     }
 

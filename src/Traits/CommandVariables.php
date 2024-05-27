@@ -8,7 +8,6 @@ use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Services\Builders\MoonShineBuildFactory;
-use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 
 trait CommandVariables
 {

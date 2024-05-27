@@ -30,7 +30,9 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
         $fields = $this->columnsToResource();
 
         StubBuilder::make($this->stubFile)
-            ->setKey('{column}', str('')
+            ->setKey(
+                '{column}',
+                str('')
                 ->newLine()
                 ->newLine()
                 ->append("\t")
@@ -44,7 +46,7 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 '{field_uses}' => $fieldUses,
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),
-                '{fields}' => $fields
+                '{fields}' => $fields,
             ]);
     }
 
@@ -116,9 +118,10 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                     ->append('::make')
                     ->append("('{$column->name()}', '$relationMethod'")
                     ->append(", resource: new ")
-                    ->when($column->dataValue('resource_class'),
-                        fn($str) => $str->append($column->dataValue('resource_class')),
-                        fn($str) => $str->append(str($resourceName)->append('Resource')->value()),
+                    ->when(
+                        $column->dataValue('resource_class'),
+                        fn ($str) => $str->append($column->dataValue('resource_class')),
+                        fn ($str) => $str->append(str($resourceName)->append('Resource')->value()),
                     )
                     ->append('())')
                     ->append($this->resourceMethods($column))
@@ -132,9 +135,10 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 ->prepend("\t\t\t\t")
                 ->prepend("\n")
                 ->append('::make')
-                ->when(! $column->isId(),
-                    fn($str) => $str->append("('{$column->name()}', '{$column->column()}')"),
-                    fn($str) => $str->append("('{$column->column()}')"),
+                ->when(
+                    ! $column->isId(),
+                    fn ($str) => $str->append("('{$column->name()}', '{$column->column()}')"),
+                    fn ($str) => $str->append("('{$column->column()}')"),
                 )
                 ->append($this->resourceMethods($column))
                 ->append(',')

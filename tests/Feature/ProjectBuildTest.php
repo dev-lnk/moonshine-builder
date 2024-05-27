@@ -53,6 +53,7 @@ class ProjectBuildTest extends TestCase
             foreach ($migrations as $migration) {
                 if(str_contains($migration, $checkMigration)) {
                     $isExists = true;
+
                     break;
                 }
             }

@@ -11,7 +11,6 @@ use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContract
 {
@@ -23,12 +22,14 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
         $migrationPath = $this->codePath->path(MoonShineBuildType::MIGRATION->value);
 
         StubBuilder::make($this->stubFile)
-            ->setKey('{timestamps}',
-                PHP_EOL."\t\t\t\$table->timestamps();",
+            ->setKey(
+                '{timestamps}',
+                PHP_EOL . "\t\t\t\$table->timestamps();",
                 $this->codeStructure->isTimestamps()
             )
-            ->setKey('{soft_deletes}',
-                PHP_EOL."\t\t\t\$table->softDeletes();",
+            ->setKey(
+                '{soft_deletes}',
+                PHP_EOL . "\t\t\t\$table->softDeletes();",
                 $this->codeStructure->isSoftDeletes()
             )
             ->makeFromStub($migrationPath->file(), [
@@ -79,16 +80,18 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
         }
 
         return str($column->type()->value)
-            ->when($column->column() === 'id' && $column->type()->value === 'id',
-                fn($str) => $str->append("("),
-                fn($str) => $str->append("('{$column->column()}'")
+            ->when(
+                $column->column() === 'id' && $column->type()->value === 'id',
+                fn ($str) => $str->append("("),
+                fn ($str) => $str->append("('{$column->column()}'")
             )
-            ->when(! is_null($column->dataValue('migration_options')),
-                fn($str) => $str->append(', ' . implode(', ', $column->dataValue('migration_options')) . ')'),
-                fn($str) => $str->append(")")
+            ->when(
+                ! is_null($column->dataValue('migration_options')),
+                fn ($str) => $str->append(', ' . implode(', ', $column->dataValue('migration_options')) . ')'),
+                fn ($str) => $str->append(")")
             )
             ->value()
-            ;
+        ;
     }
 
     public function migrationNameFromRelation(ColumnStructure $column): string
@@ -104,8 +107,9 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
         return str('foreignIdFor')
             ->append('(')
             ->append($modelClass)
-            ->when(empty($column->dataValue('model_class')),
-                fn($str) => $str->append($modelName)
+            ->when(
+                empty($column->dataValue('model_class')),
+                fn ($str) => $str->append($modelName)
             )
             ->append("::class")
 //            ->when($this->foreignId,
@@ -122,7 +126,7 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
             ->append("\t\t\t\t")
             ->append('->cascadeOnUpdate()')
             ->value()
-            ;
+        ;
     }
 
     protected function migrationMethods(ColumnStructure $column): string

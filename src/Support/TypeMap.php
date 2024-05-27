@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DevLnk\MoonShineBuilder\Support;
 
 use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use Illuminate\Support\Facades\File;
 use MoonShine\Fields\Date;
 use MoonShine\Fields\Enum;
@@ -17,7 +18,6 @@ use MoonShine\Fields\Relationships\HasOne;
 use MoonShine\Fields\Switcher;
 use MoonShine\Fields\Text;
 use MoonShine\MoonShine;
-use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use Symfony\Component\Finder\SplFileInfo;
 
 final class TypeMap
@@ -32,7 +32,7 @@ final class TypeMap
         $this->fieldClasses = collect(File::files(MoonShine::path('src/Fields')))
             ->mapWithKeys(
                 fn (SplFileInfo $file): array => [
-                    $file->getFilenameWithoutExtension() => 'MoonShine\\Fields\\'.$file->getFilenameWithoutExtension(),
+                    $file->getFilenameWithoutExtension() => 'MoonShine\\Fields\\' . $file->getFilenameWithoutExtension(),
                 ]
             )
             ->except(['Field', 'Fields', 'FormElement', 'FormElements'])

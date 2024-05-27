@@ -6,7 +6,6 @@ namespace DevLnk\MoonShineBuilder\Structures\Factories;
 
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
-use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class MoonShineStructureFactory
 {

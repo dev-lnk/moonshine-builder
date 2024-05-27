@@ -8,8 +8,8 @@ use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\RelationStructure;
-use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
 use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class StructureFromJson implements MakeStructureContract
@@ -27,7 +27,7 @@ final class StructureFromJson implements MakeStructureContract
     public function makeStructures(): CodeStructureList
     {
         if(! file_exists($this->filePath)) {
-            throw new ProjectBuilderException('File not available: ' .  $this->filePath);
+            throw new ProjectBuilderException('File not available: ' . $this->filePath);
         }
 
         $file = json_decode(file_get_contents($this->filePath), true);
@@ -38,15 +38,15 @@ final class StructureFromJson implements MakeStructureContract
 
         $codeStructures = new CodeStructureList();
 
-        if( isset($file['withModel'])) {
+        if(isset($file['withModel'])) {
             $codeStructures->setWithModel($file['withModel']);
         }
 
-        if( isset($file['withMigration'])) {
+        if(isset($file['withMigration'])) {
             $codeStructures->setWithMigration($file['withMigration']);
         }
 
-        if( isset($file['withResource'])) {
+        if(isset($file['withResource'])) {
             $codeStructures->setWithResource($file['withResource']);
         }
 
@@ -72,7 +72,7 @@ final class StructureFromJson implements MakeStructureContract
                              && (
                                  $columnStructure->type() === SqlTypeMap::BELONGS_TO
                                 || $columnStructure->type() === SqlTypeMap::BELONGS_TO_MANY
-                            )
+                             )
                         ) {
                             $field['relation']['foreign_key'] = 'id';
                         }
