@@ -24,8 +24,16 @@ jobs:
         laravel: [10, 11]
 
     steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
       - uses: actions/checkout@v4
-      - uses: php-actions/composer@v6
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --dev
+
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
         with:
