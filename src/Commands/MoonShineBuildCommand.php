@@ -7,16 +7,18 @@ use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\Factories\CodeStructureFromMysql;
+use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 use DevLnk\MoonShineBuilder\Structures\Factories\MoonShineStructureFactory;
 use DevLnk\MoonShineBuilder\Traits\CommandVariables;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use SplFileInfo;
 
-use function Laravel\Prompts\{select};
+use function Laravel\Prompts\{note, select};
 
 class MoonShineBuildCommand extends LaravelCodeBuildCommand
 {
@@ -25,6 +27,16 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
     protected $signature = 'moonshine:build {target?} {--type=} {--model} {--resource} {--migration} {--builders}';
 
     protected int $iterations = 0;
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $reminderResourceInfo = [];
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $reminderMenuInfo = [];
 
     /**
      * @throws CodeGenerateCommandException
@@ -44,7 +56,35 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             $this->make($codeStructure, $generationPath);
         }
 
+        $this->components->warn("Don't forget to register new resources in the provider method:");
+        $code = implode(PHP_EOL, $this->reminderResourceInfo);
+        note($code);
+
+        note("...or in the menu method:");
+
+        $code = implode(PHP_EOL, $this->reminderMenuInfo);
+        note($code);
+        $this->components->info('All done');
+
         return self::SUCCESS;
+    }
+
+    /**
+     * @throws CodeGenerateCommandException
+     * @throws FileNotFoundException
+     */
+    protected function buildCode(CodeStructure $codeStructure, CodePathContract $codePath): void
+    {
+        parent::buildCode($codeStructure, $codePath);
+
+        $resourcePath = $codePath->path(MoonShineBuildType::RESOURCE->value);
+
+        $this->reminderResourceInfo[] = "new {$resourcePath->rawName()}(),";
+        $this->reminderMenuInfo[] = StubBuilder::make($this->stubDir . 'MenuItem')
+            ->getFromStub([
+                '{resource}' => $resourcePath->rawName()
+            ])
+        ;
     }
 
     protected function prepareBuilders(): void
