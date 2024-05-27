@@ -23,11 +23,17 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
         $migrationPath = $this->codePath->path(MoonShineBuildType::MIGRATION->value);
 
         StubBuilder::make($this->stubFile)
+            ->setKey('{timestamps}',
+                PHP_EOL."\t\t\t\$table->timestamps();",
+                $this->codeStructure->isTimestamps()
+            )
+            ->setKey('{soft_deletes}',
+                PHP_EOL."\t\t\t\$table->softDeletes();",
+                $this->codeStructure->isSoftDeletes()
+            )
             ->makeFromStub($migrationPath->file(), [
                 '{table}' => $this->codeStructure->table(),
                 '{columns}' => $this->columnsToMigration(),
-                '{timestamps}' => '',
-                '{soft_deletes}' => ''
             ]);
     }
 
