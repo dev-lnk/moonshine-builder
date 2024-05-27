@@ -52,32 +52,34 @@ final class StructureFromJson implements MakeStructureContract
 
         foreach ($file['resources'] as $resource) {
             foreach ($resource as $name => $values) {
-                $codeStructure = new CodeStructure($name, $name);
+                $codeStructure = new CodeStructure(str($name)->snake()->lower()->plural()->value(), $name);
 
                 $codeStructure->setDataValue('column', $values['column'] ?? null);
 
                 foreach ($values['fields'] as $fieldColumn => $field) {
 
-                    $type = SqlTypeMap::from($field['type']);
-
                     $columnStructure = new ColumnStructure(
                         column: $fieldColumn,
                         name: $field['name'] ?? '',
-                        type: $type,
+                        type: SqlTypeMap::from($field['type']),
                         default: isset($field['default']) ? (string) $field['default'] : null,
                         nullable: true
                     );
 
                     if(! empty($field['relation'])) {
-                        $relationId = (
-                            $columnStructure->type() === SqlTypeMap::BELONGS_TO
-                            || $columnStructure->type() === SqlTypeMap::BELONGS_TO_MANY
-                        ) ? 'id'
-                        : str($name)->singular()->lower()->append('_id')->value();
+                        if(
+                            ! isset($field['relation']['foreign_key'])
+                             && (
+                                 $columnStructure->type() === SqlTypeMap::BELONGS_TO
+                                || $columnStructure->type() === SqlTypeMap::BELONGS_TO_MANY
+                            )
+                        ) {
+                            $field['relation']['foreign_key'] = 'id';
+                        }
 
                         $columnStructure->setRelation(new RelationStructure(
-                            $relationId,
-                            $field['relation']
+                            $field['relation']['foreign_key'],
+                            $field['relation']['table'],
                         ));
                     }
 
@@ -115,6 +117,10 @@ final class StructureFromJson implements MakeStructureContract
 
                     if(! empty($field['model_class'])) {
                         $columnStructure->setDataValue('model_class', $field['model_class']);
+                    }
+
+                    if(! empty($field['field'])) {
+                        $columnStructure->setDataValue('field_class', $field['field']);
                     }
 
                     $codeStructure->addColumn($columnStructure);
@@ -156,20 +162,5 @@ final class StructureFromJson implements MakeStructureContract
         }
 
         return $codeStructures;
-    }
-
-    private function getFieldBuilder(string $fieldColumn, array $field): FieldStructure
-    {
-        if( empty($field['relation'])) {
-            return new FieldStructure($fieldColumn, $field['name'] ?? '');
-        }
-
-        $fieldStructure = new RelationFieldStructure($field['relation'], $fieldColumn, $field['name'] ?? '');
-
-        return $fieldStructure
-            ->setForeignId($field['foreign_id'] ?? '')
-            ->setModelClass($field['model_class'] ?? '')
-            ->setResourceClass($field['resource_class'] ?? '')
-        ;
     }
 }

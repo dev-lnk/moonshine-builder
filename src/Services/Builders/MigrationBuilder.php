@@ -91,8 +91,7 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
             return '';
         }
 
-        $modelPath = $this->codePath->path(MoonShineBuildType::MODEL->value);
-        $modelName = $modelPath->rawName();
+        $modelName = str($column->relation()->table()->singular())->ucfirst()->value();
 
         $modelClass = empty($column->dataValue('model_class')) ? '\\App\\Models\\' : $column->dataValue('model_class');
 
