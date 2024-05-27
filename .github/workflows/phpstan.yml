@@ -25,7 +25,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: php-actions/composer@v6
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
         with:
