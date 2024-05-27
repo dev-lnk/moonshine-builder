@@ -10,8 +10,6 @@ use DevLnk\MoonShineBuilder\Traits\Makeable;
 
 final class MoonShineStructureFactory
 {
-    use Makeable;
-
     /**
      * @throws ProjectBuilderException
      */

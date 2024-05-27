@@ -1,0 +1,61 @@
+name: tests_pgsql
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  package-tests-pgsql:
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: localhost
+      DB_PASSWORD: postgres
+      DB_USERNAME: postgres
+      DB_DATABASE: postgres
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.2, 8.3]
+        laravel: [10, 11]
+
+    steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pgsql
+          tools: composer:v2
+          coverage: none
+      - uses: actions/checkout@v4
+
+      - name: Copy phpunit.xml.dist
+        run: php -r "file_exists('phpunit.xml.dist') || copy('phpunit-pg.xml.dist', 'phpunit.xml.dist');"
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Execute tests via PEST(PHPUnit)
+        env:
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}
+        run: ./vendor/bin/phpunit

@@ -56,19 +56,9 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             $this->make($codeStructure, $generationPath);
         }
 
-        if(in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
-            $this->components->warn(
-                "Don't forget to register new resources in the provider method:"
-            );
-            $code = implode(PHP_EOL, $this->reminderResourceInfo);
-            note($code);
+        $this->resourceInfo();
 
-            note("...or in the menu method:");
-
-            $code = implode(PHP_EOL, $this->reminderMenuInfo);
-            note($code);
-            $this->components->info('All done');
-        }
+        $this->components->info('All done');
 
         return self::SUCCESS;
     }
@@ -141,8 +131,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             ];
         }
 
-        $codeStructures = MoonShineStructureFactory::make()
-            ->getStructures($target);
+        $codeStructures = (new MoonShineStructureFactory())->getStructures($target);
 
         if(! $codeStructures->withModel()) {
             $this->builders = array_filter($this->builders, fn($item) => $item !== MoonShineBuildType::MODEL);
@@ -182,5 +171,23 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         $codePath = new MoonShineCodePath($this->iterations);
         $this->iterations++;
         return $codePath;
+    }
+
+    protected function resourceInfo(): void
+    {
+        if(! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
+            return;
+        }
+
+        $this->components->warn(
+            "Don't forget to register new resources in the provider method:"
+        );
+        $code = implode(PHP_EOL, $this->reminderResourceInfo);
+        note($code);
+
+        note("...or in the menu method:");
+
+        $code = implode(PHP_EOL, $this->reminderMenuInfo);
+        note($code);
     }
 }

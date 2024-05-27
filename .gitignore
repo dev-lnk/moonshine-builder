@@ -3,4 +3,5 @@ vendor
 composer.lock
 .phpunit.cache
 phpunit.xml.dist
+phpstan.neon
 app

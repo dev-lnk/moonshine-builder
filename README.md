@@ -43,26 +43,18 @@ You will be given options as to which scheme to use when generating the code, fo
 ```
 ```shell
  ┌ File ────────────────────────────────────────────────────────┐
- │   ○ category.json                                            │
- │ › ● project.json                                             │
+ │ › ● category.json                                            │
+ │   ○ project.json                                             │
  └──────────────────────────────────────────────────────────────┘
 ```
 ```shell
 app/Models/Category.php was created successfully!
 app/MoonShine/Resources/CategoryResource.php was created successfully!
-var/www/moonshine-builder/database/migrations/2024_05_27_131533_create_categories.php was created successfully!
-app/Models/Product.php was created successfully!
-app/MoonShine/Resources/ProductResource.php was created successfully!
-var/www/moonshine-builder/database/migrations/2024_05_27_131534_create_products.php was created successfully!
-app/Models/Comment.php was created successfully!
-app/MoonShine/Resources/CommentResource.php was created successfully!
-var/www/moonshine-builder/database/migrations/2024_05_27_131535_create_comments.php was created successfully!
+var/www/moonshine-builder/database/migrations/2024_05_27_140239_create_categories.php was created successfully!
 
-   WARN  Don't forget to register new resources in the provider method:
+WARN  Don't forget to register new resources in the provider method:
 
  new CategoryResource(),
- new ProductResource(),
- new CommentResource(),
 
  ...or in the menu method:
 
@@ -70,16 +62,9 @@ var/www/moonshine-builder/database/migrations/2024_05_27_131535_create_comments.
      static fn() => 'CategoryResource',
      new CategoryResourceResource()
  ),
- MenuItem::make(
-     static fn() => 'ProductResource',
-     new ProductResourceResource()
- ),
- MenuItem::make(
-     static fn() => 'CommentResource',
-     new CommentResourceResource()
- ),
 
-   INFO  All done.
+INFO  All done.
+
 ```
 ### Creating a Schema
 In the <code>builds_dir</code> directory, create a schema file, for example, <code>category.json</code>:
@@ -113,7 +98,7 @@ A more detailed example with multiple resources and relationships can be found [
 ### Creation from sql table
 You can create a resource using a table schema.You must specify the table name and select <code>table</code> type. Example:
 ```shell
-php artisan moonshine:build users --type=table --resource
+php artisan moonshine:build users --type=table
 ```
 Result:
 ```php

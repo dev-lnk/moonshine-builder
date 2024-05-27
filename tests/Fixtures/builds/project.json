@@ -3,7 +3,7 @@
   "withMigration": true,
   "resources": [
     {
-      "CategoryResource": {
+      "Category": {
         "column": "name",
         "fields": {
           "id": {
@@ -18,7 +18,9 @@
           }
         }
       },
-      "ProductResource": {
+      "Product": {
+        "timestamps": true,
+        "soft_deletes": true,
         "fields": {
           "id": {
             "type": "id",
@@ -49,24 +51,30 @@
           },
           "category_id": {
             "type": "BelongsTo",
-            "relation": "category",
-            "name": "Категория",
-            "foreign_id": "category_id"
+            "name": "Category",
+            "relation": {
+              "table" : "categories"
+            }
           },
           "comments": {
             "type": "HasMany",
-            "relation": "comments",
-            "name": "Комментарии",
+            "name": "Comments",
+            "relation": {
+              "table" : "comments",
+              "foreign_key": "product_id"
+            },
             "methods": [
               "creatable"
             ]
           },
           "moonshine_user_id": {
             "type": "BelongsTo",
-            "relation": "moonshineUser",
+            "name": "User",
+            "relation": {
+              "table" : "moonshine_users"
+            },
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
-            "name": "Пользователь"
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           },
           "is_active": {
             "type": "boolean",
@@ -80,7 +88,7 @@
           }
         }
       },
-      "CommentResource": {
+      "Comment": {
         "fields": {
           "id": {
             "type": "id",
@@ -94,15 +102,19 @@
           },
           "product_id": {
             "type": "BelongsTo",
-            "relation": "product",
-            "name": "Продукт"
+            "name": "Product",
+            "relation": {
+              "table" : "products"
+            }
           },
           "moonshine_user_id": {
             "type": "BelongsTo",
-            "relation": "moonshineUser",
+            "name": "User",
+            "relation": {
+              "table" : "moonshine_users"
+            },
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource",
-            "name": "Пользователь"
+            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           }
         }
       }

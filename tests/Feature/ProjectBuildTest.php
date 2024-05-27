@@ -18,6 +18,8 @@ class ProjectBuildTest extends TestCase
     {
         parent::setUp();
 
+        $this->filesystem = new Filesystem();
+
         $this->resourcePath = config('moonshine.dir') . '/Resources/';
 
         $this->modelPath = app_path('Models/');
@@ -38,7 +40,7 @@ class ProjectBuildTest extends TestCase
         $this->assertFileExists($this->modelPath . 'Product.php');
         $this->assertFileExists($this->modelPath . 'Comment.php');
 
-        $migrations = (new Filesystem())->allFiles($this->migrationPath);
+        $migrations = $this->filesystem->allFiles($this->migrationPath);
 
         $checkMigrations = [
             'create_categories',
@@ -57,5 +59,23 @@ class ProjectBuildTest extends TestCase
 
             $this->assertTrue($isExists, "Migration not found $checkMigration");
         }
+    }
+
+    public function tearDown(): void
+    {
+        $this->filesystem->delete($this->resourcePath . 'CategoryResource.php');
+        $this->filesystem->delete($this->resourcePath . 'ProductResource.php');
+        $this->filesystem->delete($this->resourcePath . 'CommentResource.php');
+
+        $this->filesystem->delete($this->modelPath . 'Category.php');
+        $this->filesystem->delete($this->modelPath . 'Product.php');
+        $this->filesystem->delete($this->modelPath . 'Comment.php');
+
+        $migrations = $this->filesystem->allFiles($this->migrationPath);
+        foreach ($migrations as $migrationFile) {
+            $this->filesystem->delete($migrationFile);
+        }
+
+        parent::tearDown();
     }
 }
