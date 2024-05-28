@@ -22,7 +22,7 @@ This package allows you to describe the entire project structure using a JSON or
 
 ### Installation:
 ```shell
-composer require dev-lnk/moonshine-builder
+composer require dev-lnk/moonshine-builder --dev
 ```
 ### Configuration:
 Publish the package configuration file:
