@@ -11,6 +11,17 @@ This package allows you to describe the entire project structure using a JSON or
     <li>Resources</li>
 </ul>
 
+<p align="center">
+<a href="https://packagist.org/packages/dev-lnk/moonshine-builder"><img src="https://img.shields.io/packagist/dt/dev-lnk/moonshine-builder" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/dev-lnk/moonshine-builder"><img src="https://img.shields.io/packagist/v/dev-lnk/moonshine-builder" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/dev-lnk/moonshine-builder"><img src="https://img.shields.io/packagist/l/dev-lnk/moonshine-builder" alt="License"></a>
+</p>
+<p align="center">
+    <a href="https://laravel.com"><img alt="Laravel 10+" src="https://img.shields.io/badge/Laravel-10+-FF2D20?style=for-the-badge&logo=laravel"></a>
+    <a href="https://laravel.com"><img alt="PHP 8+" src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php"></a>
+    <a href="https://github.com/moonshine-software/moonshine"><img alt="Moonshine Admin Panel" src="https://img.shields.io/badge/Moonshine-2.10+-1B253B?style=for-the-badge"></a>
+</p>
+
 ### Installation:
 ```shell
 composer require dev-lnk/moonshine-builder
