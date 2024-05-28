@@ -1,16 +1,6 @@
 ![logo](https://github.com/moonshine-software/moonshine/raw/2.x/art/lego.png)
 
 ## Creating projects using schemas for the [MoonShine](https://github.com/moonshine-software/moonshine).
-
-#### Hello, Laravel and MoonShine User!
-
-This package allows you to describe the entire project structure using a JSON or SQL table schema and generate the necessary files, such as:
-<ul>
-    <li>Models</li>
-    <li>Migrations</li>
-    <li>Resources</li>
-</ul>
-
 <p align="center">
 <a href="https://packagist.org/packages/dev-lnk/moonshine-builder"><img src="https://img.shields.io/packagist/dt/dev-lnk/moonshine-builder" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/dev-lnk/moonshine-builder"><img src="https://img.shields.io/packagist/v/dev-lnk/moonshine-builder" alt="Latest Stable Version"></a>
@@ -21,6 +11,14 @@ This package allows you to describe the entire project structure using a JSON or
     <a href="https://laravel.com"><img alt="PHP 8+" src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php"></a>
     <a href="https://github.com/moonshine-software/moonshine"><img alt="Moonshine Admin Panel" src="https://img.shields.io/badge/Moonshine-2.10+-1B253B?style=for-the-badge"></a>
 </p>
+#### Hello, Laravel and MoonShine User!
+
+This package allows you to describe the entire project structure using a JSON or SQL table schema and generate the necessary files, such as:
+<ul>
+    <li>Models</li>
+    <li>Migrations</li>
+    <li>Resources</li>
+</ul>
 
 ### Installation:
 ```shell
