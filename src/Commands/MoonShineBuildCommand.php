@@ -3,6 +3,7 @@
 namespace DevLnk\MoonShineBuilder\Commands;
 
 use DevLnk\LaravelCodeBuilder\Commands\LaravelCodeBuildCommand;
+use DevLnk\LaravelCodeBuilder\Enums\BuildTypeContract;
 use DevLnk\LaravelCodeBuilder\Exceptions\CodeGenerateCommandException;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
@@ -13,11 +14,10 @@ use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 use DevLnk\MoonShineBuilder\Structures\Factories\MoonShineStructureFactory;
 use DevLnk\MoonShineBuilder\Traits\CommandVariables;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\{note, select};
+use function Laravel\Prompts\{confirm, note, select};
 
 use SplFileInfo;
 
@@ -64,13 +64,52 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         return self::SUCCESS;
     }
 
-    /**
-     * @throws CodeGenerateCommandException
-     * @throws FileNotFoundException
-     */
     protected function buildCode(CodeStructure $codeStructure, CodePathContract $codePath): void
     {
-        parent::buildCode($codeStructure, $codePath);
+        $buildFactory = $this->buildFactory(
+            $codeStructure,
+            $codePath,
+        );
+
+        $validBuildMap = [
+            'withModel' => MoonShineBuildType::MODEL,
+            'withMigration' => MoonShineBuildType::MIGRATION,
+            'withResource' => MoonShineBuildType::RESOURCE,
+        ];
+
+        $validBuilders = [];
+        foreach ($validBuildMap as $dataKey => $builder) {
+            if(
+                ! is_null($codeStructure->dataValue($dataKey))
+                && $codeStructure->dataValue($dataKey) === false
+            ) {
+                continue;
+            }
+            $validBuilders[] = $builder;
+        }
+
+        foreach ($this->builders as $builder) {
+            if(! $builder instanceof BuildTypeContract) {
+                throw new CodeGenerateCommandException('builder is not DevLnk\LaravelCodeBuilder\Enums\BuildTypeContract');
+            }
+
+            if(! in_array($builder, $validBuilders)) {
+                continue;
+            }
+
+            $confirmed = true;
+            if(isset($this->replaceCautions[$builder->value()])) {
+                $confirmed = confirm($this->replaceCautions[$builder->value()]);
+            }
+
+            if(! $confirmed) {
+                continue;
+            }
+
+            $buildFactory->call($builder->value(), $this->stubDir . $builder->stub());
+            $filePath = $codePath->path($builder->value())->file();
+            $this->info($this->projectFileName($filePath) . ' was created successfully!');
+        }
 
         if(! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
             return;
@@ -134,18 +173,6 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         $codeStructures = (new MoonShineStructureFactory())->getStructures($target);
-
-        if(! $codeStructures->withModel()) {
-            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MODEL);
-        }
-
-        if(! $codeStructures->withMigration()) {
-            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MIGRATION);
-        }
-
-        if(! $codeStructures->withResource()) {
-            $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::RESOURCE);
-        }
 
         return $codeStructures->codeStructures();
     }

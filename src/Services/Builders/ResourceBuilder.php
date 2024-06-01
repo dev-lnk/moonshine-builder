@@ -107,8 +107,7 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 $resourceName = str($column->relation()->table()->camel())->singular()->ucfirst()->value();
 
                 $relationMethod = $column->relation()->table();
-                $relationMethod = ($column->type() === SqlTypeMap::BELONGS_TO
-                || $column->type() === SqlTypeMap::BELONGS_TO_MANY)
+                $relationMethod = $column->type() === SqlTypeMap::BELONGS_TO
                     ? $relationMethod->singular()
                     : $relationMethod->plural();
 

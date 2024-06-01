@@ -46,6 +46,7 @@ class MigrationBuilder extends AbstractBuilder implements EditActionBuilderContr
             if(
                 $column->type() === SqlTypeMap::HAS_ONE
                 || $column->type() === SqlTypeMap::HAS_MANY
+                || $column->type() === SqlTypeMap::BELONGS_TO_MANY
             ) {
                 continue;
             }
