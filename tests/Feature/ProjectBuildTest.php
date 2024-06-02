@@ -209,7 +209,7 @@ class ProjectBuildTest extends TestCase
             "Schema::create('comments', function (Blueprint \$table) {",
             "table->string('comment');",
             "table->foreignIdFor(\App\Models\Product::class)\n\t\t\t\t->constrained()\n\t\t\t\t->cascadeOnDelete()\n\t\t\t\t->cascadeOnUpdate()",
-            "table->foreignIdFor(\MoonShine\Models\MoonshineUser::class)\n\t\t\t\t->constrained()\n\t\t\t\t->cascadeOnDelete()\n\t\t\t\t->cascadeOnUpdate()"
+            "table->foreignIdFor(\MoonShine\Models\MoonshineUser::class)\n\t\t\t\t->constrained()\n\t\t\t\t->cascadeOnDelete()\n\t\t\t\t->cascadeOnUpdate()",
         ];
         foreach ($migrationContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $migration);
@@ -223,9 +223,11 @@ class ProjectBuildTest extends TestCase
         foreach ($migrations as $migration) {
             if(str_contains($migration, $migrationName)) {
                 $migrationFile = $migration;
+
                 break;
             }
         }
+
         return $migrationFile;
     }
 
