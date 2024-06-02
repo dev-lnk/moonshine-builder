@@ -30,6 +30,7 @@ class {class} extends ModelResource
 
     public function rules(Model $item): array
     {
-        return [];
+        return [{rules}
+        ];
     }
 }
