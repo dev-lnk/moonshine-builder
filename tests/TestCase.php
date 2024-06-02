@@ -49,6 +49,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         }
 
         copy(realpath('./tests/Fixtures/builds/project.json'), base_path('builds/project.json'));
+        copy(realpath('./tests/Fixtures/builds/belongs_to_many.json'), base_path('builds/belongs_to_many.json'));
 
         return $this;
     }
