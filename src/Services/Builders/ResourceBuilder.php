@@ -47,6 +47,7 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),
                 '{fields}' => $fields,
+                '{rules}' => $this->columnsToRules(),
             ]);
     }
 
@@ -164,6 +165,35 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 $method .= "()";
             }
             $result .= str('')->newLine()->append("\t\t\t\t\t")->value() . "->$method";
+        }
+
+        return $result;
+    }
+
+    public function columnsToRules(): string
+    {
+        $result = "";
+
+        foreach ($this->codeStructure->columns() as $column) {
+            if(
+                in_array($column->column(), $this->codeStructure->dateColumns())
+                || in_array($column->type(), $this->codeStructure->noInputType())
+            ) {
+                continue;
+            }
+
+            $result .= str("'{$column->column()}' => ['{$column->rulesType()}'")
+                ->when(
+                    $column->type() === SqlTypeMap::BOOLEAN,
+                    fn ($str) => $str->append(", 'sometimes'"),
+                    fn ($str) => $str->append(", 'nullable'")
+                )
+                ->append(']')
+                ->prepend("\t\t\t")
+                ->prepend(PHP_EOL)
+                ->append(',')
+                ->value()
+            ;
         }
 
         return $result;
