@@ -59,10 +59,10 @@ final class StructureFromJson implements MakeStructureContract
 
                 $codeStructure->setDataValue('column', $values['column'] ?? null);
 
-                foreach ($values['fields'] as $fieldColumn => $field) {
+                foreach ($values['fields'] as $field) {
 
                     $columnStructure = new ColumnStructure(
-                        column: $fieldColumn,
+                        column: $field['column'],
                         name: $field['name'] ?? '',
                         type: SqlTypeMap::from($field['type']),
                         default: isset($field['default']) ? (string) $field['default'] : null,

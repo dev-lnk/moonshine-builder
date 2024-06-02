@@ -3,65 +3,74 @@
     {
       "Item": {
         "timestamps": true,
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "title": {
+          {
+            "column": "title",
             "type": "string",
             "name": "Name"
           },
-          "properties": {
+          {
+            "column": "properties",
             "type": "BelongsToMany",
             "relation": {
               "table": "properties",
               "foreign_key": "item_id"
             }
           }
-        }
+        ]
       },
       "Property": {
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id"
           },
-          "title": {
+          {
+            "column": "title",
             "type": "string",
             "name": "Name"
           },
-          "items": {
+          {
+            "column": "items",
             "type": "BelongsToMany",
             "relation": {
               "table": "items",
               "foreign_key": "property_id"
             }
           }
-        }
+        ]
       },
       "ItemPropertyPivot": {
         "withResource": false,
         "withModel": false,
         "table": "item_property",
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id"
           },
-          "item_id": {
+          {
+            "column": "item_id",
             "type": "BelongsTo",
             "relation": {
               "table": "items"
             }
           },
-          "property_id": {
+          {
+            "column": "property_id",
             "type": "BelongsTo",
             "relation": {
               "table": "properties"
             }
           }
-        }
+        ]
       }
     }
   ]
