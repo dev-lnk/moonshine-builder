@@ -147,9 +147,11 @@ class BelongsToManyBuildTest extends TestCase
         foreach ($migrations as $migration) {
             if(str_contains($migration, $migrationName)) {
                 $migrationFile = $migration;
+
                 break;
             }
         }
+
         return $migrationFile;
     }
 
