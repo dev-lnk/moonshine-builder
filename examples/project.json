@@ -3,14 +3,16 @@
     {
       "Category": {
         "column": "name",
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "name": {
+          {
+            "column": "name",
             "type": "string",
             "name": "Name",
             "migration": {
@@ -19,25 +21,45 @@
               ]
             }
           }
-        }
+        ]
       },
       "Product": {
-        "fields": {
-          "id": {
+        "timestamps": true,
+        "soft_deletes": true,
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "title": {
+          {
+            "column": "title",
             "type": "string",
             "name": "Name"
           },
-          "content": {
+          {
+            "column": "content",
             "type": "text",
             "name": "Content"
           },
-          "sort_number": {
+          {
+            "column": "price",
+            "type": "unsignedInteger",
+            "name": "Price",
+            "default": 0,
+            "methods": [
+              "sortable"
+            ],
+            "migration": {
+              "methods": [
+                "index()"
+              ]
+            }
+          },
+          {
+            "column": "sort_number",
             "type": "integer",
             "name": "Sorting",
             "default": 0,
@@ -50,14 +72,16 @@
               ]
             }
           },
-          "category_id": {
+          {
+            "column": "category_id",
             "type": "BelongsTo",
             "name": "Category",
             "relation": {
               "table" : "categories"
             }
           },
-          "comments": {
+          {
+            "column": "comments",
             "type": "HasMany",
             "name": "Comments",
             "relation": {
@@ -68,7 +92,8 @@
               "creatable"
             ]
           },
-          "moonshine_user_id": {
+          {
+            "column": "moonshine_user_id",
             "type": "BelongsTo",
             "name": "User",
             "relation": {
@@ -77,39 +102,43 @@
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
             "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           },
-          "is_active": {
+          {
+            "column": "is_active",
             "type": "boolean",
             "name": "Active",
             "field": "Checkbox",
             "migration": {
               "methods": [
-                "default(0)",
-                "index"
+                "default(0)"
               ]
             }
           }
-        }
+        ]
       },
       "Comment": {
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "comment": {
+          {
+            "column": "comment",
             "type": "string",
             "name": "Comment"
           },
-          "product_id": {
+          {
+            "column": "product_id",
             "type": "BelongsTo",
             "name": "Product",
             "relation": {
               "table" : "products"
             }
           },
-          "moonshine_user_id": {
+          {
+            "column": "moonshine_user_id",
             "type": "BelongsTo",
             "name": "User",
             "relation": {
@@ -118,7 +147,7 @@
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
             "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           }
-        }
+        ]
       }
     }
   ]
