@@ -68,6 +68,9 @@ class BelongsToManyBuildTest extends TestCase
             "use MoonShine\Fields\Relationships\BelongsToMany;",
             "@extends ModelResource<Item>",
             "BelongsToMany::make('Properties', 'properties', resource: new PropertyResource())",
+            "'id' => ['int', 'nullable']",
+            "'title' => ['string', 'nullable']",
+            "'properties' => ['array', 'nullable']",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -112,6 +115,9 @@ class BelongsToManyBuildTest extends TestCase
             "use MoonShine\Fields\Relationships\BelongsToMany;",
             "@extends ModelResource<Property>",
             "BelongsToMany::make('Items', 'items', resource: new ItemResource())",
+            "'id' => ['int', 'nullable']",
+            "'title' => ['string', 'nullable']",
+            "'items' => ['array', 'nullable']",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
