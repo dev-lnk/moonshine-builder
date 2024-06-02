@@ -1,62 +1,87 @@
 {
-  "withResource": true,
-  "withMigration": true,
   "resources": [
     {
       "Category": {
         "column": "name",
-        "fields": {
-          "id": {
-            "type": "tinyIncrements",
-            "methods": [
-              "sortable"
-            ]
-          },
-          "title": {
-            "type": "tinyText",
-            "name": "Название"
-          }
-        }
-      },
-      "Product": {
-        "timestamps": true,
-        "soft_deletes": true,
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "title": {
+          {
+            "column": "name",
             "type": "string",
-            "name": "Название"
-          },
-          "content": {
-            "type": "text",
-            "name": "Контент"
-          },
-          "sort_number": {
-            "type": "integer",
-            "name": "Порядковый номер",
+            "name": "Name",
+            "migration": {
+              "options": [
+                100
+              ]
+            }
+          }
+        ]
+      },
+      "Product": {
+        "timestamps": true,
+        "soft_deletes": true,
+        "fields": [
+          {
+            "column": "id",
+            "type": "id",
             "methods": [
-              "sortable",
-              "default(0)"
+              "sortable"
+            ]
+          },
+          {
+            "column": "title",
+            "type": "string",
+            "name": "Name"
+          },
+          {
+            "column": "content",
+            "type": "text",
+            "name": "Content"
+          },
+          {
+            "column": "price",
+            "type": "unsignedInteger",
+            "name": "Price",
+            "default": 0,
+            "methods": [
+              "sortable"
             ],
             "migration": {
               "methods": [
-                "default(0)"
+                "index()"
               ]
             }
           },
-          "category_id": {
+          {
+            "column": "sort_number",
+            "type": "integer",
+            "name": "Sorting",
+            "default": 0,
+            "methods": [
+              "sortable"
+            ],
+            "migration": {
+              "methods": [
+                "index()"
+              ]
+            }
+          },
+          {
+            "column": "category_id",
             "type": "BelongsTo",
             "name": "Category",
             "relation": {
               "table" : "categories"
             }
           },
-          "comments": {
+          {
+            "column": "comments",
             "type": "HasMany",
             "name": "Comments",
             "relation": {
@@ -67,7 +92,8 @@
               "creatable"
             ]
           },
-          "moonshine_user_id": {
+          {
+            "column": "moonshine_user_id",
             "type": "BelongsTo",
             "name": "User",
             "relation": {
@@ -76,38 +102,43 @@
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
             "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           },
-          "is_active": {
+          {
+            "column": "is_active",
             "type": "boolean",
-            "name": "Активен",
+            "name": "Active",
+            "field": "Checkbox",
             "migration": {
               "methods": [
-                "default(0)",
-                "index"
+                "default(0)"
               ]
             }
           }
-        }
+        ]
       },
       "Comment": {
-        "fields": {
-          "id": {
+        "fields": [
+          {
+            "column": "id",
             "type": "id",
             "methods": [
               "sortable"
             ]
           },
-          "comment": {
+          {
+            "column": "comment",
             "type": "string",
-            "name": "Комментарий"
+            "name": "Comment"
           },
-          "product_id": {
+          {
+            "column": "product_id",
             "type": "BelongsTo",
             "name": "Product",
             "relation": {
               "table" : "products"
             }
           },
-          "moonshine_user_id": {
+          {
+            "column": "moonshine_user_id",
             "type": "BelongsTo",
             "name": "User",
             "relation": {
@@ -116,7 +147,7 @@
             "model_class": "\\MoonShine\\Models\\MoonshineUser",
             "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           }
-        }
+        ]
       }
     }
   ]
