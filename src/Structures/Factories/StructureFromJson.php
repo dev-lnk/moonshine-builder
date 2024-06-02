@@ -38,21 +38,24 @@ final class StructureFromJson implements MakeStructureContract
 
         $codeStructures = new CodeStructureList();
 
-        if(isset($file['withModel'])) {
-            $codeStructures->setWithModel($file['withModel']);
-        }
-
-        if(isset($file['withMigration'])) {
-            $codeStructures->setWithMigration($file['withMigration']);
-        }
-
-        if(isset($file['withResource'])) {
-            $codeStructures->setWithResource($file['withResource']);
-        }
-
         foreach ($file['resources'] as $resource) {
             foreach ($resource as $name => $values) {
-                $codeStructure = new CodeStructure(str($name)->snake()->lower()->plural()->value(), $name);
+
+                $table = $values['table'] ?? str($name)->snake()->lower()->plural()->value();
+
+                $codeStructure = new CodeStructure($table, $name);
+
+                if(isset($values['withModel'])) {
+                    $codeStructure->setDataValue('withModel', $values['withModel']);
+                }
+
+                if(isset($values['withMigration'])) {
+                    $codeStructure->setDataValue('withMigration', $values['withMigration']);
+                }
+
+                if(isset($values['withResource'])) {
+                    $codeStructure->setDataValue('withResource', $values['withResource']);
+                }
 
                 $codeStructure->setDataValue('column', $values['column'] ?? null);
 
@@ -81,6 +84,10 @@ final class StructureFromJson implements MakeStructureContract
                             $field['relation']['foreign_key'],
                             $field['relation']['table'],
                         ));
+
+                        if(! empty($field['relation']['relation_name'])) {
+                            $columnStructure->setDataValue('relation_name', $field['relation']['relation_name']);
+                        }
                     }
 
                     if(isset($field['default'])) {

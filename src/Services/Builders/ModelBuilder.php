@@ -40,11 +40,15 @@ class ModelBuilder extends BaseModelBuilder
                 );
             }
 
-            $relation = $column->relation()->table()->str();
+            if($column->dataValue('relation_name')) {
+                $relation = $column->dataValue('relation_name');
+            } else {
+                $relation = $column->relation()->table()->str();
 
-            $relation = ($column->type() === SqlTypeMap::HAS_MANY || $column->type() === SqlTypeMap::BELONGS_TO_MANY)
-                ? $relation->plural()->camel()->value()
-                : $relation->singular()->camel()->value();
+                $relation = ($column->type() === SqlTypeMap::HAS_MANY || $column->type() === SqlTypeMap::BELONGS_TO_MANY)
+                    ? $relation->plural()->camel()->value()
+                    : $relation->singular()->camel()->value();
+            }
 
             $relationColumn = ($column->type() === SqlTypeMap::HAS_MANY || $column->type() === SqlTypeMap::HAS_ONE)
                 ? $column->relation()->foreignColumn()
@@ -52,7 +56,7 @@ class ModelBuilder extends BaseModelBuilder
 
             $relationModel = ! empty($column->dataValue('model_class'))
                 ? $column->dataValue('model_class')
-                : $column->relation()->table()->ucFirstSingular();
+                : $column->relation()->table()->str()->camel()->singular()->ucfirst()->value();
 
             $result = $result->newLine()->newLine()->append(
                 $stubBuilder->getFromStub([
