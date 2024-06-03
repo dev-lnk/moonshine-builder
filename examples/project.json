@@ -1,154 +1,155 @@
 {
   "resources": [
     {
-      "Category": {
-        "column": "name",
-        "fields": [
-          {
-            "column": "id",
-            "type": "id",
-            "methods": [
-              "sortable"
+      "name": "Category",
+      "column": "name",
+      "fields": [
+        {
+          "column": "id",
+          "type": "id",
+          "methods": [
+            "sortable"
+          ]
+        },
+        {
+          "column": "name",
+          "type": "string",
+          "name": "Name",
+          "migration": {
+            "options": [
+              100
             ]
-          },
-          {
-            "column": "name",
-            "type": "string",
-            "name": "Name",
-            "migration": {
-              "options": [
-                100
-              ]
-            }
           }
-        ]
-      },
-      "Product": {
-        "timestamps": true,
-        "soft_deletes": true,
-        "fields": [
-          {
-            "column": "id",
-            "type": "id",
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "timestamps": true,
+      "soft_deletes": true,
+      "fields": [
+        {
+          "column": "id",
+          "type": "id",
+          "methods": [
+            "sortable"
+          ]
+        },
+        {
+          "column": "title",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "column": "content",
+          "type": "text",
+          "name": "Content"
+        },
+        {
+          "column": "price",
+          "type": "unsignedInteger",
+          "name": "Price",
+          "default": 0,
+          "methods": [
+            "sortable"
+          ],
+          "migration": {
             "methods": [
-              "sortable"
+              "index()"
             ]
-          },
-          {
-            "column": "title",
-            "type": "string",
-            "name": "Name"
-          },
-          {
-            "column": "content",
-            "type": "text",
-            "name": "Content"
-          },
-          {
-            "column": "price",
-            "type": "unsignedInteger",
-            "name": "Price",
-            "default": 0,
-            "methods": [
-              "sortable"
-            ],
-            "migration": {
-              "methods": [
-                "index()"
-              ]
-            }
-          },
-          {
-            "column": "sort_number",
-            "type": "integer",
-            "name": "Sorting",
-            "default": 0,
-            "methods": [
-              "sortable"
-            ],
-            "migration": {
-              "methods": [
-                "index()"
-              ]
-            }
-          },
-          {
-            "column": "category_id",
-            "type": "BelongsTo",
-            "name": "Category",
-            "relation": {
-              "table" : "categories"
-            }
-          },
-          {
-            "column": "comments",
-            "type": "HasMany",
-            "name": "Comments",
-            "relation": {
-              "table" : "comments",
-              "foreign_key": "product_id"
-            },
-            "methods": [
-              "creatable"
-            ]
-          },
-          {
-            "column": "moonshine_user_id",
-            "type": "BelongsTo",
-            "name": "User",
-            "relation": {
-              "table" : "moonshine_users"
-            },
-            "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
-          },
-          {
-            "column": "is_active",
-            "type": "boolean",
-            "name": "Active",
-            "field": "Checkbox",
-            "migration": {
-              "methods": [
-                "default(0)"
-              ]
-            }
           }
-        ]
-      },
-      "Comment": {
-        "fields": [
-          {
-            "column": "id",
-            "type": "id",
+        },
+        {
+          "column": "sort_number",
+          "type": "integer",
+          "name": "Sorting",
+          "default": 0,
+          "methods": [
+            "sortable"
+          ],
+          "migration": {
             "methods": [
-              "sortable"
+              "index()"
             ]
-          },
-          {
-            "column": "comment",
-            "type": "string",
-            "name": "Comment"
-          },
-          {
-            "column": "product_id",
-            "type": "BelongsTo",
-            "name": "Product",
-            "relation": {
-              "table" : "products"
-            }
-          },
-          {
-            "column": "moonshine_user_id",
-            "type": "BelongsTo",
-            "name": "User",
-            "relation": {
-              "table" : "moonshine_users"
-            },
-            "model_class": "\\MoonShine\\Models\\MoonshineUser",
-            "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
           }
-        ]
-      }
+        },
+        {
+          "column": "category_id",
+          "type": "BelongsTo",
+          "name": "Category",
+          "relation": {
+            "table" : "categories"
+          }
+        },
+        {
+          "column": "comments",
+          "type": "HasMany",
+          "name": "Comments",
+          "relation": {
+            "table" : "comments",
+            "foreign_key": "product_id"
+          },
+          "methods": [
+            "creatable"
+          ]
+        },
+        {
+          "column": "moonshine_user_id",
+          "type": "BelongsTo",
+          "name": "User",
+          "relation": {
+            "table" : "moonshine_users"
+          },
+          "model_class": "\\MoonShine\\Models\\MoonshineUser",
+          "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
+        },
+        {
+          "column": "is_active",
+          "type": "boolean",
+          "name": "Active",
+          "field": "Checkbox",
+          "migration": {
+            "methods": [
+              "default(0)"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comment",
+      "fields": [
+        {
+          "column": "id",
+          "type": "id",
+          "methods": [
+            "sortable"
+          ]
+        },
+        {
+          "column": "comment",
+          "type": "string",
+          "name": "Comment"
+        },
+        {
+          "column": "product_id",
+          "type": "BelongsTo",
+          "name": "Product",
+          "relation": {
+            "table" : "products"
+          }
+        },
+        {
+          "column": "moonshine_user_id",
+          "type": "BelongsTo",
+          "name": "User",
+          "relation": {
+            "table" : "moonshine_users"
+          },
+          "model_class": "\\MoonShine\\Models\\MoonshineUser",
+          "resource_class": "\\MoonShine\\Resources\\MoonShineUserResource"
+        }
+      ]
     }
   ]
 }
