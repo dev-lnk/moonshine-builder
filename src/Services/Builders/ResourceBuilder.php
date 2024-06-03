@@ -25,10 +25,6 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
         $resourcePath = $this->codePath->path(MoonShineBuildType::RESOURCE->value);
         $modelPath = $this->codePath->path(MoonShineBuildType::MODEL->value);
 
-        $fieldUses = $this->usesFieldsToResource();
-
-        $fields = $this->columnsToResource();
-
         StubBuilder::make($this->stubFile)
             ->setKey(
                 '{column}',
@@ -43,10 +39,10 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
             ->makeFromStub($resourcePath->file(), [
                 '{namespace}' => $resourcePath->namespace(),
                 '{model_namespace}' => $modelPath->namespace() . '\\' . $modelPath->rawName(),
-                '{field_uses}' => $fieldUses,
+                '{field_uses}' => $this->usesFieldsToResource(),
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),
-                '{fields}' => $fields,
+                '{fields}' => $this->columnsToResource(),
                 '{rules}' => $this->columnsToRules(),
             ]);
     }

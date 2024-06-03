@@ -10,15 +10,17 @@ use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\RelationStructure;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
-use DevLnk\MoonShineBuilder\Traits\Makeable;
 
-final class StructureFromJson implements MakeStructureContract
+final readonly class StructureFromJson implements MakeStructureContract
 {
-    use Makeable;
-
     public function __construct(
-        private readonly string $filePath
+        private string $filePath
     ) {
+    }
+
+    public static function make(string $filePath): static
+    {
+        return new static($filePath);
     }
 
     /**
