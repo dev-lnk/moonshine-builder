@@ -12,12 +12,12 @@
 
 #### Hello, Laravel and MoonShine User!
 
-This package allows you to describe the entire project structure using a JSON or SQL table schema and generate the necessary files, such as:
-<ul>
-    <li>Models</li>
-    <li>Migrations</li>
-    <li>Resources</li>
-</ul>
+This package allows you to describe the entire project structure using a [JSON](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json) or `SQL` table schema and generate the necessary files, such as:
+
+ - [Resource](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/resource.md)
+ - [Model](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/model.md)
+ - [Migration](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/migration.md)
+
 
 ### Installation:
 ```shell
@@ -58,7 +58,7 @@ You will be given options as to which scheme to use when generating the code, fo
 ```shell
 app/Models/Category.php was created successfully!
 app/MoonShine/Resources/CategoryResource.php was created successfully!
-var/www/moonshine-builder/database/migrations/2024_05_27_140239_create_categories.php was created successfully!
+database/migrations/2024_05_27_140239_create_categories.php was created successfully!
 
 WARN  Don't forget to register new resources in the provider method:
 
@@ -80,20 +80,21 @@ In the <code>builds_dir</code> directory, create a schema file, for example, <co
 {
   "resources": [
     {
-      "CategoryResource": {
-        "fields": {
-          "id": {
-            "type": "id",
-            "methods": [
-              "sortable"
-            ]
-          },
-          "title": {
-            "type": "string",
-            "name": "Name"
-          }
+      "name": "Category",
+      "fields": [
+        {
+          "column": "id",
+          "type": "id",
+          "methods": [
+            "sortable"
+          ]
+        },
+        {
+          "column": "name",
+          "type": "string",
+          "name": "Name"
         }
-      }
+      ]
     }
   ]
 }
@@ -133,11 +134,9 @@ You can specify the timestamp: true flag
 {
   "resources": [
     {
-      "CategoryResource": {
-        "timestamps": true,
-        "fields": {
-        }
-      }
+      "name": "Category",
+      "timestamps": true,
+      "fields": []
     }
   ]
 }
@@ -146,3 +145,15 @@ The created_at and updated_at fields will be added to your code. If you manually
 
 ### Soft deletes
 Works similarly to the `timestamps` flag and the `deleted_at` field
+
+### Flags for generating files
+Using flags `withResource`, `withModel`, `withMigration`, you can configure what exactly you want to generate for your resource
+```json
+{
+  "name": "ItemPropertyPivot",
+  "withResource": false,
+  "withModel": false
+}
+```
+### JSON Schema
+For hints in your IDE or for a more detailed description of the json structure, you can use this [file](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json)

@@ -41,6 +41,12 @@
           "table": {
             "type": "string"
           },
+          "timestamps": {
+            "type": "boolean"
+          },
+          "soft_deletes": {
+            "type": "boolean"
+          },
           "fields": {
             "type": "array",
             "description": "Field schema",
@@ -59,12 +65,6 @@
                 },
                 "default": {
                   "description": "Default value for migration and resource"
-                },
-                "timestamps": {
-                  "type": "boolean"
-                },
-                "soft_deletes": {
-                  "type": "boolean"
                 },
                 "methods": {
                   "type": "array",
