@@ -14,9 +14,9 @@
 
 This package allows you to describe the entire project structure using a [JSON](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json) or `SQL` table schema and generate the necessary files, such as:
 
- - [Resource](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/resource.md)
- - [Model](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/model.md)
- - [Migration](https://github.com/dev-lnk/laravel-code-builder/blob/master/.github/entities/migration.md)
+ - [Resource](https://github.com/dev-lnk/moonshine-builder/blob/master/.github/entities/resource.md)
+ - [Model](https://github.com/dev-lnk/moonshine-builder/blob/master/.github/entities/model.md)
+ - [Migration](https://github.com/dev-lnk/moonshine-builder/blob/master/.github/entities/migration.md)
 
 
 ### Installation:
