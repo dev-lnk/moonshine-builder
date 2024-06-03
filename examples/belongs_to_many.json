@@ -1,77 +1,78 @@
 {
   "resources": [
     {
-      "Item": {
-        "timestamps": true,
-        "fields": [
-          {
-            "column": "id",
-            "type": "id",
-            "methods": [
-              "sortable"
-            ]
-          },
-          {
-            "column": "title",
-            "type": "string",
-            "name": "Name"
-          },
-          {
-            "column": "properties",
-            "type": "BelongsToMany",
-            "relation": {
-              "table": "properties",
-              "foreign_key": "item_id"
-            }
+      "name": "Item",
+      "timestamps": true,
+      "fields": [
+        {
+          "column": "id",
+          "type": "id",
+          "methods": [
+            "sortable"
+          ]
+        },
+        {
+          "column": "title",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "column": "properties",
+          "type": "BelongsToMany",
+          "relation": {
+            "table": "properties",
+            "foreign_key": "item_id"
           }
-        ]
-      },
-      "Property": {
-        "fields": [
-          {
-            "column": "id",
-            "type": "id"
-          },
-          {
-            "column": "title",
-            "type": "string",
-            "name": "Name"
-          },
-          {
-            "column": "items",
-            "type": "BelongsToMany",
-            "relation": {
-              "table": "items",
-              "foreign_key": "property_id"
-            }
+        }
+      ]
+    },
+    {
+      "name": "Property",
+      "fields": [
+        {
+          "column": "id",
+          "type": "id"
+        },
+        {
+          "column": "title",
+          "type": "string",
+          "name": "Name"
+        },
+        {
+          "column": "items",
+          "type": "BelongsToMany",
+          "relation": {
+            "table": "items",
+            "foreign_key": "property_id"
           }
-        ]
-      },
-      "ItemPropertyPivot": {
-        "withResource": false,
-        "withModel": false,
-        "table": "item_property",
-        "fields": [
-          {
-            "column": "id",
-            "type": "id"
-          },
-          {
-            "column": "item_id",
-            "type": "BelongsTo",
-            "relation": {
-              "table": "items"
-            }
-          },
-          {
-            "column": "property_id",
-            "type": "BelongsTo",
-            "relation": {
-              "table": "properties"
-            }
+        }
+      ]
+    },
+    {
+      "name": "ItemPropertyPivot",
+      "withResource": false,
+      "withModel": false,
+      "table": "item_property",
+      "fields": [
+        {
+          "column": "id",
+          "type": "id"
+        },
+        {
+          "column": "item_id",
+          "type": "BelongsTo",
+          "relation": {
+            "table": "items"
           }
-        ]
-      }
+        },
+        {
+          "column": "property_id",
+          "type": "BelongsTo",
+          "relation": {
+            "table": "properties"
+          }
+        }
+      ]
     }
   ]
 }

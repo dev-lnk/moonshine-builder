@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MoonShine builder json schema",
+  "description": "MoonShine builder json schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "resources"
+  ],
+  "properties": {
+    "resources": {
+      "type": "array",
+      "description": "Resources list",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "fields"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Resource name"
+          },
+          "column": {
+            "type": "string",
+            "description": "Column property in a resource"
+          },
+          "withModel": {
+            "type": "boolean",
+            "description": "Generate a model?"
+          },
+          "withMigration": {
+            "type": "boolean",
+            "description": "Generate a migration?"
+          },
+          "withResource": {
+            "type": "boolean",
+            "description": "Generate a resource?"
+          },
+          "table": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "description": "Field schema",
+            "items": {
+              "type": "object",
+              "required": [
+                "column",
+                "type"
+              ],
+              "properties": {
+                "column": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "default": {
+                  "description": "Default value for migration and resource"
+                },
+                "timestamps": {
+                  "type": "boolean"
+                },
+                "soft_deletes": {
+                  "type": "boolean"
+                },
+                "methods": {
+                  "type": "array",
+                  "description": "MoonShine field Methods",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "migration": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "array",
+                      "description": "Column migration options"
+                    },
+                    "methods": {
+                      "type": "array",
+                      "description": "Migration methods",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "relation": {
+                  "type": "object",
+                  "properties": {
+                    "table": {
+                      "type": "string"
+                    },
+                    "foreign_key": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "model_class": {
+                  "type": "string",
+                  "description": "If the model is not in the app directory"
+                },
+                "resource_class": {
+                  "type": "string",
+                  "description": "If the resource is not in the default directory"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Field type",
+                  "oneOf": [
+                    {"const": "id"},
+                    {"const": "bigInteger"},
+                    {"const": "mediumInteger"},
+                    {"const": "integer"},
+                    {"const": "smallInteger"},
+                    {"const": "tinyInteger"},
+                    {"const": "unsignedBigInteger"},
+                    {"const": "unsignedMediumInteger"},
+                    {"const": "unsignedInteger"},
+                    {"const": "unsignedSmallInteger"},
+                    {"const": "unsignedTinyInteger"},
+                    {"const": "decimal"},
+                    {"const": "double"},
+                    {"const": "float"},
+                    {"const": "string"},
+                    {"const": "char"},
+                    {"const": "json"},
+                    {"const": "jsonb"},
+                    {"const": "longText"},
+                    {"const": "mediumText"},
+                    {"const": "tinyText"},
+                    {"const": "uuid"},
+                    {"const": "timestamp"},
+                    {"const": "datetime"},
+                    {"const": "year"},
+                    {"const": "date"},
+                    {"const": "time"},
+                    {"const": "BelongsTo"},
+                    {"const": "BelongsToMany"},
+                    {"const": "HasOne"},
+                    {"const": "HasMany"}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
