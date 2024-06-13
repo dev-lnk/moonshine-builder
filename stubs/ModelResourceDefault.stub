@@ -16,7 +16,7 @@ class {class} extends ModelResource
 {
     {todo_model_not_found}protected string $model = {model}::class;
 
-    protected string $title = '{class}';{column}
+    protected string $title = '{class}';{column}{with_array}
 
     public function fields(): array
     {

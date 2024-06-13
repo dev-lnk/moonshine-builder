@@ -34,7 +34,7 @@ final class CodeStructureList
         $resources = [];
 
         if(! empty($pivotTables)) {
-            foreach ($this->codeStructures as $codeStructure) {
+            foreach ($this->codeStructures as $key => $codeStructure) {
                 if(! in_array($codeStructure->table(), $pivotTables)) {
                     continue;
                 }
@@ -51,6 +51,7 @@ final class CodeStructureList
                 }
 
                 if(count($pivotColumns) !== 2) {
+                    unset($this->codeStructures[$key]);
                     continue;
                 }
 
@@ -89,6 +90,8 @@ final class CodeStructureList
 
                     $findCodeStructure->addColumn($field);
                 }
+
+                unset($this->codeStructures[$key]);
             }
         }
 
@@ -101,6 +104,15 @@ final class CodeStructureList
                     'default' => $column->default(),
                     'name' => $column->name(),
                 ];
+
+                $resourceColumnProperties = [
+                    'name',
+                    'title'
+                ];
+
+                if(in_array($column->column(), $resourceColumnProperties)) {
+                    $codeStructure->setDataValue('column', $column->column());
+                }
 
                 if($column->relation()) {
                     $field['relation']['table'] = $column->relation()->table()->raw();
@@ -121,6 +133,7 @@ final class CodeStructureList
                 'name' => $codeStructure->entity()->ucFirst(),
                 'timestamps' => $codeStructure->isTimestamps(),
                 'soft_deletes' => $codeStructure->isSoftDeletes(),
+                'column' => $codeStructure->dataValue('column'),
                 'withModel' => false,
                 'withMigration' => false,
                 'fields' => $fields,
