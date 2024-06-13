@@ -25,6 +25,10 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
         $resourcePath = $this->codePath->path(MoonShineBuildType::RESOURCE->value);
         $modelPath = $this->codePath->path(MoonShineBuildType::MODEL->value);
 
+        $modelUse = class_exists($modelPath->namespace() . '\\' . $modelPath->rawName())
+            ? "\nuse {$modelPath->namespace()}\\{$modelPath->rawName()};"
+            : "";
+
         StubBuilder::make($this->stubFile)
             ->setKey(
                 '{column}',
@@ -36,9 +40,10 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 ->value(),
                 ! is_null($this->codeStructure->dataValue('column'))
             )
+            ->setKey('{model_use}', $modelUse, ! empty($modelUse))
+            ->setKey('{todo_model_not_found}', "// TODO model not found\n\t", empty($modelUse))
             ->makeFromStub($resourcePath->file(), [
                 '{namespace}' => $resourcePath->namespace(),
-                '{model_namespace}' => $modelPath->namespace() . '\\' . $modelPath->rawName(),
                 '{field_uses}' => $this->usesFieldsToResource(),
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),

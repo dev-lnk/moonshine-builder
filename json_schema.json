@@ -131,6 +131,7 @@
                     {"const": "char"},
                     {"const": "json"},
                     {"const": "jsonb"},
+                    {"const": "text"},
                     {"const": "longText"},
                     {"const": "mediumText"},
                     {"const": "tinyText"},

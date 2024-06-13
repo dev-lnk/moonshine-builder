@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace {namespace};
 
-use Illuminate\Database\Eloquent\Model;
-use {model_namespace};
+use Illuminate\Database\Eloquent\Model;{model_use}
 
 use MoonShine\Resources\ModelResource;
 use MoonShine\Decorations\Block;
 {field_uses}
-
 /**
  * @extends ModelResource<{model}>
  */
 class {class} extends ModelResource
 {
-    protected string $model = {model}::class;
+    {todo_model_not_found}protected string $model = {model}::class;
 
     protected string $title = '{class}';{column}
 
     public function fields(): array
     {
+        // TODO correct labels values
         return [
             Block::make([{fields}
             ]),
@@ -30,6 +29,7 @@ class {class} extends ModelResource
 
     public function rules(Model $item): array
     {
+        // TODO change it to your own rules
         return [{rules}
         ];
     }
