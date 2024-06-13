@@ -52,6 +52,7 @@ final class CodeStructureList
 
                 if(count($pivotColumns) !== 2) {
                     unset($this->codeStructures[$key]);
+
                     continue;
                 }
 
@@ -107,7 +108,7 @@ final class CodeStructureList
 
                 $resourceColumnProperties = [
                     'name',
-                    'title'
+                    'title',
                 ];
 
                 if(in_array($column->column(), $resourceColumnProperties)) {
