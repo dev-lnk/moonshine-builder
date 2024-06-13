@@ -29,6 +29,8 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
             ? "\nuse {$modelPath->namespace()}\\{$modelPath->rawName()};"
             : "";
 
+        $withArray = $this->withArray();
+
         StubBuilder::make($this->stubFile)
             ->setKey(
                 '{column}',
@@ -40,13 +42,27 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
                 ->value(),
                 ! is_null($this->codeStructure->dataValue('column'))
             )
-            ->setKey('{model_use}', $modelUse, ! empty($modelUse))
-            ->setKey('{todo_model_not_found}', "// TODO model not found\n\t", empty($modelUse))
+            ->setKey(
+                '{model_use}',
+                $modelUse,
+                ! empty($modelUse)
+            )
+            ->setKey(
+                '{todo_model_not_found}',
+                "// TODO model not found\n\t",
+                empty($modelUse)
+            )
+            ->setKey(
+                '{with_array}',
+                "\n\n\tprotected array \$with = [{with}];",
+                ! empty($withArray)
+            )
             ->makeFromStub($resourcePath->file(), [
                 '{namespace}' => $resourcePath->namespace(),
                 '{field_uses}' => $this->usesFieldsToResource(),
                 '{class}' => $resourcePath->rawName(),
                 '{model}' => $modelPath->rawName(),
+                '{with}' => $this->withArray(),
                 '{fields}' => $this->columnsToResource(),
                 '{rules}' => $this->columnsToRules(),
             ]);
@@ -198,5 +214,24 @@ class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContra
         }
 
         return $result;
+    }
+
+    public function withArray(): string
+    {
+        $withArray = [];
+        foreach ($this->codeStructure->columns() as $column) {
+            if(! $column->relation()) {
+                continue;
+            }
+
+            $relationMethod = $column->relation()->table();
+            $relationMethod = $column->type() === SqlTypeMap::BELONGS_TO
+                ? $relationMethod->singular()
+                : $relationMethod->plural();
+
+            $withArray[] = "'$relationMethod'";
+        }
+
+        return implode(',', $withArray);
     }
 }
