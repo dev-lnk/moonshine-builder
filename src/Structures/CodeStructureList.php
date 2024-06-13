@@ -107,6 +107,13 @@ final class CodeStructureList
                     $field['relation']['foreign_column'] = $column->relation()->foreignColumn();
                 }
 
+                if(
+                    $column->column() === 'moonshine_user_id'
+                    && $column->type() === SqlTypeMap::BELONGS_TO
+                ) {
+                    $field['resource_class'] = "\\MoonShine\\Resources\\MoonShineUserResource";
+                }
+
                 $fields[] = $field;
             }
 
