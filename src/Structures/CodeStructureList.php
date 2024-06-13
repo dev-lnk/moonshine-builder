@@ -95,11 +95,11 @@ final class CodeStructureList
         foreach ($this->codeStructures as $codeStructure) {
             $fields = [];
             foreach ($codeStructure->columns() as $column) {
-                $field =  [
+                $field = [
                     'column' => $column->column(),
                     'type' => $column->type()->value,
                     'default' => $column->default(),
-                    'name' => $column->name()
+                    'name' => $column->name(),
                 ];
 
                 if($column->relation()) {
@@ -123,7 +123,7 @@ final class CodeStructureList
                 'soft_deletes' => $codeStructure->isSoftDeletes(),
                 'withModel' => false,
                 'withMigration' => false,
-                'fields' => $fields
+                'fields' => $fields,
             ];
         }
 

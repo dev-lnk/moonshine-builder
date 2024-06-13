@@ -7,6 +7,7 @@ use DevLnk\MoonShineBuilder\Structures\CodeStructureList;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Schema;
+
 use function Laravel\Prompts\multiselect;
 
 class MoonShineProjectSchemaCommand extends Command
