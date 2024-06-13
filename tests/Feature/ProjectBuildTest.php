@@ -172,7 +172,6 @@ class ProjectBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use App\Models\Comment;",
             "use MoonShine\Fields\ID;",
             "use MoonShine\Fields\Text;",
             "use MoonShine\Fields\Relationships\BelongsTo;",

@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace DevLnk\MoonShineBuilder\Providers;
 
 use DevLnk\MoonShineBuilder\Commands\MoonShineBuildCommand;
+use DevLnk\MoonShineBuilder\Commands\MoonShineProjectSchemaCommand;
 use Illuminate\Support\ServiceProvider;
 
 class MoonShineBuilderProvider extends ServiceProvider
 {
     protected array $commands = [
         MoonShineBuildCommand::class,
+        MoonShineProjectSchemaCommand::class,
     ];
 
     public function boot(): void
