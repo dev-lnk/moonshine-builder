@@ -157,3 +157,29 @@ Using flags `withResource`, `withModel`, `withMigration`, you can configure what
 ```
 ### JSON Schema
 For hints in your IDE or for a more detailed description of the json structure, you can use this [file](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json)
+
+### Bulk table import
+If you already have a project with its own database and you don't want to build the resources one by one, you can use the following command:
+```shell
+php artisan moonshine:project-schema
+```
+First, select all your Pivot tables to correctly form the BelongsToMany relationship, then select all the necessary tables for which you want to generate resources.
+```shell
+ ┌ Select the pivot table to correctly generate BelongsToMany (Press enter to skip) ┐
+ │ item_property                                                                    │
+ └──────────────────────────────────────────────────────────────────────────────────┘
+
+ ┌ Select tables ───────────────────────────────────────────────┐
+ │ categories                                                   │
+ │ comments                                                     │
+ │ items                                                        │
+ │ products                                                     │
+ │ properties                                                   │
+ │ users                                                        │
+ └──────────────────────────────────────────────────────────────┘
+```
+A JSON schema will be generated, which you can edit and apply if desired.
+```shell
+project_20240613113014.json was created successfully! To generate resources, run: 
+php artisan moonshine:build project_20240613113014.json
+```
