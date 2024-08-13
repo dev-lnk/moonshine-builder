@@ -147,7 +147,8 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             );
         }
 
-        if ($type === 'table') {
+        // If it is a sql table, the standard parent package generation is used
+        if($type === 'table') {
             $target = select(
                 'Table',
                 collect(Schema::getTables())
@@ -155,9 +156,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
                     ->mapWithKeys(fn ($v) => [$v['name'] => $v['name']]),
                 default: 'jobs'
             );
-        }
 
-        if($type === 'table') {
             $this->builders = array_filter($this->builders, fn ($item) => $item !== MoonShineBuildType::MIGRATION);
 
             return [
