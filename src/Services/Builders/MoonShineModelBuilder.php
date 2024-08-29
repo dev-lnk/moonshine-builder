@@ -7,8 +7,9 @@ namespace DevLnk\MoonShineBuilder\Services\Builders;
 use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\LaravelCodeBuilder\Services\Builders\Core\ModelBuilder as BaseModelBuilder;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
+use DevLnk\MoonShineBuilder\Services\Builders\Contracts\MoonShineModelBuilderContract;
 
-class ModelBuilder extends BaseModelBuilder
+class MoonShineModelBuilder extends BaseModelBuilder implements MoonShineModelBuilderContract
 {
     public function relationsToModel(): string
     {

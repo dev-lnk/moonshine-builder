@@ -7,7 +7,7 @@ use DevLnk\LaravelCodeBuilder\Services\Builders\Factory\AbstractBuildFactory;
 use DevLnk\LaravelCodeBuilder\Services\CodePath\CodePathContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\CodeStructure;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
-use DevLnk\MoonShineBuilder\Services\Builders\MoonShineBuildFactory;
+use DevLnk\MoonShineBuilder\Services\Builders\Factory\MoonShineBuildFactory;
 
 trait CommandVariables
 {

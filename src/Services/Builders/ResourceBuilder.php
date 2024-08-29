@@ -6,15 +6,15 @@ namespace DevLnk\MoonShineBuilder\Services\Builders;
 
 use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\LaravelCodeBuilder\Services\Builders\AbstractBuilder;
-use DevLnk\LaravelCodeBuilder\Services\Builders\Core\Contracts\EditActionBuilderContract;
 use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
+use DevLnk\MoonShineBuilder\Services\Builders\Contracts\ResourceBuilderContract;
 use DevLnk\MoonShineBuilder\Support\TypeMap;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
-class ResourceBuilder extends AbstractBuilder implements EditActionBuilderContract
+class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
 {
     /**
      * @throws FileNotFoundException
