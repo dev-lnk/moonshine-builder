@@ -30,13 +30,16 @@ final readonly class MoonShineBuildFactory extends AbstractBuildFactory
          */
         $builder = match($buildType) {
             MoonShineBuildType::MODEL->value => app(
-                MoonShineModelBuilderContract::class, $classParameters
+                MoonShineModelBuilderContract::class,
+                $classParameters
             ),
             MoonShineBuildType::RESOURCE->value => app(
-                ResourceBuilderContract::class, $classParameters
+                ResourceBuilderContract::class,
+                $classParameters
             ),
             MoonShineBuildType::MIGRATION->value => app(
-                MigrationBuilderContract::class, $classParameters
+                MigrationBuilderContract::class,
+                $classParameters
             ),
             default => throw new NotFoundBuilderException()
         };
