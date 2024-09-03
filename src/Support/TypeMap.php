@@ -46,8 +46,6 @@ final class TypeMap
      */
     public function fieldClassFromAlias(string $field): string
     {
-        dump($field, $this->fieldClasses[$field]);
-
         return $this->fieldClasses[$field] ?? throw new ProjectBuilderException("Field: $field not found");
     }
 
