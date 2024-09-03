@@ -36,9 +36,6 @@
             "MoonShine\\": "vendor/moonshine/moonshine/"
         }
     },
-    "conflict": {
-        "moonshine/moonshine": "<2.0"
-    },
     "scripts": {
         "test": "vendor/bin/phpstan analyse -c phpstan.neon && vendor/bin/phpunit"
     },
