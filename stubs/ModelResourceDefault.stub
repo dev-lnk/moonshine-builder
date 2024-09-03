@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace {namespace};
 
-use Illuminate\Database\Eloquent\Model;{model_use}
+{model_use}
 
-use MoonShine\Resources\ModelResource;
-use MoonShine\Decorations\Block;
+use MoonShine\Laravel\Resources\ModelResource;
+use MoonShine\UI\Components\Layout\Block;
 {field_uses}
 /**
  * @extends ModelResource<{model}>
@@ -18,7 +18,7 @@ class {class} extends ModelResource
 
     protected string $title = '{class}';{column}{with_array}
 
-    public function fields(): array
+    public function indexFields(): array
     {
         // TODO correct labels values
         return [
@@ -27,7 +27,7 @@ class {class} extends ModelResource
         ];
     }
 
-    public function rules(Model $item): array
+    public function rules(mixed $item): array
     {
         // TODO change it to your own rules
         return [{rules}

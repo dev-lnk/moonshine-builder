@@ -7,17 +7,18 @@ namespace DevLnk\MoonShineBuilder\Support;
 use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use Illuminate\Support\Facades\File;
-use MoonShine\Fields\Date;
-use MoonShine\Fields\Enum;
-use MoonShine\Fields\ID;
-use MoonShine\Fields\Number;
-use MoonShine\Fields\Relationships\BelongsTo;
-use MoonShine\Fields\Relationships\BelongsToMany;
-use MoonShine\Fields\Relationships\HasMany;
-use MoonShine\Fields\Relationships\HasOne;
-use MoonShine\Fields\Switcher;
-use MoonShine\Fields\Text;
-use MoonShine\MoonShine;
+
+use MoonShine\Core\Core;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
+use MoonShine\Laravel\Fields\Relationships\BelongsToMany;
+use MoonShine\Laravel\Fields\Relationships\HasMany;
+use MoonShine\Laravel\Fields\Relationships\HasOne;
+use MoonShine\UI\Fields\Date;
+use MoonShine\UI\Fields\Enum;
+use MoonShine\UI\Fields\ID;
+use MoonShine\UI\Fields\Number;
+use MoonShine\UI\Fields\Switcher;
+use MoonShine\UI\Fields\Text;
 use Symfony\Component\Finder\SplFileInfo;
 
 final class TypeMap
@@ -29,10 +30,10 @@ final class TypeMap
 
     public function __construct()
     {
-        $this->fieldClasses = collect(File::files(MoonShine::path('src/Fields')))
+        $this->fieldClasses = collect(File::files(Core::path('src/UI/Fields')))
             ->mapWithKeys(
                 fn (SplFileInfo $file): array => [
-                    $file->getFilenameWithoutExtension() => 'MoonShine\\Fields\\' . $file->getFilenameWithoutExtension(),
+                    $file->getFilenameWithoutExtension() => 'MoonShine\\UI\\Fields\\' . $file->getFilenameWithoutExtension(),
                 ]
             )
             ->except(['Field', 'Fields', 'FormElement', 'FormElements'])
@@ -45,6 +46,8 @@ final class TypeMap
      */
     public function fieldClassFromAlias(string $field): string
     {
+        dump($field, $this->fieldClasses[$field]);
+
         return $this->fieldClasses[$field] ?? throw new ProjectBuilderException("Field: $field not found");
     }
 

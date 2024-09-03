@@ -6,27 +6,30 @@ namespace DevLnk\MoonShineBuilder\Services\Builders;
 
 use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\LaravelCodeBuilder\Services\Builders\AbstractBuilder;
-use DevLnk\LaravelCodeBuilder\Services\CodeStructure\ColumnStructure;
 use DevLnk\LaravelCodeBuilder\Services\StubBuilder;
 use DevLnk\MoonShineBuilder\Enums\MoonShineBuildType;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Services\Builders\Contracts\ResourceBuilderContract;
-use DevLnk\MoonShineBuilder\Support\TypeMap;
+use DevLnk\MoonShineBuilder\Structures\MoonShineStructure;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
 {
+    private MoonShineStructure $moonShineStructure;
+
     /**
      * @throws FileNotFoundException
      * @throws ProjectBuilderException
      */
     public function build(): void
     {
+        $this->moonShineStructure = new MoonShineStructure($this->codeStructure);
+
         $resourcePath = $this->codePath->path(MoonShineBuildType::RESOURCE->value);
         $modelPath = $this->codePath->path(MoonShineBuildType::MODEL->value);
 
         $modelUse = class_exists($modelPath->namespace() . '\\' . $modelPath->rawName())
-            ? "\nuse {$modelPath->namespace()}\\{$modelPath->rawName()};"
+            ? "use {$modelPath->namespace()}\\{$modelPath->rawName()};"
             : "";
 
         $withArray = $this->withArray();
@@ -73,30 +76,10 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
      */
     protected function usesFieldsToResource(): string
     {
-        $fieldMap = new TypeMap();
-
         $result = "";
 
-        foreach ($this->codeStructure->columns() as $column) {
-            if($column->isLaravelTimestamp()) {
-                continue;
-            }
-
-            $fieldClass = $column->dataValue('field_class')
-                ? $fieldMap->fieldClassFromAlias($column->dataValue('field_class'))
-                : $fieldMap->getMoonShineFieldFromSqlType($column->type())
-            ;
-
-            if(str_contains($result, $fieldClass)) {
-                continue;
-            }
-
-            $result .= str($fieldClass)
-                ->prepend('use ')
-                ->append(';')
-                ->newLine()
-                ->value()
-            ;
+        foreach ($this->moonShineStructure->getUsesForFields() as $use) {
+            $result .= str($use)->newLine()->value();
         }
 
         return $result;
@@ -107,81 +90,15 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
      */
     protected function columnsToResource(): string
     {
-        $fieldMap = new TypeMap();
-
         $result = "";
 
-        foreach ($this->codeStructure->columns() as $column) {
-            if($column->isLaravelTimestamp()) {
-                continue;
-            }
-
-            $fieldClass = $column->dataValue('field_class')
-                ? $fieldMap->fieldClassFromAlias($column->dataValue('field_class'))
-                : $fieldMap->getMoonShineFieldFromSqlType($column->type())
-            ;
-
-            if(! is_null($column->relation())) {
-                $resourceName = str($column->relation()->table()->camel())->singular()->ucfirst()->value();
-
-                $relationMethod = $column->relation()->table();
-                $relationMethod = $column->type() === SqlTypeMap::BELONGS_TO
-                    ? $relationMethod->singular()
-                    : $relationMethod->plural();
-
-                $result .= str(class_basename($fieldClass))
-                    ->prepend("\t\t\t\t")
-                    ->prepend("\n")
-                    ->append('::make')
-                    ->append("('{$column->name()}', '$relationMethod'")
-                    ->append(", resource: new ")
-                    ->when(
-                        $column->dataValue('resource_class'),
-                        fn ($str) => $str->append($column->dataValue('resource_class')),
-                        fn ($str) => $str->append(str($resourceName)->append('Resource')->value()),
-                    )
-                    ->append('())')
-                    ->append($this->resourceMethods($column))
-                    ->append(',')
-                    ->value();
-
-                continue;
-            }
-
-            $result .= str(class_basename($fieldClass))
+        foreach ($this->moonShineStructure->getFields(tabulation: 5) as $field) {
+            $result .= str($field)
                 ->prepend("\t\t\t\t")
                 ->prepend("\n")
-                ->append('::make')
-                ->when(
-                    ! $column->isId(),
-                    fn ($str) => $str->append("('{$column->name()}', '{$column->column()}')"),
-                    fn ($str) => $str->append("('{$column->column()}')"),
-                )
-                ->append($this->resourceMethods($column))
                 ->append(',')
                 ->value()
             ;
-        }
-
-        return $result;
-    }
-
-    public function resourceMethods(ColumnStructure $columnStructure): string
-    {
-        if(
-            empty($columnStructure->dataValue('resource_methods'))
-            || ! is_array($columnStructure->dataValue('resource_methods'))
-        ) {
-            return '';
-        }
-
-        $result = "";
-
-        foreach ($columnStructure->dataValue('resource_methods') as $method) {
-            if(! str_contains($method, '(')) {
-                $method .= "()";
-            }
-            $result .= str('')->newLine()->append("\t\t\t\t\t")->value() . "->$method";
         }
 
         return $result;
@@ -191,23 +108,10 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
     {
         $result = "";
 
-        foreach ($this->codeStructure->columns() as $column) {
-            if(
-                in_array($column->column(), $this->codeStructure->dateColumns())
-                || in_array($column->type(), $this->codeStructure->noInputType())
-            ) {
-                continue;
-            }
-
-            $result .= str("'{$column->column()}' => ['{$column->rulesType()}'")
-                ->when(
-                    $column->type() === SqlTypeMap::BOOLEAN,
-                    fn ($str) => $str->append(", 'sometimes'"),
-                    fn ($str) => $str->append(", 'nullable'")
-                )
-                ->append(']')
+        foreach ($this->moonShineStructure->getRules() as $rule) {
+            $result .= str($rule)
                 ->prepend("\t\t\t")
-                ->prepend(PHP_EOL)
+                ->prepend("\n")
                 ->append(',')
                 ->value()
             ;
@@ -218,20 +122,7 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
 
     public function withArray(): string
     {
-        $withArray = [];
-        foreach ($this->codeStructure->columns() as $column) {
-            if(! $column->relation()) {
-                continue;
-            }
-
-            $relationMethod = $column->relation()->table();
-            $relationMethod = $column->type() === SqlTypeMap::BELONGS_TO
-                ? $relationMethod->singular()
-                : $relationMethod->plural();
-
-            $withArray[] = "'$relationMethod'";
-        }
-
-        return implode(',', $withArray);
+        $withArray = array_map(fn($with) => "'$with'", $this->moonShineStructure->getWithProperty());
+        return implode(', ', $withArray);
     }
 }
