@@ -101,7 +101,7 @@ class ProjectBuildTest extends TestCase
             "use MoonShine\Fields\Relationships\HasMany;",
             "use MoonShine\Fields\Checkbox;",
             "@extends ModelResource<Product>",
-            "protected array \$with = ['category','comments','moonshineUser'];",
+            "protected array \$with = ['category', 'comments', 'moonshineUser'];",
             "ID::make('id')\n\t\t\t\t\t->sortable()",
             "Text::make('Name', 'title')",
             "Text::make('Content', 'content')",
