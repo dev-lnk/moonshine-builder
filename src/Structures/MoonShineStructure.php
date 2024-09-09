@@ -29,7 +29,7 @@ final readonly class MoonShineStructure
         $uses = [];
 
         foreach ($this->codeStructure->columns() as $column) {
-            if($column->isLaravelTimestamp()) {
+            if ($column->isLaravelTimestamp()) {
                 continue;
             }
 
@@ -44,7 +44,7 @@ final readonly class MoonShineStructure
                 ->value()
             ;
 
-            if(in_array($use, $uses)) {
+            if (in_array($use, $uses)) {
                 continue;
             }
 
@@ -63,7 +63,7 @@ final readonly class MoonShineStructure
         $fields = [];
 
         foreach ($this->codeStructure->columns() as $column) {
-            if($column->isLaravelTimestamp()) {
+            if ($column->isLaravelTimestamp()) {
                 continue;
             }
 
@@ -74,7 +74,7 @@ final readonly class MoonShineStructure
 
             //dump($fieldClass);
 
-            if(! is_null($column->relation())) {
+            if (! is_null($column->relation())) {
                 $resourceName = str($column->relation()->table()->camel())->singular()->ucfirst()->value();
 
                 $relationMethod = $column->relation()->table();
@@ -121,7 +121,7 @@ final readonly class MoonShineStructure
         $rules = [];
 
         foreach ($this->codeStructure->columns() as $column) {
-            if(
+            if (
                 in_array($column->column(), $this->codeStructure->dateColumns())
                 || in_array($column->type(), $this->codeStructure->noInputType())
             ) {
@@ -149,7 +149,7 @@ final readonly class MoonShineStructure
     {
         $withArray = [];
         foreach ($this->codeStructure->columns() as $column) {
-            if(! $column->relation()) {
+            if (! $column->relation()) {
                 continue;
             }
 
@@ -166,7 +166,7 @@ final readonly class MoonShineStructure
 
     private function resourceMethods(ColumnStructure $columnStructure, int $tabulation = 0): string
     {
-        if(
+        if (
             empty($columnStructure->dataValue('resource_methods'))
             || ! is_array($columnStructure->dataValue('resource_methods'))
         ) {
@@ -178,12 +178,13 @@ final readonly class MoonShineStructure
         $result = "";
 
         foreach ($columnStructure->dataValue('resource_methods') as $method) {
-            if(! str_contains($method, '(')) {
+            if (! str_contains($method, '(')) {
                 $method .= "()";
             }
             $result .= str('')
-                    ->when($tabulation > 0,
-                        fn($str) => $str->newLine()->append($tabStr)
+                    ->when(
+                        $tabulation > 0,
+                        fn ($str) => $str->newLine()->append($tabStr)
                     )
                     ->value() . "->$method";
         }

@@ -16,7 +16,7 @@ class MoonShineModelBuilder extends BaseModelBuilder implements MoonShineModelBu
         $result = str('');
 
         foreach ($this->codeStructure->columns() as $column) {
-            if(is_null($column->relation())) {
+            if (is_null($column->relation())) {
                 continue;
             }
 
@@ -28,12 +28,12 @@ class MoonShineModelBuilder extends BaseModelBuilder implements MoonShineModelBu
                 default => ''
             };
 
-            if(empty($stubName)) {
+            if (empty($stubName)) {
                 continue;
             }
 
             $stubBuilder = StubBuilder::make($this->codeStructure->stubDir() . $stubName);
-            if($column->type() === SqlTypeMap::BELONGS_TO) {
+            if ($column->type() === SqlTypeMap::BELONGS_TO) {
                 $stubBuilder->setKey(
                     '{relation_id}',
                     ", '{$column->relation()->foreignColumn()}'",
@@ -41,7 +41,7 @@ class MoonShineModelBuilder extends BaseModelBuilder implements MoonShineModelBu
                 );
             }
 
-            if($column->dataValue('relation_name')) {
+            if ($column->dataValue('relation_name')) {
                 $relation = $column->dataValue('relation_name');
             } else {
                 $relation = $column->relation()->table()->str();

@@ -43,7 +43,7 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
         $result = "";
 
         foreach ($this->codeStructure->columns() as $column) {
-            if(
+            if (
                 $column->type() === SqlTypeMap::HAS_ONE
                 || $column->type() === SqlTypeMap::HAS_MANY
                 || $column->type() === SqlTypeMap::BELONGS_TO_MANY
@@ -51,13 +51,13 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
                 continue;
             }
 
-            if($this->codeStructure->isTimestamps()
+            if ($this->codeStructure->isTimestamps()
                 && ($column->isCreatedAt() || $column->isUpdatedAt())
             ) {
                 continue;
             }
 
-            if($this->codeStructure->isSoftDeletes() && $column->isDeletedAt()) {
+            if ($this->codeStructure->isSoftDeletes() && $column->isDeletedAt()) {
                 continue;
             }
 
@@ -76,7 +76,7 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
 
     protected function migrationName(ColumnStructure $column): string
     {
-        if($column->relation()) {
+        if ($column->relation()) {
             return $this->migrationNameFromRelation($column);
         }
 
@@ -97,7 +97,7 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
 
     public function migrationNameFromRelation(ColumnStructure $column): string
     {
-        if($column->type() !== SqlTypeMap::BELONGS_TO) {
+        if ($column->type() !== SqlTypeMap::BELONGS_TO) {
             return '';
         }
 
@@ -132,7 +132,7 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
 
     protected function migrationMethods(ColumnStructure $column): string
     {
-        if(
+        if (
             is_null($column->dataValue('migration_methods'))
             || ! is_array($column->dataValue('migration_methods'))
         ) {
@@ -142,7 +142,7 @@ class MigrationBuilder extends AbstractBuilder implements MigrationBuilderContra
         $result = "";
 
         foreach ($column->dataValue('migration_methods') as $method) {
-            if(! str_contains($method, '(')) {
+            if (! str_contains($method, '(')) {
                 $method .= "()";
             }
             $result .= "->$method";

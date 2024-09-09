@@ -16,7 +16,7 @@ final class MoonShineStructureFactory
     {
         $path = config('moonshine_builder.builds_dir') . '/' . $target;
 
-        if(! file_exists($path)) {
+        if (! file_exists($path)) {
             throw new ProjectBuilderException("File $path not found");
         }
 

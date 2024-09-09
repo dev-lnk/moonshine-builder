@@ -26,15 +26,15 @@ final readonly class StructureFromArray implements MakeStructureContract
 
             $codeStructure = new CodeStructure($table, $resource['name']);
 
-            if(isset($resource['withModel'])) {
+            if (isset($resource['withModel'])) {
                 $codeStructure->setDataValue('withModel', $resource['withModel']);
             }
 
-            if(isset($resource['withMigration'])) {
+            if (isset($resource['withMigration'])) {
                 $codeStructure->setDataValue('withMigration', $resource['withMigration']);
             }
 
-            if(isset($resource['withResource'])) {
+            if (isset($resource['withResource'])) {
                 $codeStructure->setDataValue('withResource', $resource['withResource']);
             }
 
@@ -50,8 +50,8 @@ final readonly class StructureFromArray implements MakeStructureContract
                     nullable: true
                 );
 
-                if(! empty($field['relation'])) {
-                    if(
+                if (! empty($field['relation'])) {
+                    if (
                         ! isset($field['relation']['foreign_key'])
                         && (
                             $columnStructure->type() === SqlTypeMap::BELONGS_TO
@@ -66,55 +66,55 @@ final readonly class StructureFromArray implements MakeStructureContract
                         $field['relation']['table'],
                     ));
 
-                    if(! empty($field['relation']['relation_name'])) {
+                    if (! empty($field['relation']['relation_name'])) {
                         $columnStructure->setDataValue('relation_name', $field['relation']['relation_name']);
                     }
                 }
 
-                if(isset($field['default'])) {
-                    if(! isset($field['methods'])) {
+                if (isset($field['default'])) {
+                    if (! isset($field['methods'])) {
                         $field['methods'][] = "default({$field['default']})";
                     } else {
                         array_unshift($field['methods'], "default({$field['default']})");
                     }
 
-                    if(! isset($field['migration']['methods'])) {
+                    if (! isset($field['migration']['methods'])) {
                         $field['migration']['methods'][] = "default({$field['default']})";
                     } else {
                         array_unshift($field['migration']['methods'], "default({$field['default']})");
                     }
                 }
 
-                if(! empty($field['methods'])) {
+                if (! empty($field['methods'])) {
                     $columnStructure->setDataValue('resource_methods', $field['methods']);
                 }
 
-                if(! empty($field['migration'])) {
-                    if(! empty($field['migration']['options'])) {
+                if (! empty($field['migration'])) {
+                    if (! empty($field['migration']['options'])) {
                         $columnStructure->setDataValue('migration_options', $field['migration']['options']);
                     }
 
-                    if(! empty($field['migration']['methods'])) {
+                    if (! empty($field['migration']['methods'])) {
                         $columnStructure->setDataValue('migration_methods', $field['migration']['methods']);
                     }
                 }
 
-                if(! empty($field['resource_class'])) {
+                if (! empty($field['resource_class'])) {
                     $columnStructure->setDataValue('resource_class', $field['resource_class']);
                 }
 
-                if(! empty($field['model_class'])) {
+                if (! empty($field['model_class'])) {
                     $columnStructure->setDataValue('model_class', $field['model_class']);
                 }
 
-                if(! empty($field['field'])) {
+                if (! empty($field['field'])) {
                     $columnStructure->setDataValue('field_class', $field['field']);
                 }
 
                 $codeStructure->addColumn($columnStructure);
             }
 
-            if(isset($resource['timestamps']) && $resource['timestamps'] === true) {
+            if (isset($resource['timestamps']) && $resource['timestamps'] === true) {
                 $createdAtField = new ColumnStructure(
                     column: 'created_at',
                     name: 'Created at',
@@ -134,7 +134,7 @@ final readonly class StructureFromArray implements MakeStructureContract
                 $codeStructure->addColumn($updatedAtField);
             }
 
-            if(isset($resource['soft_deletes']) && $resource['soft_deletes'] === true) {
+            if (isset($resource['soft_deletes']) && $resource['soft_deletes'] === true) {
                 $softDeletes = new ColumnStructure(
                     column: 'deleted_at',
                     name: 'Deleted at',

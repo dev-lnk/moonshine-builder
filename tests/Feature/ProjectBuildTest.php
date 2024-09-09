@@ -221,7 +221,7 @@ class ProjectBuildTest extends TestCase
         $migrationFile = '';
         $migrations = $this->filesystem->allFiles($this->migrationPath);
         foreach ($migrations as $migration) {
-            if(str_contains($migration, $migrationName)) {
+            if (str_contains($migration, $migrationName)) {
                 $migrationFile = $migration;
 
                 break;
