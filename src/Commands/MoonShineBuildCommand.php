@@ -79,7 +79,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
 
         $validBuilders = [];
         foreach ($validBuildMap as $dataKey => $builder) {
-            if(
+            if (
                 ! is_null($codeStructure->dataValue($dataKey))
                 && $codeStructure->dataValue($dataKey) === false
             ) {
@@ -89,20 +89,20 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         foreach ($this->builders as $builder) {
-            if(! $builder instanceof BuildTypeContract) {
+            if (! $builder instanceof BuildTypeContract) {
                 throw new CodeGenerateCommandException('builder is not DevLnk\LaravelCodeBuilder\Enums\BuildTypeContract');
             }
 
-            if(! in_array($builder, $validBuilders)) {
+            if (! in_array($builder, $validBuilders)) {
                 continue;
             }
 
             $confirmed = true;
-            if(isset($this->replaceCautions[$builder->value()])) {
+            if (isset($this->replaceCautions[$builder->value()])) {
                 $confirmed = confirm($this->replaceCautions[$builder->value()]);
             }
 
-            if(! $confirmed) {
+            if (! $confirmed) {
                 continue;
             }
 
@@ -111,7 +111,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
             $this->info($this->projectFileName($filePath) . ' was created successfully!');
         }
 
-        if(! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
+        if (! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
             return;
         }
 
@@ -148,7 +148,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
         }
 
         // If it is a sql table, the standard parent package generation is used
-        if($type === 'table') {
+        if ($type === 'table') {
             $target = select(
                 'Table',
                 collect(Schema::getTables())
@@ -204,7 +204,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
 
     protected function resourceInfo(): void
     {
-        if(! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
+        if (! in_array(MoonShineBuildType::RESOURCE, $this->builders)) {
             return;
         }
 

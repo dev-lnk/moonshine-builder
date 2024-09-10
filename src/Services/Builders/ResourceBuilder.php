@@ -121,7 +121,8 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
 
     public function withArray(): string
     {
-        $withArray = array_map(fn($with) => "'$with'", $this->moonShineStructure->getWithProperty());
+        $withArray = array_map(fn ($with) => "'$with'", $this->moonShineStructure->getWithProperty());
+
         return implode(', ', $withArray);
     }
 }
