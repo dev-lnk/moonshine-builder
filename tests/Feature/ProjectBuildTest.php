@@ -3,17 +3,22 @@
 namespace DevLnk\MoonShineBuilder\Tests\Feature;
 
 use DevLnk\MoonShineBuilder\Tests\TestCase;
+use DevLnk\MoonShineBuilder\Tests\Traits\GetMigrationFile;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use PHPUnit\Framework\Attributes\Test;
 
 class ProjectBuildTest extends TestCase
 {
+    use GetMigrationFile;
+
     private string $resourcePath = '';
 
     private string $modelPath = '';
 
     private string $migrationPath = '';
+
+    private Filesystem $filesystem;
 
     public function setUp(): void
     {
@@ -71,7 +76,9 @@ class ProjectBuildTest extends TestCase
             $this->assertStringContainsString($stringContain, $model);
         }
 
-        $migrationFile = $this->getMigrationFile('create_categories');
+        $migrationFile = $this->getMigrationFile('create_categories', $this->migrationPath, $this->filesystem);
+
+
         $this->assertNotEmpty($migrationFile);
         $migration = $this->filesystem->get($migrationFile);
         $migrationContains = [
@@ -143,7 +150,7 @@ class ProjectBuildTest extends TestCase
             $this->assertStringContainsString($stringContain, $model);
         }
 
-        $migrationFile = $this->getMigrationFile('create_products');
+        $migrationFile = $this->getMigrationFile('create_products', $this->migrationPath, $this->filesystem);
         $this->assertNotEmpty($migrationFile);
         $migration = $this->filesystem->get($migrationFile);
         $migrationContains = [
@@ -202,7 +209,7 @@ class ProjectBuildTest extends TestCase
             $this->assertStringContainsString($stringContain, $model);
         }
 
-        $migrationFile = $this->getMigrationFile('create_comments');
+        $migrationFile = $this->getMigrationFile('create_comments', $this->migrationPath, $this->filesystem);
         $this->assertNotEmpty($migrationFile);
         $migration = $this->filesystem->get($migrationFile);
         $migrationContains = [
@@ -214,21 +221,6 @@ class ProjectBuildTest extends TestCase
         foreach ($migrationContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $migration);
         }
-    }
-
-    private function getMigrationFile(string $migrationName): string
-    {
-        $migrationFile = '';
-        $migrations = $this->filesystem->allFiles($this->migrationPath);
-        foreach ($migrations as $migration) {
-            if (str_contains($migration, $migrationName)) {
-                $migrationFile = $migration;
-
-                break;
-            }
-        }
-
-        return $migrationFile;
     }
 
     public function tearDown(): void
