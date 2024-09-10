@@ -48,8 +48,8 @@ final readonly class StructureFromConsole implements MakeStructureContract
                 nullable: true
             );
 
-            if(! empty($value['relationTable'])) {
-                if(
+            if (! empty($value['relationTable'])) {
+                if (
                     $columnStructure->type() === SqlTypeMap::BELONGS_TO
                     || $columnStructure->type() === SqlTypeMap::BELONGS_TO_MANY
                 ) {
@@ -67,7 +67,7 @@ final readonly class StructureFromConsole implements MakeStructureContract
             $codeStructure->addColumn($columnStructure);
         }
 
-        if($this->isTimestamps) {
+        if ($this->isTimestamps) {
             $createdAtField = new ColumnStructure(
                 column: 'created_at',
                 name: 'Created at',
@@ -87,7 +87,7 @@ final readonly class StructureFromConsole implements MakeStructureContract
             $codeStructure->addColumn($updatedAtField);
         }
 
-        if($this->isSoftDelete) {
+        if ($this->isSoftDelete) {
             $softDeletes = new ColumnStructure(
                 column: 'deleted_at',
                 name: 'Deleted at',

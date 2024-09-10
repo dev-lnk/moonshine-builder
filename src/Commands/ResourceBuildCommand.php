@@ -6,9 +6,9 @@ use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFromConsole;
 
-use ValueError;
+use function Laravel\Prompts\{confirm, search, text};
 
-use function Laravel\Prompts\{search, text, confirm};
+use ValueError;
 
 class ResourceBuildCommand extends MoonShineBuildCommand
 {
@@ -39,7 +39,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
         } catch (ValueError $e) {
             $this->components->error($e->getMessage());
 
-            if(str_contains($e->getMessage(), 'is not a valid backing value for enum DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap')) {
+            if (str_contains($e->getMessage(), 'is not a valid backing value for enum DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap')) {
                 $this->components->info('You can see the available types by running the command: <fg=yellow>php artisan ms-build:types</>');
             }
 
@@ -65,11 +65,11 @@ class ResourceBuildCommand extends MoonShineBuildCommand
 
         foreach ($consoleFields as $value) {
             $field = explode(':', $value);
-            if(count($field) < 2) {
+            if (count($field) < 2) {
                 throw new ProjectBuilderException('Incorrect field value');
             }
 
-            if(count($field) === 2) {
+            if (count($field) === 2) {
                 $result[] = [
                     'column' => $field[0],
                     'name' => str($field[0])->ucfirst()->value(),
@@ -84,7 +84,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
                 'column' => $field[0],
                 'name' => $field[1],
                 'type' => $field[2],
-                'relationTable'  => $field[3] ?? '',
+                'relationTable' => $field[3] ?? '',
             ];
         }
 
@@ -126,7 +126,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
             $typeIndex = search('Column type:', static function (string $search) use ($sqlTypesValue) {
                 return strlen($search) === 0
                     ? $sqlTypesValue
-                    : array_filter($sqlTypesValue, fn($value) => str_contains($value, $search));
+                    : array_filter($sqlTypesValue, fn ($value) => str_contains($value, $search));
             }, scroll: 9);
 
             // If the type is relation, specify the table
@@ -139,7 +139,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
             ];
 
             $relationTable = '';
-            if(in_array($sqlType, $relationTypes)) {
+            if (in_array($sqlType, $relationTypes)) {
                 $tableName = str($column)->replace('_id', '')->snake()->plural();
                 $relationTable = text('Table name:', default: $tableName);
             }
@@ -148,7 +148,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
                 'column' => $column,
                 'name' => $name,
                 'type' => $sqlTypesValue[$typeIndex],
-                'relationTable' => $relationTable
+                'relationTable' => $relationTable,
             ];
 
             $addMore = confirm('Add more fields?', true);
