@@ -33,8 +33,8 @@ final readonly class StructureFromConsole implements MakeStructureContract
 
         $codeStructure = new CodeStructure($table, $name);
 
-        $codeStructure->setDataValue('withModel', $this->isMigration);
-        $codeStructure->setDataValue('withMigration', true);
+        $codeStructure->setDataValue('withMigration', $this->isMigration);
+        $codeStructure->setDataValue('withModel', true);
         $codeStructure->setDataValue('withResource', true);
 
         $codeStructure->setDataValue('column', null);
