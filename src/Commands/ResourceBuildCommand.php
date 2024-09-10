@@ -6,6 +6,8 @@ use DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Structures\Factories\StructureFromConsole;
 
+use ValueError;
+
 use function Laravel\Prompts\{search, text, confirm};
 
 class ResourceBuildCommand extends MoonShineBuildCommand
@@ -18,19 +20,31 @@ class ResourceBuildCommand extends MoonShineBuildCommand
 
         $this->prepareBuilders();
 
-        $fields = $this->hasArgument('fields') ? $this->consoleFields() : $this->promptFields();
+        $consoleFields = $this->argument('fields');
+
+        $fields = count($consoleFields) ? $this->consoleFields($consoleFields) : $this->promptFields();
 
         $isTimeStamps = confirm('Add timestamps?', true);
         $isSoftDeletes = confirm('Add softDelete?', false);
         $isMigration = confirm('Make migration?', false);
 
-        $codeStructureList = (new StructureFromConsole(
-            $this->argument('entity'),
-            $fields,
-            $isMigration,
-            $isTimeStamps,
-            $isSoftDeletes
-        ))->makeStructures();
+        try {
+            $codeStructureList = (new StructureFromConsole(
+                $this->argument('entity'),
+                $fields,
+                $isMigration,
+                $isTimeStamps,
+                $isSoftDeletes
+            ))->makeStructures();
+        } catch (ValueError $e) {
+            $this->components->error($e->getMessage());
+
+            if(str_contains($e->getMessage(), 'is not a valid backing value for enum DevLnk\LaravelCodeBuilder\Enums\SqlTypeMap')) {
+                $this->components->info('You can see the available types by running the command: <fg=yellow>php artisan ms-build:types</>');
+            }
+
+            return self::FAILURE;
+        }
 
         $generationPath = $this->generationPath();
 
@@ -45,10 +59,8 @@ class ResourceBuildCommand extends MoonShineBuildCommand
      * @throws ProjectBuilderException
      * @return array<int, array{column: string, name:string, type:string, relationTable:string}>
      */
-    protected function consoleFields(): array
+    protected function consoleFields($consoleFields): array
     {
-        $consoleFields = $this->argument('fields');
-
         $result = [];
 
         foreach ($consoleFields as $value) {
@@ -62,7 +74,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
                     'column' => $field[0],
                     'name' => str($field[0])->ucfirst()->value(),
                     'type' => $field[1],
-                    'table' => '',
+                    'relationTable' => '',
                 ];
 
                 continue;
@@ -72,7 +84,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
                 'column' => $field[0],
                 'name' => $field[1],
                 'type' => $field[2],
-                'table'  => $field[3] ?? '',
+                'relationTable'  => $field[3] ?? '',
             ];
         }
 
@@ -108,7 +120,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
 
             // Column name
             $defaultName = str($column)->replace('_id', '')->camel()->ucfirst()->value();
-            $name = text('Column name:', $defaultName);
+            $name = text('Column name:', default: $defaultName);
 
             // Selecting a field type
             $typeIndex = search('Column type:', static function (string $search) use ($sqlTypesValue) {
@@ -129,7 +141,7 @@ class ResourceBuildCommand extends MoonShineBuildCommand
             $relationTable = '';
             if(in_array($sqlType, $relationTypes)) {
                 $tableName = str($column)->replace('_id', '')->snake()->plural();
-                $relationTable = text('Table name:', $tableName);
+                $relationTable = text('Table name:', default: $tableName);
             }
 
             $result[] = [
