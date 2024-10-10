@@ -72,6 +72,14 @@ final readonly class StructureFromArray implements MakeStructureContract
                 }
 
                 if (isset($field['default'])) {
+                    if($field['default'] === false) {
+                        $field['default'] = 'false';
+                    }
+
+                    if($field['default'] === true) {
+                        $field['default'] = 'true';
+                    }
+
                     if (! isset($field['methods'])) {
                         $field['methods'][] = "default({$field['default']})";
                     } else {
