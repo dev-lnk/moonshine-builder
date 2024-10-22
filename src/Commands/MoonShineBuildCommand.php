@@ -117,7 +117,7 @@ class MoonShineBuildCommand extends LaravelCodeBuildCommand
 
         $resourcePath = $codePath->path(MoonShineBuildType::RESOURCE->value);
 
-        $this->reminderResourceInfo[] = "new {$resourcePath->rawName()}(),";
+        $this->reminderResourceInfo[] = "{$resourcePath->rawName()}::class,";
         $this->reminderMenuInfo[] = StubBuilder::make($this->stubDir . 'MenuItem')
             ->getFromStub([
                 '{resource}' => $resourcePath->rawName(),
