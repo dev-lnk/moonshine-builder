@@ -18,12 +18,28 @@ class {class} extends ModelResource
 
     protected string $title = '{class}';{column}{with_array}
 
-    public function indexFields(): array
+    public function indexFields(): iterable
     {
         // TODO correct labels values
+        return [{fields}
+        ];
+    }
+
+    public function formFields(): iterable
+    {
         return [
-            Block::make([{fields}
-            ]),
+            Block::make([
+                ...$this->indexFields()
+            ])
+        ];
+    }
+
+    public function detailFields(): iterable
+    {
+        return [
+            Block::make([
+                ...$this->indexFields()
+            ])
         ];
     }
 
