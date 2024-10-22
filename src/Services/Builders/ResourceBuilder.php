@@ -92,9 +92,9 @@ class ResourceBuilder extends AbstractBuilder implements ResourceBuilderContract
     {
         $result = "";
 
-        foreach ($this->moonShineStructure->getFields(tabulation: 5) as $field) {
+        foreach ($this->moonShineStructure->getFields(tabulation: 4) as $field) {
             $result .= str($field)
-                ->prepend("\t\t\t\t")
+                ->prepend("\t\t\t")
                 ->prepend("\n")
                 ->append(',')
                 ->value()
