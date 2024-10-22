@@ -30,7 +30,7 @@ final class TypeMap
 
     public function __construct()
     {
-        $this->fieldClasses = collect(File::files(Core::path('src/UI/Fields')))
+        $this->fieldClasses = collect(File::files(Core::path('UI/src/Fields')))
             ->mapWithKeys(
                 fn (SplFileInfo $file): array => [
                     $file->getFilenameWithoutExtension() => 'MoonShine\\UI\\Fields\\' . $file->getFilenameWithoutExtension(),
