@@ -36,11 +36,7 @@ class {class} extends ModelResource
 
     public function detailFields(): iterable
     {
-        return [
-            Block::make([
-                ...$this->indexFields()
-            ])
-        ];
+        return $this->indexFields();
     }
 
     public function rules(mixed $item): array
