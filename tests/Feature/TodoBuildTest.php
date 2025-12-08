@@ -67,6 +67,50 @@ class TodoBuildTest extends TestCase
             "Schema::create('tasks', function (Blueprint \$table) {",
             "\$table->string('priority')->default('Низкий');",
         ]);
+
+        $resourceFields = [
+            "use MoonShine\UI\Fields\ID;",
+            "use MoonShine\UI\Fields\Text;",
+            "use MoonShine\UI\Fields\Select;",
+            "use MoonShine\UI\Fields\Date;",
+            "use MoonShine\Laravel\Fields\Relationships\BelongsTo;",
+            "use MoonShine\Laravel\Fields\Relationships\BelongsToMany;",
+            "use MoonShine\Laravel\Fields\Relationships\HasMany;",
+            "ID::make('id')\n\t\t\t\t->sortable()",
+            "Text::make('Название', 'title')",
+            "Text::make('Описание', 'content')",
+            "Select::make('Приоритет', 'priority')\n\t\t\t\t->default('Низкий')\n\t\t\t\t->options(['Низкий', 'Средний', 'Высокий'])",
+            "Date::make('Дедлайн', 'deadline')",
+            "BelongsTo::make('Ответственный', 'moonshineUser', resource: MoonShineUserResource::class)",
+            "BelongsTo::make('Стадия', 'stage', resource: StageResource::class)",
+            "BelongsToMany::make('Теги', 'tags', resource: TagResource::class)",
+            "HasMany::make('Вложения', 'taskAttachments', resource: TaskAttachmentResource::class)->creatable()",
+        ];
+
+        $indexPage = $this->resourcePath . 'Task/Pages/TaskIndexPage.php';
+        $this->testBuildFile($indexPage, $resourceFields + [
+            "use App\MoonShine\Resources\Task\TaskResource;",
+            "@extends IndexPage<TaskResource>",
+        ]);
+
+        $formPage = $this->resourcePath . 'Task/Pages/TaskFormPage.php';
+        $this->testBuildFile($formPage, $resourceFields + [
+            "use App\MoonShine\Resources\Task\TaskResource;",
+            "@extends FormPage<TaskResource>",
+            "'title' => ['string', 'required']",
+            "'content' => ['string', 'required']",
+            "'priority' => ['string', 'required']",
+            "'deadline' => ['string', 'required']",
+            "'moonshine_user_id' => ['int', 'required']",
+            "'stage_id' => ['int', 'required']",
+            "'tags' => ['array', 'nullable']",
+        ]);
+
+        $detailPage = $this->resourcePath . 'Task/Pages/TaskDetailPage.php';
+        $this->testBuildFile($detailPage, $resourceFields + [
+            "use App\MoonShine\Resources\Task\TaskResource;",
+            "@extends DetailPage<TaskResource>",
+        ]);
     }
 
     /**
@@ -74,11 +118,7 @@ class TodoBuildTest extends TestCase
      */
     private function taskAttachment(string $resourcePath, string $modelPath): void
     {
-        $this->assertFileExists($resourcePath);
-        $this->assertFileExists($modelPath);
-
-        $resource = $this->filesystem->get($resourcePath);
-        $resourceStringContains = [
+        $this->testBuildFile($resourcePath, [
             "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentIndexPage;",
             "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentFormPage;",
             "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentDetailPage;",
@@ -87,34 +127,57 @@ class TodoBuildTest extends TestCase
             "protected string \$column = 'attachment';",
             "protected array \$with = ['task'];",
             "protected string \$title = 'Вложения';",
-        ];
-        foreach ($resourceStringContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $resource);
-        }
+        ]);
 
-        $model = $this->filesystem->get($modelPath);
-        $modelContains = [
+        $this->testBuildFile($modelPath, [
             "class TaskAttachment extends Model",
             "'attachment' => 'json',",
-        ];
-        foreach ($modelContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $model);
-        }
+        ]);
 
         $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_task_attachments');
-        $this->assertNotEmpty($migrationFile);
-        $migration = $this->filesystem->get($migrationFile);
-        $migrationContains = [
+        $this->testBuildFile($migrationFile, [
             "\$table->string('attachment');",
+        ]);
+
+        $resourceFields = [
+            "use MoonShine\UI\Fields\ID;",
+            "use MoonShine\Laravel\Fields\Relationships\BelongsTo;",
+            "use MoonShine\UI\Fields\File;",
+            "ID::make('id')",
+            "BelongsTo::make('Задача', 'task', resource: TaskResource::class)",
+            "File::make('Файл', 'attachment')\n\t\t\t\t->multiple()",
         ];
-        foreach ($migrationContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $migration);
-        }
+
+        $indexPage = $this->resourcePath . 'TaskAttachment/Pages/TaskAttachmentIndexPage.php';
+        $this->testBuildFile($indexPage, $resourceFields + [
+            "use App\MoonShine\Resources\TaskAttachment\TaskAttachmentResource;",
+            "@extends IndexPage<TaskAttachmentResource>",
+        ]);
+
+        $formPage = $this->resourcePath . 'TaskAttachment/Pages/TaskAttachmentFormPage.php';
+        $this->testBuildFile($formPage, $resourceFields + [
+            "use App\MoonShine\Resources\TaskAttachment\TaskAttachmentResource;",
+            "@extends FormPage<TaskAttachmentResource>",
+            "'task_id' => ['int', 'required']",
+            "'attachment' => ['array', 'required']",
+        ]);
+
+        $detailPage = $this->resourcePath . 'TaskAttachment/Pages/TaskAttachmentDetailPage.php';
+        $this->testBuildFile($detailPage, $resourceFields + [
+            "use App\MoonShine\Resources\TaskAttachment\TaskAttachmentResource;",
+            "@extends DetailPage<TaskAttachmentResource>",
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath);
+        $this->filesystem->deleteDirectory($this->resourcePath);
+
+        $this->filesystem->delete($this->modelPath . 'Task.php');
+        $this->filesystem->delete($this->modelPath . 'TaskTagPivot.php');
+        $this->filesystem->delete($this->modelPath . 'TaskAttachment.php');
+        $this->filesystem->delete($this->modelPath . 'Stage.php');
+        $this->filesystem->delete($this->modelPath . 'Tag.php');
 
         $migrations = $this->filesystem->allFiles($this->migrationPath);
         foreach ($migrations as $migrationFile) {

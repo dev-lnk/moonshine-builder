@@ -74,6 +74,35 @@ class BelongsToManyBuildTest extends TestCase
             "table->string('title');",
             "table->timestamps();",
         ]);
+
+        $resourceFields = [
+            "use MoonShine\UI\Fields\ID;",
+            "use MoonShine\UI\Fields\Text;",
+            "use MoonShine\Laravel\Fields\Relationships\BelongsToMany;",
+            "ID::make('id')\n\t\t\t\t->sortable()",
+            "Text::make('Name', 'title')",
+            "BelongsToMany::make('Properties', 'properties', resource: PropertyResource::class)",
+        ];
+
+        $indexPage = $this->resourcePath . 'Item/Pages/ItemIndexPage.php';
+        $this->testBuildFile($indexPage, $resourceFields + [
+            "use App\MoonShine\Resources\Item\ItemResource;",
+            "@extends IndexPage<ItemResource>",
+        ]);
+
+        $formPage = $this->resourcePath . 'Item/Pages/ItemFormPage.php';
+        $this->testBuildFile($formPage, $resourceFields + [
+            "use App\MoonShine\Resources\Item\ItemResource;",
+            "@extends FormPage<ItemResource>",
+            "'title' => ['string', 'required']",
+            "'properties' => ['array', 'nullable']",
+        ]);
+
+        $detailPage = $this->resourcePath . 'Item/Pages/ItemDetailPage.php';
+        $this->testBuildFile($detailPage, $resourceFields + [
+            "use App\MoonShine\Resources\Item\ItemResource;",
+            "@extends DetailPage<ItemResource>",
+        ]);
     }
 
     /**
@@ -100,11 +129,40 @@ class BelongsToManyBuildTest extends TestCase
             "table->id();",
             "table->string('title');",
         ]);
+
+        $resourceFields = [
+            "use MoonShine\UI\Fields\ID;",
+            "use MoonShine\UI\Fields\Text;",
+            "use MoonShine\Laravel\Fields\Relationships\BelongsToMany;",
+            "ID::make('id')",
+            "Text::make('Name', 'title')",
+            "BelongsToMany::make('Items', 'items', resource: ItemResource::class)",
+        ];
+
+        $indexPage = $this->resourcePath . 'Property/Pages/PropertyIndexPage.php';
+        $this->testBuildFile($indexPage, $resourceFields + [
+            "use App\MoonShine\Resources\Property\PropertyResource;",
+            "@extends IndexPage<PropertyResource>",
+        ]);
+
+        $formPage = $this->resourcePath . 'Property/Pages/PropertyFormPage.php';
+        $this->testBuildFile($formPage, $resourceFields + [
+            "use App\MoonShine\Resources\Property\PropertyResource;",
+            "@extends FormPage<PropertyResource>",
+            "'title' => ['string', 'required']",
+            "'items' => ['array', 'nullable']",
+        ]);
+
+        $detailPage = $this->resourcePath . 'Property/Pages/PropertyDetailPage.php';
+        $this->testBuildFile($detailPage, $resourceFields + [
+            "use App\MoonShine\Resources\Property\PropertyResource;",
+            "@extends DetailPage<PropertyResource>",
+        ]);
     }
 
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath);
+        $this->filesystem->deleteDirectory($this->resourcePath);
 
         $this->filesystem->delete($this->modelPath . 'Item.php');
         $this->filesystem->delete($this->modelPath . 'Property.php');

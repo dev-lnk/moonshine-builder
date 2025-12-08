@@ -248,7 +248,7 @@ class ProjectBuildTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath);
+        $this->filesystem->deleteDirectory($this->resourcePath);
 
         $this->filesystem->delete($this->modelPath . 'Category.php');
         $this->filesystem->delete($this->modelPath . 'Product.php');
