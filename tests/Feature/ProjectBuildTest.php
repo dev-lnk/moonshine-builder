@@ -56,6 +56,7 @@ class ProjectBuildTest extends TestCase
             "use App\MoonShine\Resources\Category\Pages\CategoryFormPage;",
             "use App\MoonShine\Resources\Category\Pages\CategoryDetailPage;",
             "@extends ModelResource<Category, CategoryIndexPage, CategoryFormPage, CategoryDetailPage>",
+            "protected string \$model = Category::class;",
             "protected string \$column = 'name';",
             "protected string \$title = 'Category';",
         ];
@@ -102,6 +103,7 @@ class ProjectBuildTest extends TestCase
             "use App\MoonShine\Resources\Product\Pages\ProductFormPage;",
             "use App\MoonShine\Resources\Product\Pages\ProductDetailPage;",
             "protected array \$with = ['category', 'comments', 'moonshineUser'];",
+            "protected string \$model = Product::class;"
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource, "Contains not found: $stringContain");

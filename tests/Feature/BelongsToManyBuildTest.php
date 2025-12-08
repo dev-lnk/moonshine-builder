@@ -36,8 +36,8 @@ class BelongsToManyBuildTest extends TestCase
     {
         $this->artisan('moonshine:build belongs_to_many.json');
 
-        $this->item($this->resourcePath . 'ItemResource.php', $this->modelPath . 'Item.php');
-        $this->property($this->resourcePath . 'PropertyResource.php', $this->modelPath . 'Property.php');
+        $this->item($this->resourcePath . 'Item/ItemResource.php', $this->modelPath . 'Item.php');
+        $this->property($this->resourcePath . 'Property/PropertyResource.php', $this->modelPath . 'Property.php');
 
         $migrationFile = $this->getMigrationFile('create_item_property');
         $this->assertNotEmpty($migrationFile);
@@ -63,14 +63,11 @@ class BelongsToManyBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
-            "use MoonShine\Laravel\Fields\Relationships\BelongsToMany;",
-            "@extends ModelResource<Item>",
+            "use App\MoonShine\Resources\Item\Pages\ItemIndexPage;",
+            "use App\MoonShine\Resources\Item\Pages\ItemFormPage;",
+            "use App\MoonShine\Resources\Item\Pages\ItemDetailPage;",
+            "@extends ModelResource<Item, ItemIndexPage, ItemFormPage, ItemDetailPage>",
             "protected array \$with = ['properties'];",
-            "BelongsToMany::make('Properties', 'properties', resource: PropertyResource::class)",
-            "'title' => ['string', 'required']",
-            "'properties' => ['array', 'nullable']",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -110,14 +107,10 @@ class BelongsToManyBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
-            "use MoonShine\Laravel\Fields\Relationships\BelongsToMany;",
-            "@extends ModelResource<Property>",
+            "use App\MoonShine\Resources\Property\Pages\PropertyIndexPage;",
+            "use App\MoonShine\Resources\Property\Pages\PropertyFormPage;",
+            "use App\MoonShine\Resources\Property\Pages\PropertyDetailPage;",
             "protected array \$with = ['items'];",
-            "BelongsToMany::make('Items', 'items', resource: ItemResource::class)",
-            "'title' => ['string', 'required']",
-            "'items' => ['array', 'nullable']",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -163,8 +156,7 @@ class BelongsToManyBuildTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath . 'ItemResource.php');
-        $this->filesystem->delete($this->resourcePath . 'PropertyResource.php');
+        $this->filesystem->delete($this->resourcePath);
 
         $this->filesystem->delete($this->modelPath . 'Item.php');
         $this->filesystem->delete($this->modelPath . 'Property.php');
