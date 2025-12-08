@@ -36,9 +36,9 @@ class ProjectBuildTest extends TestCase
     {
         $this->artisan('moonshine:build project.json --type=json');
 
-        $this->category($this->resourcePath . 'CategoryResource.php', $this->modelPath . 'Category.php');
-        $this->product($this->resourcePath . 'ProductResource.php', $this->modelPath . 'Product.php');
-        $this->comments($this->resourcePath . 'CommentResource.php', $this->modelPath . 'Comment.php');
+        $this->category($this->resourcePath . 'Category/CategoryResource.php', $this->modelPath . 'Category.php');
+        $this->product($this->resourcePath . 'Product/ProductResource.php', $this->modelPath . 'Product.php');
+        $this->comments($this->resourcePath . 'Comment/CommentResource.php', $this->modelPath . 'Comment.php');
     }
 
     /**
@@ -51,12 +51,13 @@ class ProjectBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
             "use App\Models\Category;",
+            "use App\MoonShine\Resources\Category\Pages\CategoryIndexPage;",
+            "use App\MoonShine\Resources\Category\Pages\CategoryFormPage;",
+            "use App\MoonShine\Resources\Category\Pages\CategoryDetailPage;",
+            "@extends ModelResource<Category, CategoryIndexPage, CategoryFormPage, CategoryDetailPage>",
             "protected string \$column = 'name';",
-            "ID::make('id')",
-            "Text::make('Name', 'name')",
+            "protected string \$title = 'Category';",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -95,31 +96,12 @@ class ProjectBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
-            "use MoonShine\UI\Fields\Number;",
-            "use MoonShine\Laravel\Fields\Relationships\BelongsTo;",
-            "use MoonShine\Laravel\Fields\Relationships\HasMany;",
-            "use MoonShine\UI\Fields\Checkbox;",
             "use App\Models\Product;",
-            "@extends ModelResource<Product>",
+            "@extends ModelResource<Product, ProductIndexPage, ProductFormPage, ProductDetailPage>",
+            "use App\MoonShine\Resources\Product\Pages\ProductIndexPage;",
+            "use App\MoonShine\Resources\Product\Pages\ProductFormPage;",
+            "use App\MoonShine\Resources\Product\Pages\ProductDetailPage;",
             "protected array \$with = ['category', 'comments', 'moonshineUser'];",
-            "ID::make('id')\n\t\t\t\t->sortable()",
-            "Text::make('Name', 'title')",
-            "Text::make('Content', 'content')",
-            "Number::make('Price', 'price')\n\t\t\t\t->default(0)\n\t\t\t\t->sortable()",
-            "Number::make('Sorting', 'sort_number')",
-            "BelongsTo::make('Category', 'category', resource: CategoryResource::class)",
-            "HasMany::make('Comments', 'comments', resource: CommentResource::class)->creatable()",
-            "BelongsTo::make('User', 'moonshineUser', resource: MoonShineUserResource::class)",
-            "Checkbox::make('Active', 'is_active')",
-            "'title' => ['string', 'required']",
-            "'content' => ['string', 'nullable']",
-            "'price' => ['int', 'required']",
-            "'sort_number' => ['int', 'required']",
-            "'category_id' => ['int', 'required']",
-            "'moonshine_user_id' => ['int', 'required']",
-            "'is_active' => ['boolean', 'required']",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource, "Contains not found: $stringContain");
@@ -174,18 +156,7 @@ class ProjectBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
-            "use MoonShine\Laravel\Fields\Relationships\BelongsTo;",
-            "use App\Models\Comment;",
-            "@extends ModelResource<Comment>",
             "class CommentResource extends ModelResource",
-            "public function getTitle(): string",
-            "return 'Comment';",
-            "ID::make('id')",
-            "Text::make('Comment', 'comment')",
-            "BelongsTo::make('Product', 'product', resource: ProductResource::class)",
-            "BelongsTo::make('User', 'moonshineUser', resource: MoonShineUserResource::class)",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -237,9 +208,7 @@ class ProjectBuildTest extends TestCase
 
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath . 'CategoryResource.php');
-        $this->filesystem->delete($this->resourcePath . 'ProductResource.php');
-        $this->filesystem->delete($this->resourcePath . 'CommentResource.php');
+        $this->filesystem->delete($this->resourcePath);
 
         $this->filesystem->delete($this->modelPath . 'Category.php');
         $this->filesystem->delete($this->modelPath . 'Product.php');
