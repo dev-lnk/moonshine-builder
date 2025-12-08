@@ -6,6 +6,7 @@ namespace DevLnk\MoonShineBuilder\Tests;
 
 use DevLnk\MoonShineBuilder\Providers\MoonShineBuilderProvider;
 use DevLnk\MoonShineBuilder\Tests\Fixtures\TestServiceProvider;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
@@ -52,6 +53,34 @@ class TestCase extends \Orchestra\Testbench\TestCase
         copy(realpath('./tests/Fixtures/builds/todo.json'), base_path('builds/todo.json'));
 
         return $this;
+    }
+
+    /**
+     * @param string   $filePath
+     * @param string[] $fileMustContains
+     *
+     * @throws FileNotFoundException
+     */
+    protected function testBuildFile(string $filePath, array $fileMustContains): void
+    {
+        $this->assertFileExists($filePath);
+        $resource = (new Filesystem())->get($filePath);
+        foreach ($fileMustContains as $stringContain) {
+            $this->assertStringContainsString($stringContain, $resource);
+        }
+    }
+
+    protected function getMigrationFile(string $migrationPath, string $migrationName): string
+    {
+        $migrationFile = '';
+        $migrations = (new Filesystem())->allFiles($migrationPath);
+        foreach ($migrations as $migration) {
+            if(str_contains((string) $migration, $migrationName)) {
+                $migrationFile = (string) $migration;
+                break;
+            }
+        }
+        return $migrationFile;
     }
 
     protected function getPackageProviders($app): array

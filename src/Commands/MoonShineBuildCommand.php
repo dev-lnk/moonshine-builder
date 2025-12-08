@@ -162,6 +162,7 @@ class MoonShineBuildCommand extends MoonShineCommand
     /**
      * @return array<int, CodeStructure>
      * @throws ProjectBuilderException
+     * @throws CodeGenerateCommandException
      */
     protected function codeStructures(): array
     {
@@ -176,13 +177,22 @@ class MoonShineBuildCommand extends MoonShineCommand
 //        }
 
         if($this->parseType === ParseType::TABLE) {
-            $target = select(
-                'Table',
-                collect(Schema::getTables())
+            $tables = collect(Schema::getTables())
                     ->filter(fn ($v) => str_contains((string) $v['name'], (string) $target ?? ''))
-                    ->mapWithKeys(fn ($v) => [$v['name'] => $v['name']]),
-                default: 'jobs'
-            );
+                ->mapWithKeys(fn ($v) => [$v['name'] => $v['name']]);
+
+            $target = $tables->count() === 1
+                ? $tables->first()
+                : select(
+                    'Table',
+                    collect(Schema::getTables())
+                        ->filter(fn ($v) => str_contains((string) $v['name'], (string) $target ?? ''))
+                        ->mapWithKeys(fn ($v) => [$v['name'] => $v['name']]),
+                );
+
+            if($target === null) {
+                throw new CodeGenerateCommandException('Table not found');
+            }
 
             $this->builders = array_filter($this->builders, fn ($item) => $item !== BuildType::MIGRATION);
         }
