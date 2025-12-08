@@ -38,8 +38,8 @@ class TodoBuildTest extends TestCase
     {
         $this->artisan('moonshine:build todo.json --type=json');
 
-        $this->task($this->resourcePath . 'TaskResource.php', $this->modelPath . 'Task.php');
-        $this->taskAttachment($this->resourcePath . 'TaskAttachmentResource.php', $this->modelPath . 'TaskAttachment.php');
+        $this->task($this->resourcePath . 'Task/TaskResource.php', $this->modelPath . 'Task.php');
+        $this->taskAttachment($this->resourcePath . 'TaskAttachment/TaskAttachmentResource.php', $this->modelPath . 'TaskAttachment.php');
     }
 
     /**
@@ -47,44 +47,26 @@ class TodoBuildTest extends TestCase
      */
     private function task(string $resourcePath, string $modelPath): void
     {
-        $this->assertFileExists($resourcePath);
-        $this->assertFileExists($modelPath);
-
-        $resource = $this->filesystem->get($resourcePath);
-        $resourceStringContains = [
-            "use MoonShine\UI\Fields\ID;",
-            "use MoonShine\UI\Fields\Text;",
+        $this->testBuildFile($resourcePath, [
+            "use App\MoonShine\Resources\Task\Pages\TaskIndexPage",
+            "use App\MoonShine\Resources\Task\Pages\TaskFormPage",
+            "use App\MoonShine\Resources\Task\Pages\TaskDetailPage",
+            "@extends ModelResource<Task, TaskIndexPage, TaskFormPage, TaskDetailPage>",
             "use App\Models\Task;",
-            "ID::make('id')",
-            "->default('Низкий')",
-            "public function filters(): iterable",
-            "public function filters(): iterable",
-            "'title' => ['string', 'required']"
-        ];
-        foreach ($resourceStringContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $resource);
-        }
+            "protected array \$with = ['moonshineUser', 'stage', 'tags', 'taskAttachments'];",
+        ]);
 
-        $model = $this->filesystem->get($modelPath);
-        $modelContains = [
+        $this->testBuildFile($modelPath, [
             "class Task extends Model",
             "use SoftDeletes;",
             "return \$this->hasMany(TaskAttachment::class, 'task_id');",
-        ];
-        foreach ($modelContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $model);
-        }
+        ]);
 
-        $migrationFile = $this->getMigrationFile('create_tasks');
-        $this->assertNotEmpty($migrationFile);
-        $migration = $this->filesystem->get($migrationFile);
-        $migrationContains = [
+        $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_tasks');
+        $this->testBuildFile($migrationFile, [
             "Schema::create('tasks', function (Blueprint \$table) {",
             "\$table->string('priority')->default('Низкий');",
-        ];
-        foreach ($migrationContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $migration);
-        }
+        ]);
     }
 
     /**
@@ -97,10 +79,14 @@ class TodoBuildTest extends TestCase
 
         $resource = $this->filesystem->get($resourcePath);
         $resourceStringContains = [
-            "BelongsTo::make('Задача', 'task', resource: TaskResource::class),",
-            "File::make('Файл', 'attachment')",
-            "->multiple(),",
-            "'attachment' => ['array', 'required'],",
+            "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentIndexPage;",
+            "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentFormPage;",
+            "use App\MoonShine\Resources\TaskAttachment\Pages\TaskAttachmentDetailPage;",
+            "@extends ModelResource<TaskAttachment, TaskAttachmentIndexPage, TaskAttachmentFormPage, TaskAttachmentDetailPage>",
+            "protected string \$model = TaskAttachment::class;",
+            "protected string \$column = 'attachment';",
+            "protected array \$with = ['task'];",
+            "protected string \$title = 'Вложения';",
         ];
         foreach ($resourceStringContains as $stringContain) {
             $this->assertStringContainsString($stringContain, $resource);
@@ -115,7 +101,7 @@ class TodoBuildTest extends TestCase
             $this->assertStringContainsString($stringContain, $model);
         }
 
-        $migrationFile = $this->getMigrationFile('create_task_attachments');
+        $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_task_attachments');
         $this->assertNotEmpty($migrationFile);
         $migration = $this->filesystem->get($migrationFile);
         $migrationContains = [
@@ -126,33 +112,9 @@ class TodoBuildTest extends TestCase
         }
     }
 
-    private function getMigrationFile(string $migrationName): string
-    {
-        $migrationFile = '';
-        $migrations = $this->filesystem->allFiles($this->migrationPath);
-        foreach ($migrations as $migration) {
-            if(str_contains((string) $migration, $migrationName)) {
-                $migrationFile = (string) $migration;
-
-                break;
-            }
-        }
-
-        return $migrationFile;
-    }
-
     public function tearDown(): void
     {
-        $this->filesystem->delete($this->resourcePath . 'TaskResource.php');
-        $this->filesystem->delete($this->resourcePath . 'TaskAttachmentResource.php');
-        $this->filesystem->delete($this->resourcePath . 'TagResource.php');
-        $this->filesystem->delete($this->resourcePath . 'StageResource.php');
-
-        $this->filesystem->delete($this->modelPath . 'Task.php');
-        $this->filesystem->delete($this->modelPath . 'TaskAttachment.php');
-        $this->filesystem->delete($this->modelPath . 'Tag.php');
-        $this->filesystem->delete($this->modelPath . 'Stage.php');
-        $this->filesystem->delete($this->modelPath . 'TaskTagPivot.php');
+        $this->filesystem->delete($this->resourcePath);
 
         $migrations = $this->filesystem->allFiles($this->migrationPath);
         foreach ($migrations as $migrationFile) {

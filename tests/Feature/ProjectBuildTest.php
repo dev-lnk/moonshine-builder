@@ -46,11 +46,7 @@ class ProjectBuildTest extends TestCase
      */
     private function category(string $resourcePath, string $modelPath): void
     {
-        $this->assertFileExists($resourcePath);
-        $this->assertFileExists($modelPath);
-
-        $resource = $this->filesystem->get($resourcePath);
-        $resourceStringContains = [
+        $this->testBuildFile($resourcePath, [
             "use App\Models\Category;",
             "use App\MoonShine\Resources\Category\Pages\CategoryIndexPage;",
             "use App\MoonShine\Resources\Category\Pages\CategoryFormPage;",
@@ -59,32 +55,20 @@ class ProjectBuildTest extends TestCase
             "protected string \$model = Category::class;",
             "protected string \$column = 'name';",
             "protected string \$title = 'Category';",
-        ];
-        foreach ($resourceStringContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $resource);
-        }
+        ]);
 
-        $model = $this->filesystem->get($modelPath);
-        $modelContains = [
+        $this->testBuildFile($modelPath, [
             "class Category extends Model",
             "public \$timestamps = false;",
             "protected \$fillable = [\n\t\t'name'",
-        ];
-        foreach ($modelContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $model);
-        }
+        ]);
 
-        $migrationFile = $this->getMigrationFile('create_categories');
-        $this->assertNotEmpty($migrationFile);
-        $migration = $this->filesystem->get($migrationFile);
-        $migrationContains = [
+        $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_categories');
+        $this->testBuildFile($migrationFile, [
             "Schema::create('categories', function (Blueprint \$table) {",
             "\$table->id();",
             "\$table->string('name', 100);",
-        ];
-        foreach ($migrationContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $migration);
-        }
+        ]);
     }
 
     /**
@@ -92,11 +76,7 @@ class ProjectBuildTest extends TestCase
      */
     private function product(string $resourcePath, string $modelPath): void
     {
-        $this->assertFileExists($resourcePath);
-        $this->assertFileExists($modelPath);
-
-        $resource = $this->filesystem->get($resourcePath);
-        $resourceStringContains = [
+        $this->testBuildFile($resourcePath, [
             "use App\Models\Product;",
             "@extends ModelResource<Product, ProductIndexPage, ProductFormPage, ProductDetailPage>",
             "use App\MoonShine\Resources\Product\Pages\ProductIndexPage;",
@@ -104,13 +84,9 @@ class ProjectBuildTest extends TestCase
             "use App\MoonShine\Resources\Product\Pages\ProductDetailPage;",
             "protected array \$with = ['category', 'comments', 'moonshineUser'];",
             "protected string \$model = Product::class;"
-        ];
-        foreach ($resourceStringContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $resource, "Contains not found: $stringContain");
-        }
+        ]);
 
-        $model = $this->filesystem->get($modelPath);
-        $modelContains = [
+        $this->testBuildFile($modelPath, [
             "use Illuminate\Database\Eloquent\SoftDeletes;",
             "use Illuminate\Database\Eloquent\Relations\BelongsTo;",
             "use Illuminate\Database\Eloquent\Relations\HasMany;",
@@ -123,15 +99,10 @@ class ProjectBuildTest extends TestCase
             "return \$this->hasMany(Comment::class, 'product_id');",
             "public function moonshineUser(): BelongsTo",
             "return \$this->belongsTo(\\MoonShine\\Laravel\\Models\\MoonshineUser::class, 'moonshine_user_id');",
-        ];
-        foreach ($modelContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $model);
-        }
+        ]);
 
-        $migrationFile = $this->getMigrationFile('create_products');
-        $this->assertNotEmpty($migrationFile);
-        $migration = $this->filesystem->get($migrationFile);
-        $migrationContains = [
+        $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_products');
+        $this->testBuildFile($migrationFile, [
             "Schema::create('products', function (Blueprint \$table) {",
             "table->id();",
             "table->string('title');",
@@ -142,10 +113,7 @@ class ProjectBuildTest extends TestCase
             "table->boolean('is_active')->default(0);",
             "table->timestamps();",
             "table->softDeletes();",
-        ];
-        foreach ($migrationContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $migration);
-        }
+        ]);
     }
 
     /**
@@ -153,19 +121,11 @@ class ProjectBuildTest extends TestCase
      */
     private function comments(string $resourcePath, string $modelPath): void
     {
-        $this->assertFileExists($resourcePath);
-        $this->assertFileExists($modelPath);
-
-        $resource = $this->filesystem->get($resourcePath);
-        $resourceStringContains = [
+        $this->testBuildFile($resourcePath, [
             "class CommentResource extends ModelResource",
-        ];
-        foreach ($resourceStringContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $resource);
-        }
+        ]);
 
-        $model = $this->filesystem->get($modelPath);
-        $modelContains = [
+        $this->testBuildFile($modelPath, [
             "use Illuminate\Database\Eloquent\Relations\BelongsTo;",
             "class Comment extends Model",
             "public \$timestamps = false;",
@@ -174,38 +134,15 @@ class ProjectBuildTest extends TestCase
             "return \$this->belongsTo(Product::class, 'product_id');",
             "public function moonshineUser(): BelongsTo",
             "return \$this->belongsTo(\\MoonShine\\Laravel\\Models\\MoonshineUser::class, 'moonshine_user_id');",
-        ];
-        foreach ($modelContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $model);
-        }
+        ]);
 
-        $migrationFile = $this->getMigrationFile('create_comments');
-        $this->assertNotEmpty($migrationFile);
-        $migration = $this->filesystem->get($migrationFile);
-        $migrationContains = [
+        $migrationFile = $this->getMigrationFile($this->migrationPath, 'create_comments');
+        $this->testBuildFile($migrationFile, [
             "Schema::create('comments', function (Blueprint \$table) {",
             "table->string('comment');",
             "table->foreignIdFor(\App\Models\Product::class, 'product_id')\n\t\t\t\t->constrained()\n\t\t\t\t->cascadeOnDelete()\n\t\t\t\t->cascadeOnUpdate()",
             "table->foreignIdFor(\\MoonShine\\Laravel\\Models\\MoonshineUser::class, 'moonshine_user_id')\n\t\t\t\t->constrained()\n\t\t\t\t->cascadeOnDelete()\n\t\t\t\t->cascadeOnUpdate()",
-        ];
-        foreach ($migrationContains as $stringContain) {
-            $this->assertStringContainsString($stringContain, $migration);
-        }
-    }
-
-    private function getMigrationFile(string $migrationName): string
-    {
-        $migrationFile = '';
-        $migrations = $this->filesystem->allFiles($this->migrationPath);
-        foreach ($migrations as $migration) {
-            if(str_contains($migration, $migrationName)) {
-                $migrationFile = $migration;
-
-                break;
-            }
-        }
-
-        return $migrationFile;
+        ]);
     }
 
     public function tearDown(): void
