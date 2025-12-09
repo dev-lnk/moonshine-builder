@@ -67,6 +67,11 @@ class MoonShineBuildCommand extends MoonShineCommand
             return self::SUCCESS;
         }
 
+        if($this->parseType === ParseType::MODEL) {
+            $this->call('moonshine:build-model');
+            return self::SUCCESS;
+        }
+
         $this->setStubDir();
 
         $this->prepareBuilders();

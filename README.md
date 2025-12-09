@@ -21,6 +21,7 @@
         - [Soft delete](#soft-delete)
         - [Флаги для генерации файлов](#flags)
     - [Генерация из консоли](#console)
+    - [Генерация из существующей модели](#model)
 - [Массовый импорт таблиц](#mass-sql)
 - [Использование в других проектах](#cases)
 
@@ -33,7 +34,8 @@
 
  - [SQL-таблицы](#sql),
  - [JSON-схемы](#json),
- - [Генерация кода для нового ресурса из консоли](#console).
+ - [Генерация кода для нового ресурса из консоли](#console),
+ - [Существующей модели Laravel](#model).
 
 Пакет генерирует следующие файлы:
 
@@ -63,8 +65,11 @@ php artisan vendor:publish --tag=moonshine-builder
 
 ```php
 return [
-     // Directory where schematic files in json, yaml, etc. are stored.
+    // Directory where schematic files in json, yaml, etc. are stored.
     'builds_dir' => base_path('builds'),
+
+    // Base path for models directory.
+    'base_model_path' => 'app/Models',
 
     // Notification of duplicate files of models and resources with a new generation.
     'is_confirm_replace_files' => true,
@@ -91,6 +96,7 @@ php artisan moonshine:build
  │   ○ table                                                    │
  │ › ● json                                                     │
  │   ○ console                                                  │
+ │   ○ model                                                    │
  └──────────────────────────────────────────────────────────────┘
 ```
 При выборе варианта `json`:
@@ -110,7 +116,7 @@ INFO  All done.
 
 Команда имеет следующую сигнатуру `moonshine:build {target?} {--type=}`, где:
  - `target` - сущность, по которой будет выполнена генерация,
- - `type` - тип или метод генерации, доступно `table`, `json`, `console`.
+ - `type` - тип или метод генерации, доступно `table`, `json`, `console`, `model`.
 
 <a name="code-generate"></a>
 ## Методы генерации кода
@@ -285,6 +291,59 @@ protected function fields(): iterable
  - fields - поля для генерации вида name:Name:string или {column}:{columnName}:{type}
 
 Все доступные {type} можно посмотреть, выполнив команду `php artisan moonshine:build-types`
+
+<a name="model"></a>
+### Генерация из существующей модели
+
+Если у вас уже есть готовая модель Laravel с определёнными полями, связями и настройками, вы можете сгенерировать MoonShine Resource на основе этой модели. Выполните команду `php artisan moonshine:build` и выберите вариант `model`:
+
+```shell
+ ┌ Type ────────────────────────────────────────────────────────┐
+ │   ○ table                                                    │
+ │   ○ json                                                     │
+ │   ○ console                                                  │
+ │ › ● model                                                    │
+ └──────────────────────────────────────────────────────────────┘
+```
+
+Затем выберите нужную модель из списка доступных:
+
+```shell
+ ┌ Select models (use Space to select, Enter to confirm): ──────┐
+ │   ◻ app/Models/Category.php                                │ │
+ │   ◻ app/Models/Comment.php                                 │ │
+ │   ◻ app/Models/Product.php                                 │ │
+ │   ◻ app/Models/Rating.php                                  │ │
+ │   ◻ app/Models/Review.php                                  │ │
+ │   ◻ app/Models/Tag.php                                     │ │
+ └────────────────────────────────────────────────── 0 selected ┘
+```
+
+Вы также можете сразу указать модель для генерации:
+
+```shell
+php artisan moonshine:build-model Product
+```
+
+или с полным именем класса:
+
+```shell
+php artisan moonshine:build-model "App\Models\Product"
+```
+
+Пакет автоматически проанализирует модель и создаст:
+- Resource с полями на основе структуры таблицы
+- Связи (HasMany, BelongsTo, BelongsToMany, HasOne) на основе методов модели
+- Правильные типы полей на основе типов колонок в базе данных
+- Настройки timestamps и soft deletes, если они используются в модели
+
+**Настройка директории моделей**
+
+По умолчанию пакет ищет модели в директории `app/Models`. Вы можете изменить это в файле конфигурации:
+
+```php
+'base_model_path' => 'app/Models',
+```
 
 <a name="mass-sql"></a>
 ### Массовый импорт таблиц
