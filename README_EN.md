@@ -12,7 +12,7 @@
 
 #### Hello, Laravel and MoonShine User!
 
-This package allows you to describe the entire project structure using a [JSON](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json) or `SQL` table schema and generate the necessary files, such as:
+This package allows you to describe the entire project structure using a [JSON](https://github.com/dev-lnk/moonshine-builder/blob/master/json_schema.json) schema, `SQL` table schema, console generation, or existing Laravel models and generate the necessary files, such as:
 
  - [Resource](https://github.com/dev-lnk/moonshine-builder/blob/master/.github/entities/resource.md)
  - [Model](https://github.com/dev-lnk/moonshine-builder/blob/master/.github/entities/model.md)
@@ -32,7 +32,20 @@ In the configuration file, specify the path to your JSON schemas:
 
 ```php
 return [
-    'builds_dir' => base_path('builds')
+    // Directory where schematic files in json, yaml, etc. are stored.
+    'builds_dir' => base_path('builds'),
+
+    // Base path for models directory.
+    'base_model_path' => 'app/Models',
+
+    // Notification of duplicate files of models and resources with a new generation.
+    'is_confirm_replace_files' => true,
+
+    // Ask about adding a new resource to the provider.
+    'is_confirm_change_provider' => false,
+
+    // Ask about adding a new resource to the menu.
+    'is_confirm_change_menu' => false,
 ];
 ```
 
@@ -41,12 +54,14 @@ Now you can run the command:
 ```shell
 php artisan moonshine:build
 ```
-You will be given options as to which scheme to use when generating the code, form example:
+You will be given options as to which scheme to use when generating the code, for example:
 
 ```shell
  ┌ Type ────────────────────────────────────────────────────────┐
  │ › ● json                                                     │
  │   ○ table                                                    │
+ │   ○ console                                                  │
+ │   ○ model                                                    │
  └──────────────────────────────────────────────────────────────┘
 ```
 ```shell
@@ -93,8 +108,9 @@ To generate project files, run the command:
  php artisan moonshine:build category.json
 ```
 A more detailed example with multiple resources and relationships can be found [here](https://github.com/dev-lnk/moonshine-builder/blob/master/examples/project.json).
-### Creation from sql table
-You can create a resource using a table schema.You must specify the table name and select <code>table</code> type. Example:
+
+### Creation from SQL table
+You can create a resource using a table schema. You must specify the table name and select <code>table</code> type. Example:
 ```shell
 php artisan moonshine:build users --type=table
 ```
@@ -116,6 +132,56 @@ public function fields(): array
 ```
 
 After generating the files, make sure to register all new Resources in your <code>MoonShineServiceProvider</code>
+
+### Creation from existing Laravel Model
+
+If you already have a Laravel model with defined fields, relationships, and settings, you can generate a MoonShine Resource based on that model. Run the command `php artisan moonshine:build` and select the `model` option:
+
+```shell
+ ┌ Type ────────────────────────────────────────────────────────┐
+ │   ○ table                                                    │
+ │   ○ json                                                     │
+ │   ○ console                                                  │
+ │ › ● model                                                    │
+ └──────────────────────────────────────────────────────────────┘
+```
+
+Then select the desired model from the list of available models:
+
+```shell
+ ┌ Select a model: ─────────────────────────────────────────────┐
+ │   ○ App\Models\User                                          │
+ │   ○ App\Models\Category                                      │
+ │ › ● App\Models\Product                                       │
+ │   ○ App\Models\Comment                                       │
+ └──────────────────────────────────────────────────────────────┘
+```
+
+You can also directly specify the model for generation:
+
+```shell
+php artisan moonshine:build-model Product
+```
+
+or with the full class name:
+
+```shell
+php artisan moonshine:build-model "App\Models\Product"
+```
+
+The package will automatically analyze the model and create:
+- Resource with fields based on the table structure
+- Relationships (HasMany, BelongsTo, BelongsToMany, HasOne) based on model methods
+- Correct field types based on column types in the database
+- Timestamps and soft deletes settings if they are used in the model
+
+**Configuring the models directory**
+
+By default, the package looks for models in the `app/Models` directory. You can change this in the configuration file:
+
+```php
+'base_model_path' => 'app/Models',
+```
 
 ### Timestamps
 You can specify the timestamp: true flag

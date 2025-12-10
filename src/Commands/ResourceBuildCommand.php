@@ -57,6 +57,8 @@ class ResourceBuildCommand extends MoonShineBuildCommand
 
         $this->make($codeStructureList->codeStructures()[0], $generationPath);
 
+        $this->resourceInfo();
+
         $this->components->info('All done');
 
         return self::SUCCESS;

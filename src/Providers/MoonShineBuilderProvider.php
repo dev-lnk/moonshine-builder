@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Providers;
 
+use DevLnk\MoonShineBuilder\Commands\ModelBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\MoonShineBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\MoonShineProjectSchemaCommand;
 use DevLnk\MoonShineBuilder\Commands\ResourceBuildCommand;
@@ -28,6 +29,7 @@ class MoonShineBuilderProvider extends ServiceProvider
         MoonShineBuildCommand::class,
         MoonShineProjectSchemaCommand::class,
         ResourceBuildCommand::class,
+        ModelBuildCommand::class,
         TypeCommand::class,
     ];
 
