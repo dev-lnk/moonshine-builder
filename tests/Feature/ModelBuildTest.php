@@ -78,6 +78,26 @@ class ModelBuildTest extends TestCase
         ]);
     }
 
+    #[Test]
+    public function buildAllModels(): void
+    {
+        $fixtureModels = realpath('./tests/Fixtures/Models');
+        
+        foreach ($this->filesystem->files($fixtureModels) as $file) {
+            $this->filesystem->copy(
+                $file->getPathname(),
+                $this->modelPath . $file->getFilename()
+            );
+        }
+
+        $this->artisan('moonshine:build-model', ['--all' => true]);
+
+        $this->assertFileExists($this->resourcePath . 'Product/ProductResource.php');
+        $this->assertFileExists($this->resourcePath . 'Category/CategoryResource.php');
+        $this->assertFileExists($this->resourcePath . 'Comment/CommentResource.php');
+        $this->assertFileExists($this->resourcePath . 'TestModel/TestModelResource.php');
+    }
+
     /**
      * @throws FileNotFoundException
      */
@@ -140,6 +160,12 @@ class ModelBuildTest extends TestCase
     public function tearDown(): void
     {
         $this->filesystem->deleteDirectory($this->resourcePath);
+        
+        if ($this->filesystem->exists($this->modelPath)) {
+            foreach ($this->filesystem->files($this->modelPath) as $file) {
+                $this->filesystem->delete($file->getPathname());
+            }
+        }
 
         parent::tearDown();
     }

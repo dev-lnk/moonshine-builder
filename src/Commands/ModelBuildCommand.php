@@ -11,7 +11,7 @@ use SplFileInfo;
 
 class ModelBuildCommand extends MoonShineBuildCommand
 {
-    protected $signature = 'moonshine:build-model {entity?}';
+    protected $signature = 'moonshine:build-model {entity?} {--all : Process all models from the models directory}';
 
     public function handle(): int
     {
@@ -20,8 +20,9 @@ class ModelBuildCommand extends MoonShineBuildCommand
         $this->prepareBuilders();
 
         $entity = $this->argument('entity');
+        $all = $this->option('all');
 
-        $entities = empty($entity) ? $this->selectModels() : [$entity];
+        $entities = $this->resolveEntities($entity, $all);
 
         $generationPath = $this->generationPath();
 
@@ -55,6 +56,39 @@ class ModelBuildCommand extends MoonShineBuildCommand
         }
 
         return parent::projectFileName($filePath);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function resolveEntities(?string $entity, bool $all): array
+    {
+        if ($all) {
+            return $this->getAllModels();
+        }
+
+        if ($entity !== null) {
+            return [$entity];
+        }
+
+        return $this->selectModels();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getAllModels(): array
+    {
+        $models = $this->scanModels();
+
+        if (empty($models)) {
+            $baseModelPath = config('moonshine_builder.base_model_path', 'app/Models');
+            $this->components->warn("No models found in {$baseModelPath} directory.");
+            
+            return [];
+        }
+
+        return array_keys($models);
     }
 
     /**

@@ -169,6 +169,16 @@ or with the full class name:
 php artisan moonshine:build-model "App\Models\Product"
 ```
 
+**Generating resources for all models**
+
+If you need to create resources for all models in the directory, use the `--all` flag:
+
+```shell
+php artisan moonshine:build-model --all
+```
+
+This command will automatically scan the models directory and create resources for each model found.
+
 The package will automatically analyze the model and create:
 - Resource with fields based on the table structure
 - Relationships (HasMany, BelongsTo, BelongsToMany, HasOne) based on model methods
