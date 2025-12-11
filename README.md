@@ -331,6 +331,16 @@ php artisan moonshine:build-model Product
 php artisan moonshine:build-model "App\Models\Product"
 ```
 
+**Генерация ресурсов для всех моделей**
+
+Если вам нужно создать ресурсы для всех моделей в директории, используйте флаг `--all`:
+
+```shell
+php artisan moonshine:build-model --all
+```
+
+Эта команда автоматически просканирует директорию с моделями и создаст ресурсы для каждой найденной модели.
+
 Пакет автоматически проанализирует модель и создаст:
 - Resource с полями на основе структуры таблицы
 - Связи (HasMany, BelongsTo, BelongsToMany, HasOne) на основе методов модели
