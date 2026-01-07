@@ -2,20 +2,31 @@
 
 namespace DevLnk\MoonShineBuilder\Commands;
 
+use DevLnk\MoonShineBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\MoonShineBuilder\Exceptions\NotFoundBuilderException;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Services\CodeStructure\Factories\StructureFromJson;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use MoonShine\Laravel\Commands\MoonShineCommand;
+use DevLnk\MoonShineBuilder\Services\CodeGenerator;
 use SplFileInfo;
 use function Laravel\Prompts\{select};
 
-class JsonBuildCommand extends AbstractBuildCommand
+class JsonBuildCommand extends MoonShineCommand
 {
     protected $signature = 'moonshine:build-json {target?}';
 
-    public function handle(): int
+    /**
+     * @throws CodeGenerateCommandException
+     * @throws ProjectBuilderException
+     * @throws NotFoundBuilderException
+     * @throws FileNotFoundException
+     */
+    public function handle(CodeGenerator $codeGenerator): int
     {
-        $this->init();
+        $codeGenerator->setCommand($this);
 
         $target = $this->argument('target') ?? $this->getFileList('json');
 
@@ -24,10 +35,10 @@ class JsonBuildCommand extends AbstractBuildCommand
             ->codeStructures();
 
         foreach ($codeStructures as $codeStructure) {
-            $this->make($codeStructure, $this->generationPath);
+            $codeGenerator->make($codeStructure);
         }
 
-        $this->resourceInfo();
+        $codeGenerator->resourceInfo();
 
         $this->components->info('All done');
 

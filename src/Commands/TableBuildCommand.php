@@ -4,17 +4,27 @@ namespace DevLnk\MoonShineBuilder\Commands;
 
 use DevLnk\MoonShineBuilder\Enums\BuildType;
 use DevLnk\MoonShineBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\MoonShineBuilder\Exceptions\NotFoundBuilderException;
 use DevLnk\MoonShineBuilder\Services\CodeStructure\Factories\StructureFromMysql;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\Schema;
+use MoonShine\Laravel\Commands\MoonShineCommand;
+use DevLnk\MoonShineBuilder\Services\CodeGenerator;
+
 use function Laravel\Prompts\{select};
 
-class TableBuildCommand extends AbstractBuildCommand
+class TableBuildCommand extends MoonShineCommand
 {
     protected $signature = 'moonshine:build-table {target?}';
 
-    public function handle(): int
+    /**
+     * @throws CodeGenerateCommandException
+     * @throws FileNotFoundException
+     * @throws NotFoundBuilderException
+     */
+    public function handle(CodeGenerator $codeGenerator): int
     {
-        $this->init();
+        $codeGenerator->setCommand($this);
 
         $table = $this->argument('target');
 
@@ -35,7 +45,9 @@ class TableBuildCommand extends AbstractBuildCommand
             throw new CodeGenerateCommandException('Table not found');
         }
 
-        $this->builders = array_filter($this->builders, fn ($item) => $item !== BuildType::MIGRATION);
+        $codeGenerator->replaceBuilder(
+            array_filter($codeGenerator->getBuilders(), fn ($item) => $item !== BuildType::MIGRATION)
+        );
 
         $codeStructures = StructureFromMysql::make(
             table: $table,
@@ -46,10 +58,10 @@ class TableBuildCommand extends AbstractBuildCommand
             ->codeStructures();
 
         foreach ($codeStructures as $codeStructure) {
-            $this->make($codeStructure, $this->generationPath);
+            $codeGenerator->make($codeStructure);
         }
 
-        $this->resourceInfo();
+        $codeGenerator->resourceInfo();
 
         $this->components->info('All done');
 

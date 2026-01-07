@@ -1,52 +1,60 @@
 <?php
 
-namespace DevLnk\MoonShineBuilder\Commands;
+namespace DevLnk\MoonShineBuilder\Services;
 
 use DevLnk\MoonShineBuilder\Enums\BuildType;
 use DevLnk\MoonShineBuilder\Enums\BuildTypeContract;
-use DevLnk\MoonShineBuilder\Enums\ParseType;
 use DevLnk\MoonShineBuilder\Exceptions\CodeGenerateCommandException;
 use DevLnk\MoonShineBuilder\Exceptions\NotFoundBuilderException;
 use DevLnk\MoonShineBuilder\Services\Builders\Factory\MoonShineBuildFactory;
 use DevLnk\MoonShineBuilder\Services\CodePath\CodePathContract;
 use DevLnk\MoonShineBuilder\Services\CodePath\MoonShineCodePath;
 use DevLnk\MoonShineBuilder\Services\CodeStructure\CodeStructure;
-use DevLnk\MoonShineBuilder\Services\StubBuilder;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use MoonShine\Laravel\Commands\MoonShineCommand;
 use Illuminate\Filesystem\Filesystem;
 
-use function Laravel\Prompts\{confirm, select, note};
+use function Laravel\Prompts\{confirm, note};
 
-abstract class AbstractBuildCommand extends MoonShineCommand
+class CodeGenerator
 {
-    protected int $iterations = 0;
+    private MoonShineCommand $command;
 
-    protected ?string $stubDir = '';
+    private int $iterations = 0;
+
+    private ?string $stubDir = '';
 
     /** @var list<string> */
-    protected array $reminderResourceInfo = [];
+    private array $reminderResourceInfo = [];
 
     /** @var list<string> */
-    protected array $reminderMenuInfo = [];
+    private array $reminderMenuInfo = [];
 
     /** @var list<array<array-key, string>> */
-    protected array $resourceInfo = [];
+    private array $resourceInfo = [];
 
     /** @var list<BuildType> */
-    protected array $builders = [];
+    private array $builders = [];
 
     /** @var array<string, string> */
-    protected array $replaceCautions = [];
+    private array $replaceCautions = [];
 
-    protected ?string $generationPath = null;
+    public function __construct() {
+        $this->setStubDir();
+        $this->prepareBuilders();
+    }
+
+    public function setCommand(MoonShineCommand $command): void
+    {
+        $this->command = $command;
+    }
 
     /**
      * @throws CodeGenerateCommandException
      * @throws FileNotFoundException
      * @throws NotFoundBuilderException
      */
-    protected final function make(CodeStructure $codeStructure, ?string $generationPath): void
+    public function make(CodeStructure $codeStructure, ?string $generationPath = null): void
     {
         $codeStructure->setStubDir($this->stubDir);
 
@@ -62,7 +70,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
      * @throws FileNotFoundException
      * @throws NotFoundBuilderException
      */
-    protected final function buildCode(CodeStructure $codeStructure, CodePathContract $codePath): void
+    private function buildCode(CodeStructure $codeStructure, CodePathContract $codePath): void
     {
         $buildFactory = new MoonShineBuildFactory(
             $codeStructure,
@@ -101,7 +109,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
 
             $buildFactory->call($builder->value(), $this->stubDir . $builder->stub());
             $filePath = $codePath->path($builder->value())->file();
-            $this->info($this->projectFileName($filePath) . ' was created successfully!');
+            $this->command->info($this->projectFileName($filePath) . ' was created successfully!');
         }
 
         if(! in_array(BuildType::RESOURCE, $this->builders)) {
@@ -130,7 +138,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         }
     }
 
-    protected final function prepareGeneration(CodeStructure $codeStructure, CodePathContract $codePath, ?string $generationPath): void
+    private function prepareGeneration(CodeStructure $codeStructure, CodePathContract $codePath, ?string $generationPath): void
     {
         $isGenerationDir = $generationPath !== null;
 
@@ -156,7 +164,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         }
     }
 
-    protected final function projectFileName(string $filePath): string
+    private function projectFileName(string $filePath): string
     {
         if(str_contains($filePath, '/resources/views')) {
             return substr($filePath, strpos($filePath, '/resources/views') + 1);
@@ -173,33 +181,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         return substr($filePath, strpos($filePath, '/app') + 1);
     }
 
-    protected final function getType(?string $target): string
-    {
-        if (! $this->option('type') && ! is_null($target)) {
-            $availableTypes = [
-                ParseType::JSON->value,
-            ];
-
-            $fileSeparate = explode('.', $target);
-            $type = $fileSeparate[count($fileSeparate) - 1];
-
-            if (in_array($type, $availableTypes)) {
-                return $type;
-            }
-        }
-
-        $typeList = [];
-        foreach (ParseType::cases() as $parseType) {
-            $typeList[$parseType->value] = $parseType->toString();
-        }
-
-        return $this->option('type') ?? select(
-            'Type',
-            $typeList
-        );
-    }
-
-    protected final function codePath(): CodePathContract
+    private function codePath(): CodePathContract
     {
         $codePath = new MoonShineCodePath($this->iterations);
         $this->iterations++;
@@ -207,7 +189,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         return $codePath;
     }
 
-    protected final function resourceInfo(): void
+    public function resourceInfo(): void
     {
         if(! in_array(BuildType::RESOURCE, $this->builders)) {
             return;
@@ -219,7 +201,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
             note($code);
         } else {
             foreach ($this->resourceInfo as $info) {
-                self::addResourceOrPageToProviderFile($info['className'], namespace: $info['namespace']);
+                $this->command::addResourceOrPageToProviderFile($info['className'], namespace: $info['namespace']);
             }
         }
 
@@ -231,24 +213,17 @@ abstract class AbstractBuildCommand extends MoonShineCommand
             // TODO Не работает в тестовой среде из-за метода addResourceOrPageToMenu
             // new ReflectionClass(moonshineConfig()->getLayout()) выбрасывает исключение
             foreach ($this->resourceInfo as $info) {
-                self::addResourceOrPageToMenu($info['className'], $info['menuName'], $info['namespace']);
+                $this->command::addResourceOrPageToMenu($info['className'], $info['menuName'], $info['namespace']);
             }
         }
     }
 
-    protected final function init(): void
-    {
-        $this->setStubDir();
-
-        $this->prepareBuilders();
-    }
-
-    protected function setStubDir(): void
+    private function setStubDir(): void
     {
         $this->stubDir = __DIR__ . '/../../stubs/';
     }
 
-    protected function prepareBuilders(): void
+    private function prepareBuilders(): void
     {
         $this->builders = [
             BuildType::MODEL,
@@ -258,5 +233,15 @@ abstract class AbstractBuildCommand extends MoonShineCommand
             BuildType::FORM_PAGE,
             BuildType::DETAIL_PAGE,
         ];
+    }
+
+    public function getBuilders(): array
+    {
+        return $this->builders;
+    }
+
+    public function replaceBuilder(array $builders): void
+    {
+        $this->builders = $builders;
     }
 }

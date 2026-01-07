@@ -4,18 +4,30 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Commands;
 
+use DevLnk\MoonShineBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\MoonShineBuilder\Exceptions\NotFoundBuilderException;
+use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 use DevLnk\MoonShineBuilder\Services\CodeStructure\Factories\StructureFromModel;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
+use MoonShine\Laravel\Commands\MoonShineCommand;
+use DevLnk\MoonShineBuilder\Services\CodeGenerator;
 use function Laravel\Prompts\{multiselect, text};
 use SplFileInfo;
 
-class ModelBuildCommand extends AbstractBuildCommand
+class ModelBuildCommand extends MoonShineCommand
 {
     protected $signature = 'moonshine:build-model {entity?} {--all : Process all models from the models directory}';
 
-    public function handle(): int
+    /**
+     * @throws CodeGenerateCommandException
+     * @throws ProjectBuilderException
+     * @throws FileNotFoundException
+     * @throws NotFoundBuilderException
+     */
+    public function handle(CodeGenerator $codeGenerator): int
     {
-        $this->init();
+        $codeGenerator->setCommand($this);
 
         $entity = $this->argument('entity');
         $all = $this->option('all');
@@ -31,14 +43,14 @@ class ModelBuildCommand extends AbstractBuildCommand
 
             $codeStructureList = (new StructureFromModel($modelClass))->makeStructures();
 
-            $this->make($codeStructureList->codeStructures()[0], $this->generationPath);
+            $codeGenerator->make($codeStructureList->codeStructures()[0]);
 
             $processedCount++;
         }
 
         $this->components->info("Processed {$processedCount} model(s) successfully");
 
-        $this->resourceInfo();
+        $codeGenerator->resourceInfo();
 
         return self::SUCCESS;
     }
