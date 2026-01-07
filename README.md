@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/packagist/l/dev-lnk/moonshine-builder)](https://packagist.org/packages/dev-lnk/moonshine-builder)\
 [![Laravel required](https://img.shields.io/badge/Laravel-10+-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
 [![PHP required](https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php)](https://www.php.net/manual/)
-[![MoonShine required](https://img.shields.io/badge/Moonshine-3.0+-1B253B?style=for-the-badge)](https://github.com/moonshine-software/moonshine)
+[![MoonShine required](https://img.shields.io/badge/Moonshine-4.0+-1B253B?style=for-the-badge)](https://github.com/moonshine-software/moonshine)
 
 - [Описание](#about)
 - [Установка](#install)
@@ -118,6 +118,12 @@ INFO  All done.
  - `target` - сущность, по которой будет выполнена генерация,
  - `type` - тип или метод генерации, доступно `table`, `json`, `console`, `model`.
 
+Также доступны отдельные команды для каждого типа генерации:
+ - `php artisan moonshine:build-json {target?}` - генерация из JSON-схемы
+ - `php artisan moonshine:build-table {target?}` - генерация из SQL-таблицы
+ - `php artisan moonshine:build-resource {entity?} {fields?*}` - генерация из консоли
+ - `php artisan moonshine:build-model {entity?} {--all}` - генерация из существующей модели
+
 <a name="code-generate"></a>
 ## Методы генерации кода
 
@@ -147,6 +153,11 @@ INFO  All done.
 Вы можете сразу указать название таблицы и тип генерации. Пример:
 ```shell
 php artisan moonshine:build users --type=table
+```
+
+Или использовать специализированную команду:
+```shell
+php artisan moonshine:build-table users
 ```
 
 Результат:
@@ -199,6 +210,11 @@ protected function fields(): iterable
 Чтобы сгенерировать файлы проекта, выполните команду:
 ```shell
 php artisan moonshine:build category.json
+```
+
+Или используйте специализированную команду:
+```shell
+php artisan moonshine:build-json category.json
 ```
 
 Более подробный пример с множественными ресурсами и связями можно найти [здесь](https://github.com/dev-lnk/moonshine-builder/blob/master/examples/project.json).
