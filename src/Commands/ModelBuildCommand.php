@@ -22,8 +22,6 @@ class ModelBuildCommand extends AbstractBuildCommand
 
         $entities = $this->resolveEntities($entity, $all);
 
-        $generationPath = $this->generationPath();
-
         $processedCount = 0;
 
         foreach ($entities as $entity) {
@@ -33,7 +31,7 @@ class ModelBuildCommand extends AbstractBuildCommand
 
             $codeStructureList = (new StructureFromModel($modelClass))->makeStructures();
 
-            $this->make($codeStructureList->codeStructures()[0], $generationPath);
+            $this->make($codeStructureList->codeStructures()[0], $this->generationPath);
 
             $processedCount++;
         }
@@ -43,17 +41,6 @@ class ModelBuildCommand extends AbstractBuildCommand
         $this->resourceInfo();
 
         return self::SUCCESS;
-    }
-
-    protected function projectFileName(string $filePath): string
-    {
-        $basePath = base_path();
-
-        if (str_starts_with($filePath, $basePath)) {
-            return substr($filePath, strlen($basePath) + 1);
-        }
-
-        return parent::projectFileName($filePath);
     }
 
     /**

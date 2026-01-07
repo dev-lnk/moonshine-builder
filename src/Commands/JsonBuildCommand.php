@@ -23,10 +23,8 @@ class JsonBuildCommand extends AbstractBuildCommand
             ->makeStructures()
             ->codeStructures();
 
-        $generationPath = $this->generationPath();
-
         foreach ($codeStructures as $codeStructure) {
-            $this->make($codeStructure, $generationPath);
+            $this->make($codeStructure, $this->generationPath);
         }
 
         $this->resourceInfo();

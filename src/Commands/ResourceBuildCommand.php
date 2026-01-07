@@ -51,9 +51,7 @@ class ResourceBuildCommand extends AbstractBuildCommand
             return self::FAILURE;
         }
 
-        $generationPath = $this->generationPath();
-
-        $this->make($codeStructureList->codeStructures()[0], $generationPath);
+        $this->make($codeStructureList->codeStructures()[0], $this->generationPath);
 
         $this->resourceInfo();
 

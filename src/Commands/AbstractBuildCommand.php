@@ -39,18 +39,20 @@ abstract class AbstractBuildCommand extends MoonShineCommand
     /** @var array<string, string> */
     protected array $replaceCautions = [];
 
+    protected ?string $generationPath = null;
+
     /**
      * @throws CodeGenerateCommandException
      * @throws FileNotFoundException
      * @throws NotFoundBuilderException
      */
-    protected final function make(CodeStructure $codeStructure, string $generationPath): void
+    protected final function make(CodeStructure $codeStructure, ?string $generationPath): void
     {
         $codeStructure->setStubDir($this->stubDir);
 
         $codePath = $this->codePath();
 
-        $this->prepareGeneration($generationPath, $codeStructure, $codePath);
+        $this->prepareGeneration($codeStructure, $codePath, $generationPath);
 
         $this->buildCode($codeStructure, $codePath);
     }
@@ -128,9 +130,9 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         }
     }
 
-    protected final function prepareGeneration(string $generationPath, CodeStructure $codeStructure, CodePathContract $codePath): void
+    protected final function prepareGeneration(CodeStructure $codeStructure, CodePathContract $codePath, ?string $generationPath): void
     {
-        $isGenerationDir = $generationPath !== '_default';
+        $isGenerationDir = $generationPath !== null;
 
         $fileSystem = new Filesystem();
 
@@ -142,7 +144,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
             }
         }
 
-        $codePath->initPaths($codeStructure, $generationPath, $isGenerationDir);
+        $codePath->initPaths($codeStructure);
 
         if(! $isGenerationDir) {
             foreach ($this->builders as $buildType) {
@@ -154,7 +156,7 @@ abstract class AbstractBuildCommand extends MoonShineCommand
         }
     }
 
-    protected function projectFileName(string $filePath): string
+    protected final function projectFileName(string $filePath): string
     {
         if(str_contains($filePath, '/resources/views')) {
             return substr($filePath, strpos($filePath, '/resources/views') + 1);
@@ -162,6 +164,10 @@ abstract class AbstractBuildCommand extends MoonShineCommand
 
         if(str_contains($filePath, '/routes')) {
             return substr($filePath, strpos($filePath, '/routes') + 1);
+        }
+
+        if (str_starts_with($filePath, base_path())) {
+            return substr($filePath, strlen(base_path()) + 1);
         }
 
         return substr($filePath, strpos($filePath, '/app') + 1);
@@ -228,11 +234,6 @@ abstract class AbstractBuildCommand extends MoonShineCommand
                 self::addResourceOrPageToMenu($info['className'], $info['menuName'], $info['namespace']);
             }
         }
-    }
-
-    public function generationPath(): string
-    {
-        return '_default';
     }
 
     protected final function init(): void
