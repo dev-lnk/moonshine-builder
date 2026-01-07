@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use function Laravel\Prompts\{multiselect, text};
 use SplFileInfo;
 
-class ModelBuildCommand extends MoonShineBuildCommand
+class ModelBuildCommand extends AbstractBuildCommand
 {
     protected $signature = 'moonshine:build-model {entity?} {--all : Process all models from the models directory}';
 

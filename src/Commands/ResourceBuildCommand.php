@@ -12,7 +12,7 @@ use function Laravel\Prompts\{confirm, search, text};
 
 use ValueError;
 
-class ResourceBuildCommand extends MoonShineBuildCommand
+class ResourceBuildCommand extends AbstractBuildCommand
 {
     protected $signature = 'moonshine:build-resource {entity?} {fields?*}';
 

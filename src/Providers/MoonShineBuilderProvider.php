@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace DevLnk\MoonShineBuilder\Providers;
 
+use DevLnk\MoonShineBuilder\Commands\JsonBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\ModelBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\MoonShineBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\MoonShineProjectSchemaCommand;
 use DevLnk\MoonShineBuilder\Commands\ResourceBuildCommand;
+use DevLnk\MoonShineBuilder\Commands\TableBuildCommand;
 use DevLnk\MoonShineBuilder\Commands\TypeCommand;
 use DevLnk\MoonShineBuilder\Services\Builders\Contracts\DetailPageBuilderContract;
 use DevLnk\MoonShineBuilder\Services\Builders\Contracts\FormPageBuilderContract;
@@ -27,9 +29,12 @@ class MoonShineBuilderProvider extends ServiceProvider
 {
     protected array $commands = [
         MoonShineBuildCommand::class,
-        MoonShineProjectSchemaCommand::class,
         ResourceBuildCommand::class,
         ModelBuildCommand::class,
+        TableBuildCommand::class,
+        JsonBuildCommand::class,
+
+        MoonShineProjectSchemaCommand::class,
         TypeCommand::class,
     ];
 
