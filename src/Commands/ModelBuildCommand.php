@@ -15,9 +15,7 @@ class ModelBuildCommand extends MoonShineBuildCommand
 
     public function handle(): int
     {
-        $this->setStubDir();
-
-        $this->prepareBuilders();
+        $this->init();
 
         $entity = $this->argument('entity');
         $all = $this->option('all');

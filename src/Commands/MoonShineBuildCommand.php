@@ -72,9 +72,7 @@ class MoonShineBuildCommand extends MoonShineCommand
             return self::SUCCESS;
         }
 
-        $this->setStubDir();
-
-        $this->prepareBuilders();
+        $this->init();
 
         $codeStructures = $this->codeStructures();
 
@@ -348,6 +346,13 @@ class MoonShineBuildCommand extends MoonShineCommand
     public function generationPath(): string
     {
         return '_default';
+    }
+
+    protected function init(): void
+    {
+        $this->setStubDir();
+
+        $this->prepareBuilders();
     }
 
     protected function setStubDir(): void
