@@ -26,7 +26,7 @@ class MoonShineCodePath implements CodePathContract
      */
     private array $paths = [];
 
-    public function initPaths(CodeStructure $codeStructure, string $generationPath, bool $isGenerationDir): void
+    public function initPaths(CodeStructure $codeStructure): void
     {
         $time = Carbon::now();
         $time->addSeconds($this->iteration);

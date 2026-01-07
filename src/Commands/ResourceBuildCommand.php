@@ -5,22 +5,31 @@ declare(strict_types=1);
 namespace DevLnk\MoonShineBuilder\Commands;
 
 use DevLnk\MoonShineBuilder\Enums\SqlTypeMap;
+use DevLnk\MoonShineBuilder\Exceptions\CodeGenerateCommandException;
+use DevLnk\MoonShineBuilder\Exceptions\NotFoundBuilderException;
 use DevLnk\MoonShineBuilder\Exceptions\ProjectBuilderException;
 
 use DevLnk\MoonShineBuilder\Services\CodeStructure\Factories\StructureFromConsole;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use MoonShine\Laravel\Commands\MoonShineCommand;
+use DevLnk\MoonShineBuilder\Services\CodeGenerator;
 use function Laravel\Prompts\{confirm, search, text};
 
 use ValueError;
 
-class ResourceBuildCommand extends MoonShineBuildCommand
+class ResourceBuildCommand extends MoonShineCommand
 {
     protected $signature = 'moonshine:build-resource {entity?} {fields?*}';
 
-    public function handle(): int
+    /**
+     * @throws CodeGenerateCommandException
+     * @throws ProjectBuilderException
+     * @throws FileNotFoundException
+     * @throws NotFoundBuilderException
+     */
+    public function handle(CodeGenerator $codeGenerator): int
     {
-        $this->setStubDir();
-
-        $this->prepareBuilders();
+        $codeGenerator->setCommand($this);
 
         $entity = $this->argument('entity');
         if(empty($entity)) {
@@ -53,11 +62,9 @@ class ResourceBuildCommand extends MoonShineBuildCommand
             return self::FAILURE;
         }
 
-        $generationPath = $this->generationPath();
+        $codeGenerator->make($codeStructureList->codeStructures()[0]);
 
-        $this->make($codeStructureList->codeStructures()[0], $generationPath);
-
-        $this->resourceInfo();
+        $codeGenerator->resourceInfo();
 
         $this->components->info('All done');
 
